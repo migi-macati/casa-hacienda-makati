@@ -28,3 +28,8 @@ Do not modify BetterMakati or Facebook. Never claim complete or error-free witho
 - About and Cultural Significance each had two H1 elements; source edits retain the page H1 and demote the WordPress embedded heading to H2. Distinct page titles added. Original historical text preserved.
 - Stage: pr_open. Mergeable reported false at creation; do not assume CI failure. Check PR checks and mergeability after GitHub processing; merge only when safe, then verify matching READY production SHA and rendered pages.
 - Unfinished: complete content/media verification, full-text search, sitemap/SEO, accessibility, performance, rights review. Keep noindex in place.
+
+## 2026-10-10 — full-text search release
+- PR #2 merged as 5a42ae604a9ca6054c767d541a658bf444633d8a and matching Vercel production deployment dpl_Dqyj45YyoqZZMy7LJ6SMxoxruBpZ is READY; rendered-page check remains separate.
+- PR #3 https://github.com/migi-macati/casa-hacienda-makati/pull/3 head 6770452c192d0a6c920c2f446adca3c12a3df82d: published-article full-text search index and homepage filter, with summary fallback. Preview dpl_FJNnKHH9G845rRr1DWCHiji1o8KD BUILDING at last check; logs show media bundling underway. Do not merge until checks pass.
+- Next: verify preview READY and search-index.json has 13 entries, test a body-only query, then merge PR #3 and verify matching READY production deployment. Continue remaining migration acceptance checks.
