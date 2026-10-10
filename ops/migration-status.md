@@ -43,3 +43,8 @@ Do not modify BetterMakati or Facebook. Never claim complete or error-free witho
 - Full-text search PR #3 merged as 71634857062d42aacc90aa0129e3ea802deff298; Vercel production deployment dpl_8GzXqF1q6okEm6TmgFXRHFhNxoUH READY and subsequent main deployment dpl_6GYR3c8NTrdvd6tJhf4T3c7Q2KUD READY. Direct search endpoint/browser interaction not yet independently verified.
 - PR #4 https://github.com/migi-macati/casa-hacienda-makati/pull/4 fixes duplicate H1 in 12 Cultural Significance posts. GitHub branch files re-fetched: each of 12 has exactly one H1. Barrio Olimpia already had one H1. Preview deployments queued at last check; merge after build READY.
 - Pending: audit image alt text and image rights/attribution, source fidelity, comments, original WordPress comparison, browser QA, final SEO/indexing decision.
+
+## 2026-10-10 17:35 PHT — M unblock pass
+- Cleared CHM-B001 (PR #4 merge pending): preview Vercel dpl_FhW5jHdTh56fRFo951Df2qB7XniK READY for head 96a43c215e037aadc17e3efbee1ff2aab2571cab. PR #4 successfully merged as 64fa2ec105d985e3b81bc85e66660619ec7b4c1b. Source audit on branch showed one H1 for all 12 affected articles.
+- CHM-B002 (pending automated verification, not owner intervention): production deployment dpl_6LmdGm8KGiqAn4gHzDLqgEFGKByK for merge SHA 64fa2ec105d985e3b81bc85e66660619ec7b4c1b was BUILDING. Recheck once on next run, then verify rendered pages.
+- No owner action currently required for PR #4. Continue independent image alt-text audit and content fidelity comparison; keep noindex until final approval.
