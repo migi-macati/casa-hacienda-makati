@@ -33,3 +33,8 @@ Do not modify BetterMakati or Facebook. Never claim complete or error-free witho
 - PR #2 merged as 5a42ae604a9ca6054c767d541a658bf444633d8a and matching Vercel production deployment dpl_Dqyj45YyoqZZMy7LJ6SMxoxruBpZ is READY; rendered-page check remains separate.
 - PR #3 https://github.com/migi-macati/casa-hacienda-makati/pull/3 head 6770452c192d0a6c920c2f446adca3c12a3df82d: published-article full-text search index and homepage filter, with summary fallback. Preview dpl_FJNnKHH9G845rRr1DWCHiji1o8KD BUILDING at last check; logs show media bundling underway. Do not merge until checks pass.
 - Next: verify preview READY and search-index.json has 13 entries, test a body-only query, then merge PR #3 and verify matching READY production deployment. Continue remaining migration acceptance checks.
+
+## 2026-10-10 — GitHub mutation unblocked
+- PR #3 successfully squash-merged into main, SHA 71634857062d42aacc90aa0129e3ea802deff298. Full-text search is merged, not yet production-verified.
+- Vercel production deployment dpl_8GzXqF1q6okEm6TmgFXRHFhNxoUH matches this SHA and was INITIALIZING at last check. Verify READY and actual /search-index.json endpoint before declaring published.
+- Next: audit and repair article H1 hierarchy, then per-image alt text and attribution. Do not lift noindex until final acceptance.
