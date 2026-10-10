@@ -74,3 +74,11 @@ Do not modify BetterMakati or Facebook. Never claim complete or error-free witho
 - Production deployment dpl_3x3Munrx5mAd7n5w4Bp6hMEPKtE7 matches merge SHA but was QUEUED at check. Do not claim deployed or behavior-tested until READY and endpoint/browser verification.
 - Contextual media audit begun: CS1 has scanned Labor Evangelica page images with descriptive alt already, but introductory cs-1-crop-1.png has blank alt. Barrio Olimpia gallery links still point to original WordPress attachment pages and seven of eight article images have blank alt. Avoid fabricating descriptions; inspect visual content and distinguish meaningful from decorative images. Image rights remain owner-review dependent.
 - Next: verify production PR5 SHA READY; audit and repair gallery links/alt context, source fidelity, and live search behavior. Retain noindex.
+
+## 2026-10-10 20:40 PHT — M unblock and consolidated queue
+- CHM-B004 CLEARED: QA PR #6 https://github.com/migi-macati/casa-hacienda-makati/pull/6 created successfully, head e651fa23ca6268d201aae497643432576e04f4cb, preview dpl_9AUL6uvs5ECN4pyrmzQfEKzzChXi READY; merged as 4e9f58b9ce9cf9251d272facc0256a61aa8d3578. Production matching SHA READY and live QA still need confirmation.
+- CHM-B005 PENDING: README correction previously rejected. Retry only against fresh main content on a separate scoped branch; automation owns; no owner action established.
+- CHM-B006 PENDING: direct rendered-page/browser verification unavailable in prior runs; retry public endpoints and supported browsing; automation owns; no owner action established.
+- CHM-B007 PENDING: restore 44 missing footnote targets in five articles (CS1 4, Barrio Olimpia 4, CS10 13, CS11 14, CS12 9). Existing branch fix/restore-cs1-source-notes-20261010 created but article update previously rejected. Re-fetch original WordPress source notes, preserve verbatim citations, repair on branch and add fragment-link QA. Automation owns; no owner action established.
+- Rights/attribution and release indexing are OWNER DECISIONS after evidence inventory; retain noindex and original WordPress. Do not publish four drafts.
+- Next: confirm QA PR6 production SHA READY; source-accurate footnote restoration and fragment link tests, image context and rights review. Do not claim acceptance.
