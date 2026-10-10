@@ -81,3 +81,32 @@ Weighted indicative score: 45.5/100. These are editorial judgments, NOT benchmar
 - Gate B (heritage usefulness): P1 tasks pass audience journey tests and source-review requirements.
 - Gate C (public launch): owner approves rights, conservation representations and indexing. Noindex and original WordPress stay unchanged until then.
 - Score again after direct browser, content fidelity and real-device tests. Do not equate a READY deployment with acceptance.
+
+## Research completeness and 100/100 quality target (2026-10-10)
+The 100/100 objective is a measured website readiness and evidence-governance target, NOT a claim that historical knowledge can be exhausted. The provisional scholarship 2.5/5 is a site/publication assessment; it is not a quantified fraction of all surviving archival records. Do not equate published article count with research completeness.
+
+### Research coverage audit (status: unverified until source inventory)
+- Property chronology and landholding: identify Jesuit estate administration, transfer/ownership chains, parcels and documentary chronology; resolve which references concern the Olympia Casa versus Poblacion Oficinas.
+- Architecture and material fabric: plans, typology, alterations, historic photographs, 1910 versus 1926 reconstructions, evidence for dates and original features.
+- Geography and cartography: 1775 Dionisio Kelly map and later cadastral/historic maps; georeferencing confidence and boundaries.
+- People and labor: tenants, workers, residents, religious orders, family networks and social/economic functions, including perspectives absent from elite institutional records.
+- Economic and institutional history: hacienda production, tenancy, local administration, later uses (factory, hospital, orphanage etc.) with separate evidence assessments.
+- Heritage significance and comparative context: authenticity, integrity, rarity, comparable surviving casas, criteria used in significance claims.
+- Condition and conservation: 2018 fire evidence, present condition, ownership/stewardship, engineering assessments, heritage designations, legal constraints and feasible restoration options.
+- Public memory and oral history: ethically gathered recollections, informed consent, provenance and corroboration.
+- Source provenance: full bibliographic details, archive/collection/call numbers, manuscript versus transcription, image rights, access URL, reliability and relevant quotations.
+- Historiography and uncertainties: contradictory dates, identity claims, translation differences, alternative interpretations and explicitly unresolved questions.
+
+### Research quality acceptance criteria
+R01: Inventory every currently cited source in all 13 articles and 2 pages with stable source ID, citation occurrence, repository/archive, date, creator, type, link or call number, access/rights and verification status.
+R02: Restore all 44 missing footnotes, audit every internal citation anchor and external source URL; record dead-link substitutes without silently replacing bibliographic references.
+R03: Build a claim-to-source matrix for every consequential historical assertion, distinguishing primary documentation, secondary scholarship, inference and oral testimony; unresolved claims labeled.
+R04: Cross-check major chronological, geographic, ownership and building-identity claims with independent evidence where feasible; document conflicts and negative findings.
+R05: Source-index maps and historical photos with captions, approximate dates, creators, holdings, transformations, permissions and uncertainty.
+R06: Create a public, accessible bibliography, chronology, research methods and corrections/change-log pages, with contextual links from the articles.
+R07: Publish a clearly sourced conservation dossier with date-of-observation, evidence, missing surveys and explicit distinctions between proposals and official decisions.
+R08: Maintain a prioritized unanswered-questions register with next archives/institutions to consult, progress and provenance of each new finding.
+R09: External scholarly/heritage review of high-stakes conclusions where practicable, with recorded responses and corrections.
+R10: Each source-supported published claim is reproducible from a cited record or transparently labeled as inference; zero known broken citation anchors or unacknowledged source discrepancies.
+
+Research backlog priority: R01–R03 and R05 are P0/P1 source-integrity work; R04, R06–R08 are P1 heritage scholarship; R09–R10 are ongoing quality gates. Continue substantive research without delaying independent migration QA. Missing or inaccessible archives are documented limitations, not invented certainty.
