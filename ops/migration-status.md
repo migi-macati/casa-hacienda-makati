@@ -68,3 +68,9 @@ Do not modify BetterMakati or Facebook. Never claim complete or error-free witho
 - PR #5 https://github.com/migi-macati/casa-hacienda-makati/pull/5 OPEN; preview dpl_FVkcfTzTTKr2uudVsuN8L179BLR9 QUEUED at check. Pending build gate and browser interaction test; do not claim search behavior verified yet. Merge after preview checks.
 - Separate production deployment dpl_FSufQ65q8N8X78MyUbeWLipXaaij for main SHA 6ad727b8703eebf2b1173798bf428bc2ac5ff4b1 was BUILDING. Reconcile once next run.
 - No owner intervention needed for CHM-B003. Continue media alt text, attribution and source fidelity work independently; retain noindex.
+
+## 2026-10-10 — M PR #5 release
+- Preview dpl_FVkcfTzTTKr2uudVsuN8L179BLR9 READY for ed6a8b7ba9b57bb6d70f0d15cc97c6e0d999fd07; PR #5 merged successfully as 17d8fb00712e75261e0f7e0a378f067e0dba7008. CHM-B003 mutation blocker resolved; CSS hidden-card correction merged.
+- Production deployment dpl_3x3Munrx5mAd7n5w4Bp6hMEPKtE7 matches merge SHA but was QUEUED at check. Do not claim deployed or behavior-tested until READY and endpoint/browser verification.
+- Contextual media audit begun: CS1 has scanned Labor Evangelica page images with descriptive alt already, but introductory cs-1-crop-1.png has blank alt. Barrio Olimpia gallery links still point to original WordPress attachment pages and seven of eight article images have blank alt. Avoid fabricating descriptions; inspect visual content and distinguish meaningful from decorative images. Image rights remain owner-review dependent.
+- Next: verify production PR5 SHA READY; audit and repair gallery links/alt context, source fidelity, and live search behavior. Retain noindex.
