@@ -15,3 +15,6 @@
  .content h1{font-size:clamp(1.85rem,7vw,2.2rem)}
  .content h2{font-size:1.5rem}
 }
+
+/* Restored archival citations: readable on narrow screens and keyboard navigable. */
+.source-notes{border-top:1px solid var(--border);margin-top:2.5rem;padding-top:1rem;overflow-wrap:anywhere}.source-notes h2{font-size:1.65rem}.source-notes ol{padding-left:1.7rem}.source-notes li{padding:.3rem 0;scroll-margin-top:7rem}.source-notes li:target{background:#f4e9d2}.source-backlink{display:inline-block;padding:.1rem .35rem;font-weight:700;text-decoration:underline}
