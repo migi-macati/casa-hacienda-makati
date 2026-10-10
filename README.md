@@ -8,7 +8,7 @@ The original WordPress site remains online at https://casahaciendamakati.wordpre
 
 - Full text of 13 published posts and 2 published pages copied into their original paths.
 - Original publication dates and source-article links preserved.
-- Media in this GitHub snapshot still loads from WordPress. Archival media has **not yet been committed** to this public repository pending provenance and rights review; a separate owner-provided media export exists.
+- The build uses `scripts/bundle-media.mjs` and `media-manifest.json` to bundle 82 archival media assets into its deployment output and rewrite WordPress upload references. These assets are generated at build time, not necessarily committed as individual files in the repository. Their provenance, rights, accessibility descriptions, and deployed integrity remain under review.
 - Unpublished draft content, private account details, and comments are not included.
 - `noindex` and `robots.txt` prevent premature search-engine indexing during migration review.
 
