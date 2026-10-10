@@ -82,3 +82,9 @@ Do not modify BetterMakati or Facebook. Never claim complete or error-free witho
 - CHM-B007 PENDING: restore 44 missing footnote targets in five articles (CS1 4, Barrio Olimpia 4, CS10 13, CS11 14, CS12 9). Existing branch fix/restore-cs1-source-notes-20261010 created but article update previously rejected. Re-fetch original WordPress source notes, preserve verbatim citations, repair on branch and add fragment-link QA. Automation owns; no owner action established.
 - Rights/attribution and release indexing are OWNER DECISIONS after evidence inventory; retain noindex and original WordPress. Do not publish four drafts.
 - Next: confirm QA PR6 production SHA READY; source-accurate footnote restoration and fragment link tests, image context and rights review. Do not claim acceptance.
+
+## 2026-10-10 20:45 PHT — M blocker progress
+- PR #6 merge SHA 4e9f58b9ce9cf9251d272facc0256a61aa8d3578 confirmed matching READY production deployment dpl_EvZsgEFGvbRwaNLV3vPdpytgBxeU. Automated QA release deployed; direct browser endpoint QA still pending.
+- CHM-B005 mutation CLEARED: created branch docs/correct-media-build-description-20261010 and corrected README's stale statement about WordPress-hosted media. Commit 05b323d77be9cbbd72d3bbe1b9a865c0930017a1, PR #7 https://github.com/migi-macati/casa-hacienda-makati/pull/7 OPEN. Preview dpl_DA2jLwJXEDweyKy7JAo2RAVAR1bA BUILDING; merge after READY.
+- Production deployment dpl_ceQzbKe2B1tLfU8qXTX2NR39oE2m for checkpoint-only SHA 67395f2d99dcbbdee7e76be7fd17cf30e67ddd0f reported ERROR; events endpoint returned empty events. Root cause unknown; separate successful QA deployment remains READY. Investigate if repeated.
+- CHM-B006 PENDING live-browser verification (automation); CHM-B007 PENDING 44 footnote restorations (automation); owner rights/attribution and indexing approval remain pending. Next: PR7 preview gate and source-accurate footnote repairs. Noindex retained.
