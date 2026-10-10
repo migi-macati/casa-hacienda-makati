@@ -1,0 +1,417 @@
+{
+  "schema_version": 1,
+  "mirror_origin": "https://casa-hacienda-makati-1jer8yfur-better-makati.vercel.app",
+  "notes": "Original owner-provided media export mapped from October 10 2026 WordPress WXR. Mirror origin is a prior verified staging deployment; on failure fallback to WordPress source during build. Preserve archival credits and verify reuse permissions before final cutover.",
+  "assets": [
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2022/06/casa-principal-colored.jpg",
+      "path": "/media/2022/06/casa-principal-colored.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2022/06/casa-principal-with-fhl-watermark.png",
+      "path": "/media/2022/06/casa-principal-with-fhl-watermark.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2023/07/chm-logo-2.png",
+      "path": "/media/2023/07/chm-logo-2.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2023/07/cs-1-crop-1.png",
+      "path": "/media/2023/07/cs-1-crop-1.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2023/07/cs-1-crop.png",
+      "path": "/media/2023/07/cs-1-crop.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2023/07/cs-1.png",
+      "path": "/media/2023/07/cs-1.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2023/07/cs-logo-1.png",
+      "path": "/media/2023/07/cs-logo-1.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2023/07/cs-logo.png",
+      "path": "/media/2023/07/cs-logo.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2023/07/foundation-1.jpg",
+      "path": "/media/2023/07/foundation-1.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2023/07/foundation-2.jpg",
+      "path": "/media/2023/07/foundation-2.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2023/07/foundation-3.jpg",
+      "path": "/media/2023/07/foundation-3.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2023/07/labor-evangelica.jpg",
+      "path": "/media/2023/07/labor-evangelica.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2023/08/cs-10.1.jpg",
+      "path": "/media/2023/08/cs-10.1.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2023/08/cs-2.1.jpg",
+      "path": "/media/2023/08/cs-2.1.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2023/08/cs-2.jpg",
+      "path": "/media/2023/08/cs-2.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2023/08/cs-4.jpg",
+      "path": "/media/2023/08/cs-4.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2023/08/cs-5.1.jpg",
+      "path": "/media/2023/08/cs-5.1.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2023/08/cs-6.1.jpg",
+      "path": "/media/2023/08/cs-6.1.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2023/08/cs-7.1.jpg",
+      "path": "/media/2023/08/cs-7.1.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2023/08/cs-8.1.jpg",
+      "path": "/media/2023/08/cs-8.1.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2023/08/cs-9.1.jpg",
+      "path": "/media/2023/08/cs-9.1.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2023/08/slide5.2.jpg",
+      "path": "/media/2023/08/slide5.2.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2023/10/1910-casa-principal.jpg",
+      "path": "/media/2023/10/1910-casa-principal.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2023/10/1926-casa-hacienda.png",
+      "path": "/media/2023/10/1926-casa-hacienda.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2023/10/2021.jpg",
+      "path": "/media/2023/10/2021.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2023/10/cs-1-crop.png",
+      "path": "/media/2023/10/cs-1-crop.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2023/10/cs-10.2.jpg",
+      "path": "/media/2023/10/cs-10.2.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2023/10/cs-10.3.jpg",
+      "path": "/media/2023/10/cs-10.3.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2023/10/cs-10.4.jpg",
+      "path": "/media/2023/10/cs-10.4.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2023/10/cs-10.5.jpg",
+      "path": "/media/2023/10/cs-10.5.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2023/10/cs-10.6.jpg",
+      "path": "/media/2023/10/cs-10.6.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2023/10/cs-10.7.jpg",
+      "path": "/media/2023/10/cs-10.7.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2023/10/cs-10.jpg",
+      "path": "/media/2023/10/cs-10.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2023/10/cs-4-1.jpg",
+      "path": "/media/2023/10/cs-4-1.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2023/10/cs-4.jpg",
+      "path": "/media/2023/10/cs-4.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2023/10/cs-5.jpg",
+      "path": "/media/2023/10/cs-5.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2023/10/cs-6.jpg",
+      "path": "/media/2023/10/cs-6.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2023/10/cs-7.2.png",
+      "path": "/media/2023/10/cs-7.2.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2023/10/cs-7.3.png",
+      "path": "/media/2023/10/cs-7.3.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2023/10/cs-7.4.png",
+      "path": "/media/2023/10/cs-7.4.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2023/10/cs-7.5.jpg",
+      "path": "/media/2023/10/cs-7.5.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2023/10/cs-7.6.png",
+      "path": "/media/2023/10/cs-7.6.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2023/10/cs-7.7.png",
+      "path": "/media/2023/10/cs-7.7.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2023/10/cs-7.jpg",
+      "path": "/media/2023/10/cs-7.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2023/10/cs-8.2-1.jpg",
+      "path": "/media/2023/10/cs-8.2-1.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2023/10/cs-8.2.1.jpg",
+      "path": "/media/2023/10/cs-8.2.1.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2023/10/cs-8.2.jpg",
+      "path": "/media/2023/10/cs-8.2.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2023/10/cs-8.3.jpg",
+      "path": "/media/2023/10/cs-8.3.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2023/10/cs-8.4.jpg",
+      "path": "/media/2023/10/cs-8.4.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2023/10/cs-8.jpg",
+      "path": "/media/2023/10/cs-8.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2023/10/cs-9.jpg",
+      "path": "/media/2023/10/cs-9.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2023/10/cs-logo-1.png",
+      "path": "/media/2023/10/cs-logo-1.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2023/10/cs-logo.png",
+      "path": "/media/2023/10/cs-logo.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2023/10/img_20230301_181345.jpg",
+      "path": "/media/2023/10/img_20230301_181345.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2023/10/img_20230301_181431.jpg",
+      "path": "/media/2023/10/img_20230301_181431.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2023/10/img_20230301_181604.jpg",
+      "path": "/media/2023/10/img_20230301_181604.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2023/10/img_20230301_181725.jpg",
+      "path": "/media/2023/10/img_20230301_181725.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2023/10/img_20230301_181810.jpg",
+      "path": "/media/2023/10/img_20230301_181810.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2023/10/img_20230301_181900.jpg",
+      "path": "/media/2023/10/img_20230301_181900.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2023/10/img_20230301_181937.jpg",
+      "path": "/media/2023/10/img_20230301_181937.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2023/10/rediscovered.jpg",
+      "path": "/media/2023/10/rediscovered.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2023/10/slide10-2971963732-e1730725188698.jpg",
+      "path": "/media/2023/10/slide10-2971963732-e1730725188698.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2024/02/1919-map.jpg",
+      "path": "/media/2024/02/1919-map.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2024/02/cultural-significance-no.-11-v2.png",
+      "path": "/media/2024/02/cultural-significance-no.-11-v2.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2024/02/cultural-significance-no.-11.png",
+      "path": "/media/2024/02/cultural-significance-no.-11.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2024/02/map-vi.png",
+      "path": "/media/2024/02/map-vi.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2024/02/plate-no-78.png",
+      "path": "/media/2024/02/plate-no-78.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2024/02/reports.png",
+      "path": "/media/2024/02/reports.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2024/02/vigilante.png",
+      "path": "/media/2024/02/vigilante.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2024/04/1.png",
+      "path": "/media/2024/04/1.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2024/04/2.png",
+      "path": "/media/2024/04/2.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2024/04/2009-120.pdf",
+      "path": "/media/2024/04/2009-120.pdf",
+      "convert": false
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2024/04/2009-174.pdf",
+      "path": "/media/2024/04/2009-174.pdf",
+      "convert": false
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2024/04/2012decision_ebcaseno_12-12-275_december.pdf",
+      "path": "/media/2024/04/2012decision_ebcaseno_12-12-275_december.pdf",
+      "convert": false
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2024/04/casa-principal-with-fhl-watermark-edited.png",
+      "path": "/media/2024/04/casa-principal-with-fhl-watermark-edited.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2024/04/ft4580066d_00023.gif",
+      "path": "/media/2024/04/ft4580066d_00023.gif",
+      "convert": false
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2024/04/img_20220512_094136.jpg",
+      "path": "/media/2024/04/img_20220512_094136.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2024/04/riverside.png",
+      "path": "/media/2024/04/riverside.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2024/04/victoria.jpg",
+      "path": "/media/2024/04/victoria.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2024/10/1000000266.png",
+      "path": "/media/2024/10/1000000266.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2024/10/1000000268-1.png",
+      "path": "/media/2024/10/1000000268-1.webp",
+      "convert": true
+    },
+    {
+      "source": "https://casahaciendamakati.wordpress.com/wp-content/uploads/2024/10/1000000268.png",
+      "path": "/media/2024/10/1000000268.webp",
+      "convert": true
+    }
+  ]
+}
