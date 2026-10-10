@@ -23,8 +23,11 @@ await walk(root);
 
 const articleFiles = htmlFiles.filter(filename =>
   /^\d{4}\/\d{2}\/\d{2}\/[^/]+\/index\.html$/.test(path.relative(root, filename).split(path.sep).join('/')));
-if (htmlFiles.length !== 16) failures.push('Expected 16 HTML pages (homepage, 2 pages, 13 posts); found ' + htmlFiles.length);
+if (htmlFiles.length !== 17) failures.push('Expected 17 HTML files (homepage, 2 pages, 13 posts, 404 page); found ' + htmlFiles.length);
 if (articleFiles.length !== 13) failures.push('Expected 13 published articles; found ' + articleFiles.length);
+for (const required of ['index.html', '404.html', 'about/index.html', 'cultural-significance/index.html']) {
+  if (!htmlFiles.includes(path.join(root, required))) failures.push('Missing required page: ' + required);
+}
 if (manifest.assets.length !== 82) failures.push('Expected 82 exported media; found ' + manifest.assets.length);
 
 const htmlByFile = new Map();
