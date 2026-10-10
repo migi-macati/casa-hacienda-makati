@@ -22,3 +22,9 @@ Inspect existing site source and migration data, then implement highest-priority
 
 ## Constraints
 Do not modify BetterMakati or Facebook. Never claim complete or error-free without acceptance evidence.
+
+## 2026-10-10 16:21 PHT — heading and metadata fix
+- PR #2 https://github.com/migi-macati/casa-hacienda-makati/pull/2 created from fix/page-heading-hierarchy-20261010, head SHA 00b50f29f11cd816ae90e0fad3e9904c3b71c2dd.
+- About and Cultural Significance each had two H1 elements; source edits retain the page H1 and demote the WordPress embedded heading to H2. Distinct page titles added. Original historical text preserved.
+- Stage: pr_open. Mergeable reported false at creation; do not assume CI failure. Check PR checks and mergeability after GitHub processing; merge only when safe, then verify matching READY production SHA and rendered pages.
+- Unfinished: complete content/media verification, full-text search, sitemap/SEO, accessibility, performance, rights review. Keep noindex in place.
