@@ -110,3 +110,8 @@ Do not modify BetterMakati or Facebook. Never claim complete or error-free witho
 - CHM-B008 progressed to PR_OPEN: PR #9 https://github.com/migi-macati/casa-hacienda-makati/pull/9, head a06da349bf7ec0b07048fc47bc7a686c2bf009a5. Mergeable false at creation; await processing/checks before merge. Documentation only.
 - CHM-B007 PENDING: 44 recovered WordPress footnotes need repository integration and fragment integrity tests. CHM-B009 PENDING: fragment-link QA. CHM-B006 PENDING: live browser/endpoint verification. Automation owns all three; no manual approval established.
 - Keep WordPress online and noindex intact; rights/indexing decisions reserved to owner. Migration acceptance not established.
+
+## 2026-10-10 22:53 PHT — M assessment merge
+- CHM-B008 CLEARED: PR #9 merged successfully as 8147d475c1cd46ccc268bd76bd2d932ac18aff35; assessment and research gates now in main. Matching READY Vercel production not yet verified.
+- PR #7 merge 1e5a2955ac28d67acd6c2ee591106304f257fd4d matched READY production dpl_4Ny7j2ubCddiabY5i3gi5CAbH2Mb. PR #8 deployment dpl_3jxRe1MV8Zq7n1JEUEeXKThiN234 BUILDING; checkpoint deployment dpl_x9Pz4u4MdVPnUmRJg5mHEqKoyNh9 QUEUED at inspection. Live rendered verification outstanding.
+- CHM-B007 (44 source footnotes), CHM-B009 (fragment QA), CHM-B006 (live endpoints) remain PENDING; automation owner. Owner rights/indexing approval still reserved. Noindex and WordPress unchanged.
