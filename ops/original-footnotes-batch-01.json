@@ -1,0 +1,47 @@
+{
+  "source": "WordPress XML wp:postmeta footnotes (original export)",
+  "entries": [
+    {
+      "article_path": "public/2023/08/12/cultural-significance-no-1/index.html",
+      "notes": [
+        {
+          "id": "cfef84ce-e534-4102-a7a4-5887ca0e8c44",
+          "content": "Colin, Francisco (S.J.), 1592-1660, Labor evangelica, ministerios apostólicos de los obreros de la Compañía de Iesus, fundacion y progressos de su provincia en las islas Filipinas, Madrid: 1663. Accessed <a href=\"https://patrimoniodigital.ucm.es/s/patrimonio/item?Search=&amp;property%5B0%5D%5Bproperty%5D=2&amp;property%5B0%5D%5Btype%5D=eq&amp;property%5B0%5D%5Btext%5D=Colin,%20Francisco%20(S.I.),%201592-1660\"><strong>here</strong></a>."
+        },
+        {
+          "id": "f7e8e726-d7aa-45cb-bdd6-bcdc05fc4cc8",
+          "content": "Estadismo de las Islas Filipinas, Fr. Joaquín Martinez de Zuniga, published in 1893. Accessed <strong><a href=\"http://www.xeniaeditrice.it/zu%C3%B1igaIocrpdf.pdf\">here</a></strong>."
+        },
+        {
+          "id": "bae23b67-e67e-4615-8d09-1dcbbf97e7ca",
+          "content": "Plan of the Environs, Portion of the Coast, and Bay Adjacent to the City and Plaza of Manila, Capital of the Philippine Islands, 1775, Dionisio Kelly. The British Library Board. Accessed <strong><a href=\"https://books.google.com.ph/books?id=ZKNFDwAAQBAJ&amp;lpg=PA260&amp;dq=kelly%20dionisio%20%20map%20manila%201775&amp;pg=PA68#v=onepage&amp;q=kelly%20dionisio%20%20map%20manila%201775&amp;f=false\">here</a></strong>."
+        },
+        {
+          "id": "a7e5bfcc-5763-456a-8a95-7156003c4a9d",
+          "content": "Photograph: Casa Principal, Hacienda Makati, Rizal, 1910. Ayala Archives, Filipinas Heritage Library. Accessed <strong><a href=\"https://www.filipinaslibrary.org.ph/biblio/18057/\">here</a></strong>."
+        }
+      ]
+    },
+    {
+      "article_path": "public/2023/10/21/history-of-barrio-olimpia-makati-rizal/index.html",
+      "notes": [
+        {
+          "id": "c0eb854b-ce1b-407c-926f-db047b3fb045",
+          "content": "Nicanor C. Garcia is the first elected municipal mayor of Makati who served from 1922 to 1934. "
+        },
+        {
+          "id": "4748caf3-5162-490e-83fe-5690ac9ae697",
+          "content": "The Lizzar &amp; Co. plant or factory and its other building, as well as the Manila (Makati) Foundry are situated in the compound of the Casa Hacienda of Makati."
+        },
+        {
+          "id": "e7fdfdcc-9d01-4507-ae83-8a4f2900182c",
+          "content": "Ibid."
+        },
+        {
+          "id": "61d55a0e-46fd-41e2-8992-9a4bd693e79d",
+          "content": "Ibid."
+        }
+      ]
+    }
+  ]
+}
