@@ -38,3 +38,8 @@ Do not modify BetterMakati or Facebook. Never claim complete or error-free witho
 - PR #3 successfully squash-merged into main, SHA 71634857062d42aacc90aa0129e3ea802deff298. Full-text search is merged, not yet production-verified.
 - Vercel production deployment dpl_8GzXqF1q6okEm6TmgFXRHFhNxoUH matches this SHA and was INITIALIZING at last check. Verify READY and actual /search-index.json endpoint before declaring published.
 - Next: audit and repair article H1 hierarchy, then per-image alt text and attribution. Do not lift noindex until final acceptance.
+
+## 2026-10-10 — article accessibility repair
+- Full-text search PR #3 merged as 71634857062d42aacc90aa0129e3ea802deff298; Vercel production deployment dpl_8GzXqF1q6okEm6TmgFXRHFhNxoUH READY and subsequent main deployment dpl_6GYR3c8NTrdvd6tJhf4T3c7Q2KUD READY. Direct search endpoint/browser interaction not yet independently verified.
+- PR #4 https://github.com/migi-macati/casa-hacienda-makati/pull/4 fixes duplicate H1 in 12 Cultural Significance posts. GitHub branch files re-fetched: each of 12 has exactly one H1. Barrio Olimpia already had one H1. Preview deployments queued at last check; merge after build READY.
+- Pending: audit image alt text and image rights/attribution, source fidelity, comments, original WordPress comparison, browser QA, final SEO/indexing decision.
