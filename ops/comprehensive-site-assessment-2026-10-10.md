@@ -26,7 +26,7 @@ Document, interpret, and share the history and cultural significance of Casa Hac
 | Search visibility and outreach | 5% | 2 | Search index exists; intentional noindex/robots block; SEO readiness not accepted |
 | Governance and sustainability | 5% | 2 | GitHub/Vercel and checkpoint in place; editorial standards, provenance review and durable update workflow need documentation |
 
-Weighted indicative score: 47/100. These are editorial judgments, NOT benchmarked measurements. No final historical, accessibility, performance or SEO certification.
+Weighted indicative score: 45.5/100. These are editorial judgments, NOT benchmarked measurements. No final historical, accessibility, performance or SEO certification.
 
 ## Evidence baseline
 - Repository: migi-macati/casa-hacienda-makati. Build pipeline runs media bundling, search-index generation and structural QA.
