@@ -1,0 +1,13 @@
+{
+  "name": "casa-hacienda-makati",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Archival Casa Hacienda website static build; bundles historic media during migration",
+  "scripts": {
+    "build": "node scripts/bundle-media.mjs"
+  },
+  "dependencies": {
+    "sharp": "0.34.4"
+  }
+}
