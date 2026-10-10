@@ -115,3 +115,8 @@ Do not modify BetterMakati or Facebook. Never claim complete or error-free witho
 - CHM-B008 CLEARED: PR #9 merged successfully as 8147d475c1cd46ccc268bd76bd2d932ac18aff35; assessment and research gates now in main. Matching READY Vercel production not yet verified.
 - PR #7 merge 1e5a2955ac28d67acd6c2ee591106304f257fd4d matched READY production dpl_4Ny7j2ubCddiabY5i3gi5CAbH2Mb. PR #8 deployment dpl_3jxRe1MV8Zq7n1JEUEeXKThiN234 BUILDING; checkpoint deployment dpl_x9Pz4u4MdVPnUmRJg5mHEqKoyNh9 QUEUED at inspection. Live rendered verification outstanding.
 - CHM-B007 (44 source footnotes), CHM-B009 (fragment QA), CHM-B006 (live endpoints) remain PENDING; automation owner. Owner rights/indexing approval still reserved. Noindex and WordPress unchanged.
+
+## 2026-10-11 07:17 PHT — M QA unblock
+- CHM-B013 CLEARED: PR #10 opened and merged as c8f10308df9893dedf62974243c3001b37cba2a3; fragment QA commands included. Branch preview dpl_24NUSCRL77AXTeR5cF9GXDMr42c4 READY for head 161973b095f1c7e861ebd7cd548d239bb422a6b7. Matching production READY and strict full-site test pending.
+- QA audit PR #11 opened and merged as c14cc06bd7e73cd78d0985c6fd0e4dfbb47ca423; branch preview dpl_EznAAZusYYqNZtYAGuxrRLSvE6RJ READY for head ae71ef19498f8535c38ea271c08cf9b1f346e67f. Documentation is merged; fixes to titles/canonicals remain pending CHM-B014.
+- CHM-B006 live endpoint verification PENDING; CHM-B007 footnotes display PENDING; CHM-B009 full-site strict citation QA PENDING; CHM-B011 restoration script integration PENDING; CHM-B012 footnote PR PENDING; CHM-B014 article metadata repair PENDING. Automation owner for all; no owner-side approval established. Keep WordPress and noindex unchanged.
