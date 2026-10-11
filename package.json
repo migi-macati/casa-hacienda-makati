@@ -5,7 +5,7 @@
   "type": "module",
   "description": "Archival Casa Hacienda website static build; bundles historic media during migration",
   "scripts": {
-    "build": "node scripts/bundle-media.mjs && node scripts/restore-footnotes.mjs && node scripts/audit-fragments.mjs --strict && node scripts/build-search.mjs && node scripts/audit-site.mjs",
+    "build": "node scripts/bundle-media.mjs && node scripts/restore-footnotes.mjs && node scripts/normalize-metadata.mjs && node scripts/audit-fragments.mjs --strict && node scripts/build-search.mjs && node scripts/audit-site.mjs",
     "audit:fragments": "node scripts/audit-fragments.mjs",
     "audit:fragments:strict": "node scripts/audit-fragments.mjs --strict",
     "restore:footnotes": "node scripts/restore-footnotes.mjs"
