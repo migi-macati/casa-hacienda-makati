@@ -78,6 +78,31 @@ for (const [filename, html] of htmlByFile) {
   }
 }
 
+// Regression gate for public metadata, distinct from the build-time normalizer.
+// A valid build must have one unique title and a canonical URL matching each route.
+const metadataTitles = new Set();
+const metadataCanonicals = new Set();
+const metadataOrigin = 'https://casa-hacienda-makati.vercel.app';
+for (const [filename, html] of htmlByFile) {
+  const rel = path.relative(root, filename).split(path.sep).join('/');
+  if (rel === '404.html') continue;
+  const titleMatches = [...html.matchAll(/<title>([^<]+)<\\/title>/gi)];
+  if (titleMatches.length !== 1 || !titleMatches[0][1].trim()) {
+    failures.push(rel + ': expected exactly one nonempty title');
+  } else if (metadataTitles.has(titleMatches[0][1])) {
+    failures.push(rel + ': duplicate title: ' + titleMatches[0][1]);
+  } else metadataTitles.add(titleMatches[0][1]);
+  const canonicalMatches = [...html.matchAll(/<link\\s+rel=["']canonical["']\\s+href=["']([^"']+)["'][^>]*>/gi)];
+  const expected = new URL('/' + rel.replace(/index\\.html$/, ''), metadataOrigin).href;
+  if (canonicalMatches.length !== 1 || canonicalMatches[0][1] !== expected) {
+    failures.push(rel + ': expected one canonical ' + expected);
+  } else if (metadataCanonicals.has(expected)) {
+    failures.push(rel + ': duplicate canonical ' + expected);
+  } else metadataCanonicals.add(expected);
+}
+if (metadataTitles.size !== 16 || metadataCanonicals.size !== 16)
+  failures.push('Expected 16 unique public titles and canonical URLs; got ' + metadataTitles.size + ' / ' + metadataCanonicals.size);
+
 const index = JSON.parse(await fs.readFile(path.join(root, 'search-index.json'), 'utf8'));
 if (!Array.isArray(index) || index.length !== 13) failures.push('Search index does not contain exactly 13 articles');
 else {
