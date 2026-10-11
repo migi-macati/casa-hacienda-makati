@@ -23,3 +23,8 @@
 .source-notes li{padding:.3rem 0;scroll-margin-top:7rem}
 .source-notes li:target{background:#f4e9d2}
 .source-backlink{display:inline-block;padding:.1rem .35rem;font-weight:700;text-decoration:underline}
+
+/* Respect reduced-motion preferences for anchor navigation. */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
