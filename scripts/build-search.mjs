@@ -15,10 +15,20 @@ async function visit(directory) {
     const heading = html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i)?.[1] || '';
     const article = html.match(/<article[^>]*class="content"[^>]*>([\s\S]*?)<\/article>/i)?.[1] || html;
     const plain = value => value.replace(/<script[^>]*>[\s\S]*?<\/script>/gi, ' ').replace(/<[^>]*>/g, ' ').replace(/&nbsp;/gi, ' ').replace(/&amp;/gi, '&').replace(/\s+/g, ' ').trim();
-    entries.push({ url: '/' + relative.slice(0, -10), title: plain(heading), text: plain(article) });
+    entries.push({ url: '/' + relative.slice(0, -10), title: plain(heading), text: plain(article), type: 'article' });
   }
 }
 await visit(root);
 if (entries.length !== 13) throw new Error('Expected 13 published posts, found ' + entries.length);
+
+// Index published informational pages without changing the 13-post archive.
+for (const slug of ['about', 'cultural-significance']) {
+  const html = await fs.readFile(path.join(root, slug, 'index.html'), 'utf8');
+  const heading = html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i)?.[1] || slug;
+  const article = html.match(/<article[^>]*class="content"[^>]*>([\s\S]*?)<\/article>/i)?.[1] || '';
+  const plain = value => value.replace(/<script[^>]*>[\s\S]*?<\/script>/gi, ' ').replace(/<[^>]*>/g, ' ').replace(/&nbsp;/gi, ' ').replace(/&amp;/gi, '&').replace(/\s+/g, ' ').trim();
+  entries.push({ url: '/' + slug + '/', title: plain(heading), text: plain(article), type: 'page' });
+}
+if (entries.length !== 15) throw new Error('Expected 15 published documents, found ' + entries.length);
 await fs.writeFile(path.join(root, 'search-index.json'), JSON.stringify(entries));
-console.log('Indexed ' + entries.length + ' published articles');
+console.log('Indexed 13 published articles and 2 informational pages');
