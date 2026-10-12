@@ -199,3 +199,13 @@ Do not modify BetterMakati or Facebook. Never claim complete or error-free witho
 - CHM-B029: PENDING evidence gap; Vercel file tree 404, non-gating if alternative integrity evidence obtained (automation).
 - CHM-B037: PENDING provenance inventory (automation), reproduction-rights clearance (owner).
 - WordPress and noindex remain unchanged; do not lift indexing without owner approval.
+
+## 2026-10-13 07:17 PHT — all-blocker continuation
+- CHM-B038 CLEARED through deployed stage: PR #27 merged SHA 3012a4ce0080d48a744117490a91d1a6f807b734, matching production deployment dpl_DRChQENVqE9z7mZBYKey2cMC83kT READY. Canonical main checkpoint 9c3bd54029f61f567dfe9380880fe4747fc5534d also deployed READY as dpl_CNd9dRggM6EAjWL6YBW1q9mhPFZs. Live HTTP endpoint inspection still pending under B006.
+- CHM-B028 ADVANCED: PR #28 https://github.com/migi-macati/casa-hacienda-makati/pull/28 commit f34f363ca1a17b5bf91d5e9ac03d1ff8bffd6b50 improves small-text and focus contrast; Vercel check pending. PR #29 https://github.com/migi-macati/casa-hacienda-makati/pull/29 commit 6f272289ae27f419cd96b2ec6c57fe046c4da4a6 announces search counts and degraded index mode; Vercel check pending. Merge only after success and fresh review.
+- CHM-B031 PENDING (automation): clean builds still download 82 media from WordPress; make builds self-contained.
+- CHM-B006 PENDING (automation): direct production endpoint checks.
+- CHM-B028 PENDING (automation): 34 empty image alt values, article/homepage parity, browser/mobile/speed/security, plus PRs #28/#29.
+- CHM-B029 PENDING optional evidence gap (automation): deployment file-tree inspection unavailable.
+- CHM-B037 PENDING (automation/owner): 24 archived media files not referenced in current HTML, provenance/rights review; owner approves rights.
+- Keep original WordPress and noindex intact pending owner approval. No BetterMakati/Facebook edits.
