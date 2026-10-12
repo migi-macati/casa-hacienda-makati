@@ -188,3 +188,14 @@ Do not modify BetterMakati or Facebook. Never claim complete or error-free witho
 - CHM-B031 PENDING: build fetches 82 media assets from WordPress/mirror, still external-dependent; checksum source authenticity unverified.
 - CHM-B028 PENDING: live browser/mobile/performance and homepage historical narrative parity. Original WordPress homepage accessible 2026-10-12; introductory narrative and 1831 quotation require evidence-based editorial review. CHM-B029 optional deployment file-tree inspection pending.
 - Noindex and original WordPress preserved. Do not infer completion from CI or READY deployment.
+
+## 2026-10-13 07:14 PHT — unblock verification
+- PR #27 merged successfully, merge SHA 3012a4ce0080d48a744117490a91d1a6f807b734. Previous merge rejections no longer block source integration.
+- Vercel production deployment dpl_DRChQENVqE9z7mZBYKey2cMC83kT matches SHA 3012a4ce0080d48a744117490a91d1a6f807b734; state INITIALIZING at inspection. Do not claim deployed until READY.
+- CHM-B038: MERGED, production READY and live verification pending (automation).
+- CHM-B031: PENDING; all 82 media still depend on WordPress downloads at clean build (automation).
+- CHM-B006: PENDING; direct live HTTP verification (automation).
+- CHM-B028: PENDING; 34 empty image alt attributes, contrast, search accessibility, mobile/performance and full source fidelity (automation).
+- CHM-B029: PENDING evidence gap; Vercel file tree 404, non-gating if alternative integrity evidence obtained (automation).
+- CHM-B037: PENDING provenance inventory (automation), reproduction-rights clearance (owner).
+- WordPress and noindex remain unchanged; do not lift indexing without owner approval.
