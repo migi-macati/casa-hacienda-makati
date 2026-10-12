@@ -1,6 +1,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import sharp from 'sharp';
+import { createHash } from 'node:crypto';
 import manifest from '../media-manifest.json' with { type: 'json' };
 
 // Build-time structural checks. These are migration regression gates, NOT
@@ -116,6 +117,51 @@ for (const asset of manifest.assets) {
   } else if (asset.path.endsWith('.gif') && !header.startsWith('GIF8')) {
     failures.push('Invalid GIF signature: ' + asset.path);
   }
+}
+
+// Verify that the generated integrity inventory covers exactly the exported assets
+// and that each checksum describes the actual bytes in this build output.
+// This does not authenticate upstream WordPress sources or establish media rights.
+try {
+  const integrity = JSON.parse(await fs.readFile(path.join(root, 'media-integrity.json'), 'utf8'));
+  if (integrity.schema_version !== 1 || !Array.isArray(integrity.assets)) {
+    failures.push('Media integrity inventory has an unsupported schema');
+  } else {
+    const expected = new Set(manifest.assets.map(asset => asset.path));
+    const actual = new Set();
+    for (const entry of integrity.assets) {
+      if (typeof entry.path !== 'string' || !expected.has(entry.path) || actual.has(entry.path)) {
+        failures.push('Unexpected or duplicate media integrity entry: ' + String(entry.path));
+        continue;
+      }
+      actual.add(entry.path);
+      if (!Number.isSafeInteger(entry.bytes) || entry.bytes < 1 ||
+          typeof entry.sha256 !== 'string' || !/^[0-9a-f]{64}$/.test(entry.sha256)) {
+        failures.push('Invalid media integrity metadata: ' + entry.path);
+        continue;
+      }
+      const file = path.resolve(root, '.' + entry.path);
+      if (!file.startsWith(root + path.sep)) {
+        failures.push('Media integrity path escapes public root: ' + entry.path);
+        continue;
+      }
+      try {
+        const data = await fs.readFile(file);
+        const digest = createHash('sha256').update(data).digest('hex');
+        if (data.length !== entry.bytes || digest !== entry.sha256)
+          failures.push('Media checksum mismatch: ' + entry.path);
+      } catch {
+        failures.push('Media integrity asset unreadable: ' + entry.path);
+      }
+    }
+    for (const expectedPath of expected) {
+      if (!actual.has(expectedPath)) failures.push('Missing media integrity entry: ' + expectedPath);
+    }
+    if (integrity.assets.length !== manifest.assets.length)
+      failures.push('Media integrity count differs from exported manifest');
+  }
+} catch (error) {
+  failures.push('Media integrity inventory unavailable or invalid: ' + error.message);
 }
 
 console.log('Static migration QA:', htmlFiles.length, 'HTML pages,', articleFiles.length,
