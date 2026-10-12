@@ -79,9 +79,15 @@ for (const [filename, html] of htmlByFile) {
 }
 
 const index = JSON.parse(await fs.readFile(path.join(root, 'search-index.json'), 'utf8'));
-if (!Array.isArray(index) || index.length !== 13) failures.push('Search index does not contain exactly 13 articles');
+if (!Array.isArray(index) || index.length !== 15) failures.push('Search index must contain 13 articles and 2 informational pages');
 else {
   const urls = new Set(index.map(entry => entry.url));
+  if (urls.size !== 15) failures.push('Search index has duplicate routes');
+  if (index.filter(entry => entry.type === 'article').length !== 13) failures.push('Search index article count is not 13');
+  if (index.filter(entry => entry.type === 'page').length !== 2) failures.push('Search index informational-page count is not 2');
+  for (const url of ['/about/', '/cultural-significance/']) {
+    if (!urls.has(url)) failures.push('Search index missing informational page ' + url);
+  }
   for (const filename of articleFiles) {
     const url = '/' + path.relative(root, filename).split(path.sep).join('/').slice(0, -10);
     if (!urls.has(url)) failures.push('Search index missing ' + url);
