@@ -30,6 +30,13 @@ for (const file of pages) {
     if (!name) throw new Error('Empty article heading: ' + rel);
     const title = name + ' | ' + brand;
     html = html.replace(/<title>[^<]*<\/title>/i, '<title>' + title.replace(/&/g, '&amp;') + '</title>');
+    // Summarize the published article using its existing title and first section heading.
+    const section = html.match(/<article class="content">[\s\S]*?<h2[^>]*>([\s\S]*?)<\/h2>/i);
+    const subject = (section?.[1] || name).replace(/<[^>]*>/g, ' ').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/\s+/g, ' ').trim();
+    let description = name + ': ' + subject;
+    if (description.length > 170) description = description.slice(0, 171).replace(/\s+\S*$/, '').trim();
+    const escaped = description.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+    html = html.replace(/<meta name="description" content="[^"]*">/i, '<meta name="description" content="' + escaped + '">');
   }
   const match = html.match(/<title>([^<]+)<\/title>/i);
   if (!match || titles.has(match[1])) throw new Error('Missing or duplicate page title: ' + rel);
