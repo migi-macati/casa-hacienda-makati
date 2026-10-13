@@ -209,3 +209,8 @@ Do not modify BetterMakati or Facebook. Never claim complete or error-free witho
 - CHM-B029 PENDING optional evidence gap (automation): deployment file-tree inspection unavailable.
 - CHM-B037 PENDING (automation/owner): 24 archived media files not referenced in current HTML, provenance/rights review; owner approves rights.
 - Keep original WordPress and noindex intact pending owner approval. No BetterMakati/Facebook edits.
+
+## 2026-10-13 12:23 PHT — publication progress
+- PR #28 merged d21f20deaff14cc71a310027a122aa5e7e47818f after stale-head 409 on earlier expected SHA; latest CSS retains gold accent and separates accessible focus outline. PR #29 merged 7133f86d2fe231cbf90be5550504dbef466095ae. Both had successful Vercel checks before merge.
+- Matching production deployments dpl_3LSpSDCGisaBS8DsR4kwjBt9eaav (#28) and dpl_DEdDV5LCsWH9wTVSntaogWHxbwkr (#29) were QUEUED at inspection; do not claim deployed until READY. Live HTTP remains unverified.
+- Merge blockers for PRs #28 and #29 cleared; remaining tasks: self-contained media builds, 34 empty alt attributes, article parity, rights/provenance, live endpoint QA and mobile/browser tests. Distinguish pending work from actual tool blockers.
