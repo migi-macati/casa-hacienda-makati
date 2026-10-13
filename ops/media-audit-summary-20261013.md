@@ -1,0 +1,3 @@
+# Casa Hacienda media QA — 2026-10-13
+
+Source inspection of 17 HTML files (13 posts, 2 informational pages, homepage, 404) against media-manifest.json: 82 archived assets; 58 distinct referenced WordPress uploads; 24 manifest assets without a direct HTML reference. Preserve all 24 pending visual, provenance and rights review. 34 empty alt attributes require individual decorative-versus-informative review; do not invent image descriptions. These are pending QA tasks, not blockers. The 2012 court-decision PDF and watermarked photograph warrant explicit rights/source checks. This audit does not establish live deployment or ownership.
