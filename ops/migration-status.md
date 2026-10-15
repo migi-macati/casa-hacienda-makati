@@ -214,3 +214,9 @@ Do not modify BetterMakati or Facebook. Never claim complete or error-free witho
 - PR #28 merged d21f20deaff14cc71a310027a122aa5e7e47818f after stale-head 409 on earlier expected SHA; latest CSS retains gold accent and separates accessible focus outline. PR #29 merged 7133f86d2fe231cbf90be5550504dbef466095ae. Both had successful Vercel checks before merge.
 - Matching production deployments dpl_3LSpSDCGisaBS8DsR4kwjBt9eaav (#28) and dpl_DEdDV5LCsWH9wTVSntaogWHxbwkr (#29) were QUEUED at inspection; do not claim deployed until READY. Live HTTP remains unverified.
 - Merge blockers for PRs #28 and #29 cleared; remaining tasks: self-contained media builds, 34 empty alt attributes, article parity, rights/provenance, live endpoint QA and mobile/browser tests. Distinguish pending work from actual tool blockers.
+
+## 2026-10-16 07:44 PHT — unblock verification
+- Verified GitHub open PR search: zero. Main commit 8ea68cd74f97c86cdcff55955615738dfc1c3847 has Vercel CI success; production dpl_6YnWsWCXnKQ8P3kuYKtRbrNGueU2 READY matches SHA.
+- CHM-B006: live HTTP inspection method unavailable; no production outage demonstrated. Owner: automation; retry with authorized independent HTTP/browser access.
+- CHM-B040: prior GitHub writes rejected by tool safety before execution; no account permission failure demonstrated. Owner: automation/tool; retry only on materially changed conditions, not identical requests.
+- Pending, not blockers: 33 visually reviewed informative alt descriptions and one decorative alt, media source pinning, dimensions, metadata, comments and browser QA. Owner decisions: media rights and noindex removal. Acceptance not established.
