@@ -6,6 +6,24 @@ const root = path.resolve('public');
 const origin = 'https://casa-hacienda-makati.vercel.app';
 const brand = 'Casa Hacienda de San Pedro Macati';
 const pages = [];
+function addSkipLink(html, rel) {
+  const link = '<a class="skip-link" href="#main-content">Skip to main content</a>';
+  if (!/<meta\s+name="robots"\s+content="noindex,nofollow"/i.test(html)) throw new Error('Missing noindex: ' + rel);
+  const body = html.match(/<body(?:\s[^>]*)?>/i);
+  const main = html.match(/<main(?:\s[^>]*)?>/i);
+  if (!body || !main) throw new Error('Missing body or main: ' + rel);
+  const id = main[0].match(/\bid\s*=\s*(["'])(.*?)\1/i)?.[2];
+  if (id && id !== 'main-content') throw new Error('Unexpected main ID: ' + rel);
+  if (html.includes(link)) {
+    if (id !== 'main-content') throw new Error('Broken skip target: ' + rel);
+    return html;
+  }
+  if (/\bid\s*=\s*["']main-content["']/i.test(html)) throw new Error('Duplicate main-content ID: ' + rel);
+  if (/class\s*=\s*["'][^"']*\bskip-link\b/i.test(html)) throw new Error('Unrecognized skip link: ' + rel);
+  return html.replace(main[0], main[0].replace(/>$/, ' id="main-content">'))
+             .replace(body[0], body[0] + link);
+}
+
 async function visit(dir) {
   for (const ent of await fs.readdir(dir, { withFileTypes: true })) {
     const file = path.join(dir, ent.name);
@@ -18,8 +36,9 @@ const titles = new Set();
 let updated = 0;
 for (const file of pages) {
   const rel = path.relative(root, file).split(path.sep).join('/');
-  if (rel === '404.html') continue;
   let html = await fs.readFile(file, 'utf8');
+  html = addSkipLink(html, rel);
+  if (rel === '404.html') { await fs.writeFile(file, html); continue; }
   if (!/<meta\s+name="robots"\s+content="noindex,nofollow"/i.test(html))
     throw new Error('Missing migration noindex safeguard: ' + rel);
   const article = /^\d{4}\/\d{2}\/\d{2}\/[^/]+\/index\.html$/.test(rel);
