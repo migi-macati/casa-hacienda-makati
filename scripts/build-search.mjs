@@ -1,5 +1,6 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import publishedRoutes from '../ops/published-routes.json' with { type: 'json' };
 
 const root = path.resolve('public');
 const entries = [];
@@ -20,6 +21,12 @@ async function visit(directory) {
 }
 await visit(root);
 if (entries.length !== 13) throw new Error('Expected 13 published posts, found ' + entries.length);
+const approved = new Set(publishedRoutes.articles);
+const actual = new Set(entries.map(entry => entry.url));
+if (approved.size !== 13 || actual.size !== 13 ||
+    [...approved].some(url => !actual.has(url)) || [...actual].some(url => !approved.has(url))) {
+  throw new Error('Published article routes differ from frozen WordPress migration inventory; refusing to index');
+}
 
 // Index published informational pages without changing the 13-post archive.
 for (const slug of ['about', 'cultural-significance']) {
@@ -30,5 +37,8 @@ for (const slug of ['about', 'cultural-significance']) {
   entries.push({ url: '/' + slug + '/', title: plain(heading), text: plain(article), type: 'page' });
 }
 if (entries.length !== 15) throw new Error('Expected 15 published documents, found ' + entries.length);
+if (JSON.stringify(publishedRoutes.pages) !== JSON.stringify(['/about/', '/cultural-significance/'])) {
+  throw new Error('Informational page allowlist differs from expected migration pages');
+}
 await fs.writeFile(path.join(root, 'search-index.json'), JSON.stringify(entries));
 console.log('Indexed 13 published articles and 2 informational pages');
