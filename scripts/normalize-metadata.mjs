@@ -73,7 +73,7 @@ for (const file of pages) {
         !html.includes('datetime="' + record.published + '"'))
       throw new Error('Publication date differs from original article: ' + pathname);
     const dateHtml = '<p class="date">Originally published <time datetime="' + record.published + '">' +
-      originalDate + '</time>; last updated <time datetime="' + record.modified + '">' +
+      originalDate + '</time>; WordPress record last modified <time datetime="' + record.modified + '">' +
       updatedDate + '</time></p>';
     html = html.replace(/(<header\s+class="entryhead">[\s\S]*?)<p\s+class="date">[\s\S]*?<\/p>/i,
       (_, prefix) => prefix + dateHtml);
