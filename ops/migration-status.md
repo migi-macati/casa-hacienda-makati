@@ -1,3 +1,17 @@
+# Current verified checkpoint — 2026-10-24 08:36 PHT
+
+**Status: IN PROGRESS; DEPLOYED, NOT FULLY LIVE_VERIFIED.** This supersedes older snapshot/status language below; retain historical entries for provenance.
+
+- **Main/CI:** `99b47f9a1e27678f363c66ad38bc4602475dc00e`; Vercel GitHub combined status SUCCESS. No open PRs at inspection. Unpublished `fix/search-published-route-allowlist-20261020` branch one ahead/zero behind (two files), **not safe to publish alone**.
+- **Production:** `dpl_75jR1C65yqVL8i6WbUAPjyMGRj8r` READY, exact main SHA. Authenticated logs confirm nine-step build succeeded 2026-10-18: 82 bundled media, 115 URL rewrites, 92 image dimensions, 44 restored footnotes, 15 search documents, 475 local links checked. This is existing structural QA, **not** independent HTTP/browser, original-media provenance or full acceptance.
+- **Original inventory:** WXR previously verified at 13 published posts + 2 pages + 4 private drafts + 82 attachment records + 0 exported comments. Original media TAR unavailable for independent bytes/provenance; all media rights unverified. Preserve WordPress READ-ONLY, four drafts private, all 82 media, noindex; no Facebook, BetterMakati, paid services or private-draft writes.
+- **Search/privacy:** Main generator has synthetic-reproduced unauthorized-route, CSS-hidden text, extra-article-class fallback and missing-noindex fail-open cases. Exact current 15 published source pages retain expected article class/noindex; no confirmed draft leak. Guarded local candidate still needs **mandatory browser-computed CSS gate** and coherent integration; neither deployed. Three draft-associated manifest media entries are unreferenced by published source, with no proven confidential exposure.
+- **Editorial/accessibility:** CS12's completed 2009 acquisition claim is unsupported by the cited authorizing resolutions; no deed/title established. Local correction tested, GitHub update_file safety-rejected; do not repeat identical rejected operation or bypass. 27 empty image alt attributes, three PDF accessibility issues, seven WordPress gallery attachment links and missing migrated comment UI remain.
+- **Genuine blockers:** CHM-B006 independent deployed artifact/unauthenticated HTTP/browser verification; CHM-B040 operation-specific GitHub safety. **Practical impediments:** incomplete local checkout/original TAR and intermittent local files. **Pending:** coherent prebuild/search/media/footnote QA integration, independent reproducible build, 13+2 rendered fidelity, original 82 media/78 WebP provenance, rights/alt/PDFs, drafts/comments, nav/search, mobile/a11y, SEO/redirects, security/performance/links/console and WordPress parity. **Owner decisions:** individual rights/attribution/privacy and separate noindex/public-launch authorization.
+- **Evidence boundary:** READY exact main = DEPLOYED, **not** fully LIVE_VERIFIED. Do not mark timeline/people/places/events/sources/maps/then-and-now as DEPLOYED VERIFIED without independent production evidence. Keep hourly maintenance enabled until full verified acceptance.
+
+---
+
 # Casa Hacienda migration checkpoint
 
 Last inspected: 2026-10-10 (Asia/Manila)
