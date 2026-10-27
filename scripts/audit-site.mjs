@@ -4,6 +4,7 @@ import sharp from 'sharp';
 import { createHash } from 'node:crypto';
 import manifest from '../media-manifest.json' with { type: 'json' };
 import { assertCommentBridge } from './comment-bridge-lib.mjs';
+import { assertLinkSemantics } from './link-semantics.mjs';
 
 // Build-time structural checks. These are migration regression gates, NOT
 // proof of historical accuracy, media rights, live accessibility or browser QA.
@@ -51,6 +52,8 @@ for (const [filename, html] of htmlByFile) {
     try { assertCommentBridge(html, route); }
     catch (error) { failures.push(label + ': ' + error.message); }
   }
+  try { assertLinkSemantics(html, label); }
+  catch (error) { failures.push(error.message); }
   const headings = [...html.matchAll(/<h1(?:\s|>)/gi)].length;
   if (headings !== 1) failures.push(label + ': expected one H1, found ' + headings);
   if (!/<title>[^<]+<\/title>/i.test(html)) failures.push(label + ': missing page title');
