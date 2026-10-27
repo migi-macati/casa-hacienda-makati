@@ -131,7 +131,8 @@ def check_browser(index):
                 if page.locator('img:not([alt]), img[alt=""]').count():
                     raise AssertionError("Image alternative missing: " + entry["url"])
                 if page.evaluate("document.documentElement.scrollWidth > innerWidth + 3"):
-                    raise AssertionError("Horizontal overflow: " + entry["url"] + " width=" + str(width))
+                    offenders = page.evaluate("""() => [...document.querySelectorAll('body *')].map(e => ({tag:e.tagName,cls:typeof e.className==='string'?e.className.slice(0,90):'',right:Math.round(e.getBoundingClientRect().right),left:Math.round(e.getBoundingClientRect().left),width:Math.round(e.getBoundingClientRect().width)})).filter(x=>x.right>innerWidth+3||x.left< -3).slice(0,12)""")
+                    raise AssertionError("Horizontal overflow: " + entry["url"] + " width=" + str(width) + " scrollWidth=" + str(page.evaluate("document.documentElement.scrollWidth")) + " offenders=" + json.dumps(offenders))
                 if entry["type"] == "article" and page.locator('a[href*="casahaciendamakati.wordpress.com"]').count() == 0:
                     raise AssertionError("Original discussion bridge missing: " + entry["url"])
                 visits += 1
