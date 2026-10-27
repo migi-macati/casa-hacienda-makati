@@ -1,0 +1,22 @@
+name: Search privacy browser acceptance
+on:
+  pull_request:
+  push:
+    branches: [main]
+jobs:
+  full-build-and-computed-css:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: npm install --no-audit --no-fund
+      - run: pip install playwright==1.57.0
+      - run: python -m playwright install --with-deps chromium
+      - run: npm run build
+      - run: python scripts/audit-search-browser.py
