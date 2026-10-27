@@ -3,6 +3,7 @@ import path from 'node:path';
 import sharp from 'sharp';
 import { createHash } from 'node:crypto';
 import manifest from '../media-manifest.json' with { type: 'json' };
+import { assertCommentBridge } from './comment-bridge-lib.mjs';
 
 // Build-time structural checks. These are migration regression gates, NOT
 // proof of historical accuracy, media rights, live accessibility or browser QA.
@@ -45,6 +46,11 @@ function localTarget(raw, current) {
 
 for (const [filename, html] of htmlByFile) {
   const label = path.relative(root, filename);
+  if (/^\d{4}\/\d{2}\/\d{2}\/[^/]+\/index\.html$/.test(label.split(path.sep).join('/'))) {
+    const route = '/' + label.split(path.sep).join('/').slice(0, -10);
+    try { assertCommentBridge(html, route); }
+    catch (error) { failures.push(label + ': ' + error.message); }
+  }
   const headings = [...html.matchAll(/<h1(?:\s|>)/gi)].length;
   if (headings !== 1) failures.push(label + ': expected one H1, found ' + headings);
   if (!/<title>[^<]+<\/title>/i.test(html)) failures.push(label + ': missing page title');
