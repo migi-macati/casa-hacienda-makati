@@ -2,8 +2,12 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import sharp from 'sharp';
 import manifest from '../media-manifest.json' with { type: 'json' };
+import provenance from '../ops/original-media-provenance.json' with { type: 'json' };
+import { verifySourceInventory, assertSourceBytes } from './source-media-provenance.mjs';
 
-const { assets, mirror_origin } = manifest;
+const { assets } = manifest;
+// Fail before writing any output if the original 82-file archive inventory drifts.
+const sourceRecords = verifySourceInventory(manifest, provenance);
 const root = path.resolve('public');
 const map = new Map();
 for (const a of assets) {
@@ -12,7 +16,6 @@ for (const a of assets) {
 }
 let next = 0;
 let copied = 0;
-let fromMirror = 0;
 const errors = [];
 
 function goodBytes(data, output) {
@@ -44,26 +47,20 @@ async function copy(asset) {
   let error;
   for (let attempt = 1; attempt <= 3; attempt++) {
     try {
-      let bytes;
-      let mirrored = false;
-      try {
-        bytes = await get(new URL(asset.path, mirror_origin).href);
-        if (!goodBytes(bytes, asset.path)) throw Error('mirror returned wrong format');
-        mirrored = true;
-      } catch {
-        bytes = await get(asset.source);
-        if (asset.convert) {
-          bytes = await sharp(bytes, { limitInputPixels: 150000000 })
-            .rotate()
-            .resize({ width: 2600, height: 2600, fit: 'inside', withoutEnlargement: true })
-            .webp({ quality: 76, effort: 3 })
-            .toBuffer();
-        }
-        if (!goodBytes(bytes, asset.path)) throw Error('original returned wrong format');
+      // Verify original WordPress bytes against the owner-supplied TAR before
+      // any conversion. Never trust mutable mirrors as source provenance.
+      let bytes = await get(asset.source);
+      assertSourceBytes(asset, bytes, sourceRecords);
+      if (asset.convert) {
+        bytes = await sharp(bytes, { limitInputPixels: 150000000 })
+          .rotate()
+          .resize({ width: 2600, height: 2600, fit: 'inside', withoutEnlargement: true })
+          .webp({ quality: 76, effort: 3 })
+          .toBuffer();
       }
+      if (!goodBytes(bytes, asset.path)) throw Error('Verified source produced invalid output');
       await fs.writeFile(output, bytes);
       copied++;
-      if (mirrored) fromMirror++;
       if (copied % 15 === 0) console.log('Bundled', copied, '/', assets.length, 'media files');
       return;
     } catch (e) {
@@ -108,7 +105,7 @@ async function updateHtml(directory) {
   }
 }
 await updateHtml(root);
-console.log('Media bundle complete:', copied, 'files;', fromMirror, 'from Vercel mirror,', copied - fromMirror, 'from original archive;', rewritten, 'local URL rewrites.');
+console.log('Media bundle complete:', copied, 'verified original source files;', rewritten, 'local URL rewrites.');
 if (unmatched.size) {
   console.error('WordPress upload references not present in export:', [...unmatched].join(', '));
   process.exit(1);
