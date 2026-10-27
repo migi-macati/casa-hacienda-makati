@@ -117,7 +117,8 @@ def check_browser(index):
             page.on("pageerror", lambda error: errors.append(str(error)[:160]))
             for entry in index:
                 url = ORIGIN + entry["url"]
-                response = page.goto(url, wait_until="domcontentloaded", timeout=45000)
+                response = page.goto(url, wait_until="load", timeout=45000)
+                page.wait_for_function("getComputedStyle(document.querySelector('.brand img')).width === '44px'", timeout=15000)
                 if not response or response.status != 200:
                     raise AssertionError("Published page unavailable: " + entry["url"])
                 if page.locator('meta[name="robots"]').get_attribute("content") != "noindex,nofollow":
