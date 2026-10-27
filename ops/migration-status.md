@@ -1,3 +1,14 @@
+# Independent deployed HTTP acceptance — 2026-10-28 01:37 PHT
+
+**IN PROGRESS; DEPLOYED exact main, NOT FULLY LIVE_VERIFIED.** Authenticated Vercel production `dpl_HhYbqZVvaosNX6pr7dKMamg1ZXak` READY at GitHub main `4fdcaa976153ae6baeee80f0b56a49e12ea5d9f4`, Vercel CI SUCCESS. New independent read-only production HTTP acceptance via authorized Vercel URL fetcher: **15/15 published routes HTTP 200**, noindex and exact canonical, nonempty H1/title, 76 images with nonempty alt, 13 WordPress discussion bridges, 44 restored source notes. Homepage and robots noindex/disallow confirmed. Deployed search index **15 unique published routes** (13 posts+2 pages); media-integrity manifest **82 unique valid-formatted entries**. Four sampled WebP and three PDF URLs HTTP 200, correct content types/signatures, content lengths match integrity manifest; served byte SHA256 **NOT** verified.
+
+- **CHM-B006 NARROWED:** Deployed HTTP access now works legitimately; browser-computed CSS/rendered fidelity, console/mobile/a11y, redirects and actual served media byte parity remain unverified. HTTP-only evidence is not FULL LIVE_VERIFIED and does not verify heritage feature acceptance.
+- **CHM-B040 UNCHANGED:** operation-specific GitHub safety restriction on historical CS12 correction; never retry identical rejected operation or bypass.
+- **Search/privacy remains priority:** generator still has synthetic unauthorized-route/CSS-hidden/extra-class/missing-noindex fail-open cases. Old route-only branch must not merge alone. Need coherent route/source/build closure, mandatory computed-CSS browser gate, postbuild auditor and reproducible build.
+- **Owner decisions:** per-asset media rights/attribution/privacy and separate noindex/public launch. Preserve original WordPress read-only, four private drafts, all 82 media and noindex. See `ops/deployed-http-acceptance-20261028.md` for exact routes, samples and limitations. Keep hourly maintenance enabled until full acceptance.
+
+---
+
 # Current verified checkpoint — 2026-10-28 00:39 PHT
 
 **IN PROGRESS. DEPLOYED exact main, NOT FULLY LIVE_VERIFIED.** PR #40 merged after Vercel preview CI SUCCESS and a reviewed five-file atomic patch. GitHub main `de1413b8dbe2e24fdca667fe83e675f5918da4f1`, Vercel CI SUCCESS; authenticated production `dpl_HySQzEqjUeG8hRSmFETUvDCPUvq2` READY exact main, aliases include `casa-hacienda-makati.vercel.app`. This is a successful build/deployment, **not independent deployed HTTP/browser acceptance**.
