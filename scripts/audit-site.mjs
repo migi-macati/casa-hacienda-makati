@@ -58,7 +58,13 @@ for (const [filename, html] of htmlByFile) {
     const tag = match[0];
     const alt = tag.match(/\balt\s*=\s*(["'])(.*?)\1/i);
     if (!alt) failures.push(label + ': image lacks alt attribute');
-    else if (!alt[2].trim()) emptyAlt++;
+    else if (!alt[2].trim()) {
+      emptyAlt++;
+      // Empty alt is valid for genuinely decorative images, but that intent
+      // must be documented explicitly to prevent accidental silent omissions.
+      if (!/\bdata-decorative\s*=\s*(["'])true\1/i.test(tag))
+        failures.push(label + ': empty image alt without data-decorative="true"');
+    }
   }
 
   for (const match of html.matchAll(/\b(?:href|src)\s*=\s*(["'])(.*?)\1/gi)) {
@@ -167,7 +173,7 @@ try {
 console.log('Static migration QA:', htmlFiles.length, 'HTML pages,', articleFiles.length,
   'published articles,', manifest.assets.length, 'media files,', localLinks,
   'local links,', images, 'images.');
-console.log('Accessibility editorial backlog:', emptyAlt, 'empty alt attributes (review individually; not an automatic failure).');
+console.log('Image alternative audit:', emptyAlt, 'explicitly decorative empty alt attributes.');
 if (failures.length) {
   console.error('Migration QA FAILED:\n' + failures.join('\n'));
   process.exitCode = 1;
