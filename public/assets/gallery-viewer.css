@@ -1,0 +1,14 @@
+/* Keyboard-accessible gallery viewer; original image links remain as no-JS fallbacks. */
+.chm-gallery-trigger{display:inline-block;max-width:100%;padding:0;border:0;background:transparent;cursor:zoom-in;text-align:inherit}
+.chm-gallery-trigger img{display:block;max-width:100%;height:auto}
+.chm-gallery-trigger:focus-visible,.chm-gallery-dialog button:focus-visible{outline:3px solid #f0b957;outline-offset:4px}
+.chm-gallery-dialog{position:fixed;inset:0;box-sizing:border-box;width:min(95vw,1080px);max-width:1080px;max-height:95vh;margin:auto;padding:1rem 1.25rem;border:1px solid #bda77c;border-radius:6px;background:#182d25;color:#fffdf5;overflow:auto;text-align:center}
+.chm-gallery-dialog::backdrop{background:rgba(0,0,0,.87)}
+.chm-gallery-dialog h2{font-size:1.25rem;margin:.25rem 0 1rem;color:#fffdf5}
+.chm-gallery-dialog .chm-gallery-image{display:block;width:auto;max-width:100%;height:auto;max-height:calc(95vh - 13rem);margin:auto;object-fit:contain}
+.chm-gallery-caption{font-size:.9rem;line-height:1.45;margin:.75rem 0;color:#fffdf5}
+.chm-gallery-controls{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+.chm-gallery-dialog button{padding:.55rem .9rem;border:1px solid #e2c58b;border-radius:3px;background:#f9f1de;color:#172b22;font:600 .9rem system-ui;cursor:pointer}
+.chm-gallery-dialog button:disabled{opacity:.45;cursor:not-allowed}
+.chm-gallery-close{display:block;margin:0 0 .5rem auto}
+@media(max-width:550px){.chm-gallery-dialog{width:98vw;max-height:97vh;padding:.75rem}.chm-gallery-dialog .chm-gallery-image{max-height:calc(97vh - 13rem)}}
