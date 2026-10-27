@@ -1,0 +1,18 @@
+name: Independent production browser and media acceptance
+on:
+  pull_request:
+  workflow_dispatch:
+jobs:
+  production-http-browser-and-bytes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install playwright==1.57.0
+      - run: python -m playwright install --with-deps chromium
+      - run: python -m py_compile scripts/audit-production.py
+      - run: python scripts/audit-production.py --self-test
+      - run: python scripts/audit-production.py
