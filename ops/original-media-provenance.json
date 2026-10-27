@@ -1,0 +1,417 @@
+{
+  "schema_version": 1,
+  "source_wxr_sha256": "7ca0c47f6435764ceaebb7a2a869546b72d8282c65503dae85bfc9e45a7cd00a",
+  "source_tar_sha256": "2b818bcd0fe0035342c5fce4c11477ed4550e726864df0171a040a135cc974a6",
+  "assets": [
+    {
+      "source_path": "2022/06/casa-principal-colored.jpg",
+      "bytes": 12365971,
+      "sha256": "d4fda1869362082a4899368be816e43219d02be7db02ec7c8fc5e8e25e169dd6"
+    },
+    {
+      "source_path": "2022/06/casa-principal-with-fhl-watermark.png",
+      "bytes": 6229745,
+      "sha256": "a1c6d3d91c7a27251560004fdd3badfd49bb1fcfdc9c1ab0ca0df195bdfa9cdc"
+    },
+    {
+      "source_path": "2023/07/chm-logo-2.png",
+      "bytes": 191491,
+      "sha256": "d567418d9982327cbc0b5b2379778df5e00f46f3fcec066f7ee30972ebf52d49"
+    },
+    {
+      "source_path": "2023/07/cs-1-crop-1.png",
+      "bytes": 1262039,
+      "sha256": "86a0e4c8a2902630394c49067bf64d21e849eee8c189d81d7c28183816abcde8"
+    },
+    {
+      "source_path": "2023/07/cs-1-crop.png",
+      "bytes": 1262039,
+      "sha256": "86a0e4c8a2902630394c49067bf64d21e849eee8c189d81d7c28183816abcde8"
+    },
+    {
+      "source_path": "2023/07/cs-1.png",
+      "bytes": 1327174,
+      "sha256": "1cd4df79e7547756e55aef90d3771eb97948620bb702cf601d31154280e9b6d9"
+    },
+    {
+      "source_path": "2023/07/cs-logo-1.png",
+      "bytes": 72933,
+      "sha256": "83641ea4f15b0c79c089e366075dccab696217f572df655b4f051d287d37c9f4"
+    },
+    {
+      "source_path": "2023/07/cs-logo.png",
+      "bytes": 72933,
+      "sha256": "83641ea4f15b0c79c089e366075dccab696217f572df655b4f051d287d37c9f4"
+    },
+    {
+      "source_path": "2023/07/foundation-1.jpg",
+      "bytes": 257185,
+      "sha256": "cb91454d53168ca7ef2052d45098bddd22fcb1fad174485a36cde719eb49ebe3"
+    },
+    {
+      "source_path": "2023/07/foundation-2.jpg",
+      "bytes": 275430,
+      "sha256": "7aff33492e1504415d9ebb420ec76bc09aa3da87bb00fc03c8524d0a0d604f70"
+    },
+    {
+      "source_path": "2023/07/foundation-3.jpg",
+      "bytes": 270949,
+      "sha256": "1f20f8233ca5b91cff7b5e9c07db2ef16e9072b7b60630e02ef97a066a8f62a4"
+    },
+    {
+      "source_path": "2023/07/labor-evangelica.jpg",
+      "bytes": 197818,
+      "sha256": "96d9ebd026dc6a51edf02ec619c3f2b3b80a6c3c0732d7162b0b4c35f725c34a"
+    },
+    {
+      "source_path": "2023/08/cs-10.1.jpg",
+      "bytes": 237291,
+      "sha256": "ac94dfb6fba39ff6662dcf685247aa6e12a2bc2858b32816fa126a913d676479"
+    },
+    {
+      "source_path": "2023/08/cs-2.1.jpg",
+      "bytes": 401813,
+      "sha256": "eef92fbc0dc60e15729ae02b302e716b626cbc22b3601287ceaf7328e6762290"
+    },
+    {
+      "source_path": "2023/08/cs-2.jpg",
+      "bytes": 357125,
+      "sha256": "17a4ab9fc38a837760290d2fe7c49bbbf395018fe444990ce535a391e893a699"
+    },
+    {
+      "source_path": "2023/08/cs-4.jpg",
+      "bytes": 462577,
+      "sha256": "b80af2979cfbdb12ea4e2c17dfd83be98106c2bad592916c141a2ca417778600"
+    },
+    {
+      "source_path": "2023/08/cs-5.1.jpg",
+      "bytes": 555897,
+      "sha256": "1b6e6427fe341d68886b05ab9ce88334f379ef713a57b652793bedb8abd24b2d"
+    },
+    {
+      "source_path": "2023/08/cs-6.1.jpg",
+      "bytes": 304004,
+      "sha256": "d5846fc2a22e025c7f5b0b99371891621d098fae96c7b8039cc9913712a11087"
+    },
+    {
+      "source_path": "2023/08/cs-7.1.jpg",
+      "bytes": 381238,
+      "sha256": "92a523f1e09541b7c7e3976e47346a1aa2185b2903d6cf588d6abaa9e09b49b5"
+    },
+    {
+      "source_path": "2023/08/cs-8.1.jpg",
+      "bytes": 455089,
+      "sha256": "7976abff9367219b33e8bef114b580c974f708f9e0beb7b817d889cf5c7b1af7"
+    },
+    {
+      "source_path": "2023/08/cs-9.1.jpg",
+      "bytes": 562828,
+      "sha256": "326dea585fd3e6b44c40e8ccbf7f939f18611db2d58e8aa989980c6cbaac5755"
+    },
+    {
+      "source_path": "2023/08/slide5.2.jpg",
+      "bytes": 250299,
+      "sha256": "acf5317885958c3361d9404fe30194097775b8d2b5304b87ac700183c6251225"
+    },
+    {
+      "source_path": "2023/10/1910-casa-principal.jpg",
+      "bytes": 12365971,
+      "sha256": "d4fda1869362082a4899368be816e43219d02be7db02ec7c8fc5e8e25e169dd6"
+    },
+    {
+      "source_path": "2023/10/1926-casa-hacienda.png",
+      "bytes": 3499899,
+      "sha256": "6d14097e9d96ad56b6609a5e75e1edd7bce8b34159df5c1411c24fd1f0828b49"
+    },
+    {
+      "source_path": "2023/10/2021.jpg",
+      "bytes": 303140,
+      "sha256": "c651657b46288dc503be62fe27146a73576914dc4caadf8ddd357a0b400383b9"
+    },
+    {
+      "source_path": "2023/10/cs-1-crop.png",
+      "bytes": 1262039,
+      "sha256": "86a0e4c8a2902630394c49067bf64d21e849eee8c189d81d7c28183816abcde8"
+    },
+    {
+      "source_path": "2023/10/cs-10.2.jpg",
+      "bytes": 141194,
+      "sha256": "ac4a95d1ae31c180f1732e43ec74b06fc7d2c0196806bdfdc4dbae98081b4547"
+    },
+    {
+      "source_path": "2023/10/cs-10.3.jpg",
+      "bytes": 144005,
+      "sha256": "82243c3851d4480d73670ebef7186389748cc91bae481ab0de147adeec82a573"
+    },
+    {
+      "source_path": "2023/10/cs-10.4.jpg",
+      "bytes": 208356,
+      "sha256": "77b84fc40c00c5eb8bab89f9c59ae927912aabbf0bdf07d49d4f658bd4432d66"
+    },
+    {
+      "source_path": "2023/10/cs-10.5.jpg",
+      "bytes": 235934,
+      "sha256": "83ac6b8c4d84c239ba89f0b130d6761211be0cf2c452ffac8453d6e0f37bbbe1"
+    },
+    {
+      "source_path": "2023/10/cs-10.6.jpg",
+      "bytes": 123921,
+      "sha256": "a1c345284f5b859a93c59a9ea011d0ba77335d2bc4294151bcbe427adb18c19f"
+    },
+    {
+      "source_path": "2023/10/cs-10.7.jpg",
+      "bytes": 256089,
+      "sha256": "eba1154a0c91c785b64c9bbd2b77cfe1ce5fd0ebb08148e83f11366700627ff0"
+    },
+    {
+      "source_path": "2023/10/cs-10.jpg",
+      "bytes": 250850,
+      "sha256": "225edfd6cfcff7ab2839f48b5031aeb782f1a2974feaa730b3b44ddfc683fb2b"
+    },
+    {
+      "source_path": "2023/10/cs-4-1.jpg",
+      "bytes": 462577,
+      "sha256": "b80af2979cfbdb12ea4e2c17dfd83be98106c2bad592916c141a2ca417778600"
+    },
+    {
+      "source_path": "2023/10/cs-4.jpg",
+      "bytes": 462577,
+      "sha256": "b80af2979cfbdb12ea4e2c17dfd83be98106c2bad592916c141a2ca417778600"
+    },
+    {
+      "source_path": "2023/10/cs-5.jpg",
+      "bytes": 625096,
+      "sha256": "7decfcae2364b1fa4486c37f151733a4d9c564b8798d8c46a5e72ffe588a59d8"
+    },
+    {
+      "source_path": "2023/10/cs-6.jpg",
+      "bytes": 366615,
+      "sha256": "423842cd5d9a13645a3ae529957b4e5ce172dc7e0afc203c484e65c0cff4269f"
+    },
+    {
+      "source_path": "2023/10/cs-7.2.png",
+      "bytes": 365493,
+      "sha256": "2da7abaa29460a5fdff992b5205ab984ce6ea7ebf7bd1330b76cb3d285b674d8"
+    },
+    {
+      "source_path": "2023/10/cs-7.3.png",
+      "bytes": 261684,
+      "sha256": "555feeb31fcca8cf0953856ecd26780db21c71a3b01c1cab526f5c8ce626e335"
+    },
+    {
+      "source_path": "2023/10/cs-7.4.png",
+      "bytes": 317857,
+      "sha256": "ee632a282c5b0f061620f2f163049b986b9b581beb1eaa92323e1d6fbabfdf26"
+    },
+    {
+      "source_path": "2023/10/cs-7.5.jpg",
+      "bytes": 268855,
+      "sha256": "ca5e0bd37bec811d9752b00766671908bb1fed3e3536a2271d62bf1c0a47ebff"
+    },
+    {
+      "source_path": "2023/10/cs-7.6.png",
+      "bytes": 618166,
+      "sha256": "fedbb8a6274f107ce6a298738d1c53d8f22bcb4c3b4710851f179c48cd8567d3"
+    },
+    {
+      "source_path": "2023/10/cs-7.7.png",
+      "bytes": 754785,
+      "sha256": "00baa44c982533fdc1d9a7f8809644f1c5e36414f91cb50798645081b21a045d"
+    },
+    {
+      "source_path": "2023/10/cs-7.jpg",
+      "bytes": 391787,
+      "sha256": "cefdce3f823d2136d863677722a85fa4278daea0df8d01af76a74ae71ed11647"
+    },
+    {
+      "source_path": "2023/10/cs-8.2-1.jpg",
+      "bytes": 160899,
+      "sha256": "56369548aa153d070a6ee9d4153ecd820a6b147fa9d012b3b8f817511c8c8711"
+    },
+    {
+      "source_path": "2023/10/cs-8.2.1.jpg",
+      "bytes": 172862,
+      "sha256": "eda25df20af0e62e035ad0e7a22faf9a913341b805efe652f828d76012120626"
+    },
+    {
+      "source_path": "2023/10/cs-8.2.jpg",
+      "bytes": 160899,
+      "sha256": "56369548aa153d070a6ee9d4153ecd820a6b147fa9d012b3b8f817511c8c8711"
+    },
+    {
+      "source_path": "2023/10/cs-8.3.jpg",
+      "bytes": 552092,
+      "sha256": "5b9130f19e2cfae1aba3d2d8ebf2790f5bd4bc259a68588afccaeabe7d2fa59b"
+    },
+    {
+      "source_path": "2023/10/cs-8.4.jpg",
+      "bytes": 228462,
+      "sha256": "bcc1a55a5bd2cf9fba0fde25732947c3a46aa684a6c6a91e5015196d8e3ba655"
+    },
+    {
+      "source_path": "2023/10/cs-8.jpg",
+      "bytes": 392435,
+      "sha256": "6962bec9eb8bb5771a37295afe07e5704f9faff3bd649ec67110f7cd52c3c81f"
+    },
+    {
+      "source_path": "2023/10/cs-9.jpg",
+      "bytes": 610276,
+      "sha256": "31f992976d2c238fe3987cb34064ae6f28eff42c5839ff1af04a3376f562c45f"
+    },
+    {
+      "source_path": "2023/10/cs-logo-1.png",
+      "bytes": 72933,
+      "sha256": "83641ea4f15b0c79c089e366075dccab696217f572df655b4f051d287d37c9f4"
+    },
+    {
+      "source_path": "2023/10/cs-logo.png",
+      "bytes": 72933,
+      "sha256": "83641ea4f15b0c79c089e366075dccab696217f572df655b4f051d287d37c9f4"
+    },
+    {
+      "source_path": "2023/10/img_20230301_181345.jpg",
+      "bytes": 140941,
+      "sha256": "b29d673c236dd29dafce2589ac0cacb2f91a2c4cf596b7fd9bcba9bcf7b796bd"
+    },
+    {
+      "source_path": "2023/10/img_20230301_181431.jpg",
+      "bytes": 1650491,
+      "sha256": "523772cbb38c4978fbc4c812ab9d7c19c24852d6252fc79b0cd4372f5b2a74db"
+    },
+    {
+      "source_path": "2023/10/img_20230301_181604.jpg",
+      "bytes": 1056591,
+      "sha256": "0fb272d02c30deb8a71e0319cc2beca2214f3d7f7593064b271e84dd4007b0e3"
+    },
+    {
+      "source_path": "2023/10/img_20230301_181725.jpg",
+      "bytes": 1064404,
+      "sha256": "84ff2ca928aa6d032a60153abeb577bdf416c02eb2380f687166101761797d1c"
+    },
+    {
+      "source_path": "2023/10/img_20230301_181810.jpg",
+      "bytes": 1492045,
+      "sha256": "0f6d27c1031c6e96b6612fd4ea3a49257c6f76e211f4ca95d51eeec356254762"
+    },
+    {
+      "source_path": "2023/10/img_20230301_181900.jpg",
+      "bytes": 932192,
+      "sha256": "5b99b68334e8be820aa4b7e03d280d39fe4571f4a7f1397b663f1ea865999a2f"
+    },
+    {
+      "source_path": "2023/10/img_20230301_181937.jpg",
+      "bytes": 823745,
+      "sha256": "a84e266d2e6ba027cfac496e3101f8c81938436df280653b81de2db602272cee"
+    },
+    {
+      "source_path": "2023/10/rediscovered.jpg",
+      "bytes": 250846,
+      "sha256": "bc3dcb21af5fe45572ae149725ea39331aeee2011434dc4c10172d734d1a318b"
+    },
+    {
+      "source_path": "2023/10/slide10-2971963732-e1730725188698.jpg",
+      "bytes": 661715,
+      "sha256": "e2ee62cfcd6d1e25a1177cc6f55127e11e74e74ff096ac1617f4cbe76cb3069d"
+    },
+    {
+      "source_path": "2024/02/1919-map.jpg",
+      "bytes": 356117,
+      "sha256": "784211e9740bd02890e8a75f7f23eb72c2308b980b26692cd314f70805605b3f"
+    },
+    {
+      "source_path": "2024/02/cultural-significance-no.-11-v2.png",
+      "bytes": 6880652,
+      "sha256": "5ab2d95dd25c9b8d7d402b6e8bd6c52de7aae8bde76bcf33303ccf9d252be830"
+    },
+    {
+      "source_path": "2024/02/cultural-significance-no.-11.png",
+      "bytes": 7046936,
+      "sha256": "d2692f6273f31408f95064fe92a9ea7f71ef4dc27dc149ad5859658d13e86df8"
+    },
+    {
+      "source_path": "2024/02/map-vi.png",
+      "bytes": 997576,
+      "sha256": "55c699d6585f8307a1b49939f5eb622cbbaaaa69040a36208728bfa05f673704"
+    },
+    {
+      "source_path": "2024/02/plate-no-78.png",
+      "bytes": 2002354,
+      "sha256": "5c92994b2762e031e4569876041c13108e38883d415873b719d70ed9d16cadd9"
+    },
+    {
+      "source_path": "2024/02/reports.png",
+      "bytes": 198355,
+      "sha256": "8f97c0bb34c192ce88deab5a0547fdc65608e0505e9cb0c6bcd02969b2acc6f5"
+    },
+    {
+      "source_path": "2024/02/vigilante.png",
+      "bytes": 457729,
+      "sha256": "d3460da8c009432ba2a0b018ccba454c9b39aed615f7c6bdc5371d0f1dffdba9"
+    },
+    {
+      "source_path": "2024/04/1.png",
+      "bytes": 13964144,
+      "sha256": "4b367fb949a1de2b8e12d7650f1185c236f855f19e06003bafc672e5de083989"
+    },
+    {
+      "source_path": "2024/04/2.png",
+      "bytes": 10438346,
+      "sha256": "ee0faeefaab9a1cbb2653cc60836e32b488e93804f6fee447c51b2658640a3d5"
+    },
+    {
+      "source_path": "2024/04/2009-120.pdf",
+      "bytes": 101131,
+      "sha256": "5e6d841b6c05a50bae817e54669a5fdc0da462ec44f6dfa2ffdbb44e03c73b25"
+    },
+    {
+      "source_path": "2024/04/2009-174.pdf",
+      "bytes": 10436,
+      "sha256": "f9bf3a515941b9a2ce1daa96acbf71f2126e594f55ea63dd0fea08b984983340"
+    },
+    {
+      "source_path": "2024/04/2012decision_ebcaseno_12-12-275_december.pdf",
+      "bytes": 4972443,
+      "sha256": "6f916d1926e4952f83affab9760b3042e402d0f253c0cf3293bf37d2e870d5a3"
+    },
+    {
+      "source_path": "2024/04/casa-principal-with-fhl-watermark-edited.png",
+      "bytes": 5912437,
+      "sha256": "71a7f4e1cd959635001287f571edfb45bfe9c549e38c56e8cd4796c9b9505e6e"
+    },
+    {
+      "source_path": "2024/04/ft4580066d_00023.gif",
+      "bytes": 33033,
+      "sha256": "a000562d42fc4c77bc5bf2098c483185518aab127206e84da4fa75c007d6fe87"
+    },
+    {
+      "source_path": "2024/04/img_20220512_094136.jpg",
+      "bytes": 1748213,
+      "sha256": "b5a94c7685703d65f34ea098b88fbca0869034731389d489721879b4ffea6c98"
+    },
+    {
+      "source_path": "2024/04/riverside.png",
+      "bytes": 305659,
+      "sha256": "f8236565d309203fbf06ca8131cb0b3d739f5bbe5f1400214396a713378c7b84"
+    },
+    {
+      "source_path": "2024/04/victoria.jpg",
+      "bytes": 72131,
+      "sha256": "8921a5d31b01de3aea90971d6d089b5125db67008863f8135d8453a3bc6543e3"
+    },
+    {
+      "source_path": "2024/10/1000000266.png",
+      "bytes": 1031035,
+      "sha256": "af915131b512e26fd0f43cc3121a88ec9e0f0d1517ffc20d30cfa187ffa54174"
+    },
+    {
+      "source_path": "2024/10/1000000268-1.png",
+      "bytes": 5853704,
+      "sha256": "0ac1069362173486b58da569d629d5a08733af55c64422ae2d5e3ed66b7516ce"
+    },
+    {
+      "source_path": "2024/10/1000000268.png",
+      "bytes": 5853704,
+      "sha256": "0ac1069362173486b58da569d629d5a08733af55c64422ae2d5e3ed66b7516ce"
+    }
+  ]
+}
