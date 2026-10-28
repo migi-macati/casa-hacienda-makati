@@ -1,3 +1,13 @@
+# Production gallery and security acceptance extension — 2026-10-28 08:41 PHT
+
+**IN PROGRESS; DEPLOYED exact baseline main, NOT FULLY LIVE_VERIFIED.** Latest baseline GitHub main `a785e916dd40b9ca232ed0f9a95a43ab58c8fa60` and authenticated Vercel production `dpl_7gyZJzezVC1W1PCWddcTf44e8xaA` READY exact SHA; GitHub CI SUCCESS. PR #46 delivered two accessible progressive-enhancement galleries (3 + 7 images), passed generated-site Chromium desktop/mobile and independent production HTTP assets, but independent production *interactions* were not yet verified. The current QA change extends the already-required independent production browser/media suite with real live gallery modal/image/keyboard/focus/fallback checks for both viewport sizes, security headers on published routes and homepages, and a noindex 404 regression. **Candidate requires green GitHub Actions and Vercel preview before merge; this note alone is not evidence of test success.**
+
+- **Preserved:** original WordPress READ-ONLY, four private drafts, all 82 source and served media, noindex and robots exclusion; no rights or public-launch authorization. No private draft metadata/associations published. Historical CS12 operation-specific safety restriction CHM-B040 remains; do not retry or bypass.
+- **Already verified:** 13 posts + 2 pages published content parity (351 ordered text blocks, 61 inline images), 82/82 deployed media SHA256, 15/15 desktop and mobile production browser, published search privacy, 13 original discussion links, 44 notes. **Still pending:** original WordPress visual/theme/carousel fidelity, native comments, full WCAG/PDF alternatives (3 untagged PDFs, 7/9 pages textless), redirect/external link review, comprehensive performance/security, offline reproducibility and verified heritage features. Owner media rights/attribution/privacy and noindex/public launch decisions remain open.
+- **Current work:** CI-gated production gallery interaction + security/404 regression suite. Never interpret READY exact SHA as FULLY LIVE_VERIFIED. Keep hourly automation enabled until full acceptance.
+
+---
+
 # Independent deployed browser and 82 served-media checks — 2026-10-28 04:42 PHT
 
 **IN PROGRESS; DEPLOYED exact main, NOT FULLY LIVE_VERIFIED.** PR #43 merged as `41fb5bfaf3df7d6a20be6f29518527e3ea727c9f`; authenticated production `dpl_DefB5WBwboBZCcsAHGCBiTrwnYbL` READY exact main, Vercel CI SUCCESS, primary alias assigned. No original WordPress, private draft, media source, rights or noindex changes.

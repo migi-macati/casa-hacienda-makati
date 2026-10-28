@@ -90,6 +90,89 @@ VISIBLE_TEXT = r"""() => {
  return parts.join(' ').replace(/\s+/g, ' ').trim();
 }"""
 
+
+# Production-only, read-only gallery interaction and security checks.
+GALLERY_ROUTES = {
+    '/2023/08/12/cultural-significance-no-1/': (3, False),
+    '/2023/10/21/history-of-barrio-olimpia-makati-rizal/': (7, True),
+}
+
+def check_security_headers(response, route):
+    headers = response.headers
+    expected = {
+        'x-content-type-options': 'nosniff',
+        'x-frame-options': 'SAMEORIGIN',
+        'referrer-policy': 'strict-origin-when-cross-origin',
+    }
+    for name, value in expected.items():
+        if headers.get(name, '').lower() != value.lower():
+            raise AssertionError(f'Security response header {name} missing or changed: {route}')
+    if not headers.get('strict-transport-security', '').startswith('max-age='):
+        raise AssertionError('HSTS missing: ' + route)
+
+
+def check_live_gallery(page, route, expected_count, linked):
+    gallery = page.locator('article.content .wp-block-gallery')
+    if gallery.count() != 1:
+        raise AssertionError('Gallery missing or duplicated: ' + route)
+    if gallery.locator('figure.wp-block-image').count() != expected_count:
+        raise AssertionError('Gallery source image count changed: ' + route)
+    triggers = gallery.locator('a[href]' if linked else 'button.chm-gallery-trigger')
+    if triggers.count() != expected_count:
+        raise AssertionError('Gallery triggers missing: ' + route)
+    if linked and not all(u.startswith('https://casahaciendamakati.wordpress.com/')
+                          for u in triggers.evaluate_all('(nodes) => nodes.map(n => n.href)')):
+        raise AssertionError('Original WordPress fallback links changed: ' + route)
+    dialog = page.locator('dialog.chm-gallery-dialog')
+    if dialog.count() != 1:
+        raise AssertionError('Gallery dialog missing or duplicated: ' + route)
+    triggers.first.click()
+    if not dialog.is_visible() or not dialog.evaluate('(el) => el.open && el.matches(":modal")'):
+        raise AssertionError('Native modal did not open: ' + route)
+    if dialog.get_attribute('aria-labelledby') != 'chm-gallery-title':
+        raise AssertionError('Gallery dialog lacks accessible title: ' + route)
+    if not dialog.locator('button.chm-gallery-close').evaluate('(el) => document.activeElement === el'):
+        raise AssertionError('Modal did not receive focus: ' + route)
+    previous = dialog.get_by_role('button', name='Previous image')
+    next_button = dialog.get_by_role('button', name='Next image')
+    for i in range(expected_count):
+        if dialog.locator('h2').inner_text() != f'Image {i + 1} of {expected_count}':
+            raise AssertionError(f'Wrong gallery position {i + 1}: {route}')
+        image = dialog.locator('img.chm-gallery-image')
+        if not image.get_attribute('alt') or '/media/' not in image.get_attribute('src'):
+            raise AssertionError('Gallery image lacks local media or alt: ' + route)
+        page.wait_for_function("""() => {
+            const im = document.querySelector('dialog.chm-gallery-dialog img.chm-gallery-image');
+            return im && im.complete && im.naturalWidth > 0;
+        }""", timeout=20000)
+        if i == 0 and not previous.is_disabled():
+            raise AssertionError('Previous enabled at first image: ' + route)
+        if i + 1 < expected_count:
+            page.keyboard.press('ArrowRight')
+    if not next_button.is_disabled():
+        raise AssertionError('Next enabled at final image: ' + route)
+    page.keyboard.press('ArrowLeft')
+    if dialog.locator('h2').inner_text() != f'Image {expected_count - 1} of {expected_count}':
+        raise AssertionError('Previous keyboard navigation failed: ' + route)
+    next_button.click()
+    page.keyboard.press('Escape')
+    if dialog.is_visible():
+        raise AssertionError('Escape failed to close gallery: ' + route)
+    if not triggers.first.evaluate('(el) => document.activeElement === el'):
+        raise AssertionError('Focus was not restored to gallery trigger: ' + route)
+
+
+def check_missing_route(page):
+    route = '/__chm_qa_unpublished_route_20261028__/'
+    response = page.goto(ORIGIN + route, wait_until='load', timeout=45000)
+    if not response or response.status != 404:
+        raise AssertionError('Unknown route must return HTTP 404')
+    check_security_headers(response, route)
+    if page.locator('meta[name="robots"]').get_attribute('content') != 'noindex,nofollow':
+        raise AssertionError('Unknown route must remain noindex')
+    if page.locator('h1').inner_text() != 'Page not found':
+        raise AssertionError('Unknown route did not render 404 template')
+
 def validate_index(index, provenance):
     if (not isinstance(index, list) or len(index) != 15 or
         len({a["url"] for a in index}) != 15 or
@@ -109,6 +192,7 @@ def check_browser(index):
     from playwright.sync_api import sync_playwright
     errors = []
     visits = 0
+    gallery_visits = 0
     with sync_playwright() as pw:
         browser = pw.chromium.launch(headless=True)
         for width, height in ((1280, 800), (375, 812)):
@@ -121,6 +205,7 @@ def check_browser(index):
                 page.wait_for_function("getComputedStyle(document.querySelector('.brand img')).width === '44px'", timeout=15000)
                 if not response or response.status != 200:
                     raise AssertionError("Published page unavailable: " + entry["url"])
+                check_security_headers(response, entry["url"])
                 if page.locator('meta[name="robots"]').get_attribute("content") != "noindex,nofollow":
                     raise AssertionError("Noindex missing: " + entry["url"])
                 if page.locator('link[rel="canonical"]').get_attribute("href") != url:
@@ -129,17 +214,23 @@ def check_browser(index):
                     raise AssertionError("Heading mismatch: " + entry["url"])
                 if norm(page.evaluate(VISIBLE_TEXT)) != norm(entry["text"]):
                     raise AssertionError("Browser-visible text mismatch: " + entry["url"])
-                if page.locator('img:not([alt]), img[alt=""]').count():
+                # Closed native gallery dialogs contain an unpopulated image; check visible images here.
+                # The gallery test separately requires a nonempty alt once its modal opens.
+                if page.locator('img:not([alt]):visible, img[alt=""]:visible').count():
                     raise AssertionError("Image alternative missing: " + entry["url"])
                 if page.evaluate("document.documentElement.scrollWidth > innerWidth + 3"):
                     offenders = page.evaluate("""() => [...document.querySelectorAll('body *')].map(e => ({tag:e.tagName,cls:typeof e.className==='string'?e.className.slice(0,90):'',right:Math.round(e.getBoundingClientRect().right),left:Math.round(e.getBoundingClientRect().left),width:Math.round(e.getBoundingClientRect().width)})).filter(x=>x.right>innerWidth+3||x.left< -3).slice(0,12)""")
                     raise AssertionError("Horizontal overflow: " + entry["url"] + " width=" + str(width) + " scrollWidth=" + str(page.evaluate("document.documentElement.scrollWidth")) + " offenders=" + json.dumps(offenders))
                 if entry["type"] == "article" and page.locator('a[href*="casahaciendamakati.wordpress.com"]').count() == 0:
                     raise AssertionError("Original discussion bridge missing: " + entry["url"])
+                if entry["url"] in GALLERY_ROUTES:
+                    check_live_gallery(page, entry["url"], *GALLERY_ROUTES[entry["url"]])
+                    gallery_visits += 1
                 visits += 1
             response = page.goto(ORIGIN + "/", wait_until="domcontentloaded", timeout=45000)
             if not response or response.status != 200:
                 raise AssertionError("Homepage unavailable")
+            check_security_headers(response, "/")
             if page.locator('meta[name="robots"]').get_attribute("content") != "noindex,nofollow":
                 raise AssertionError("Homepage noindex missing")
             if page.evaluate("document.documentElement.scrollWidth > innerWidth + 3"):
@@ -152,11 +243,12 @@ def check_browser(index):
             page.wait_for_function('document.querySelector("#search-status").textContent.startsWith("0 results")', timeout=15000)
             if not page.locator("#nothing").is_visible():
                 raise AssertionError("Homepage no-results state missing")
+            check_missing_route(page)
             context.close()
         browser.close()
     if errors:
         raise AssertionError("Browser JavaScript exceptions: " + "; ".join(errors[:5]))
-    return visits
+    return visits, gallery_visits
 
 def self_test():
     manifest = {"assets": [{"path": f"/media/2023/07/sample{i}.webp"} for i in range(82)]}
@@ -171,7 +263,10 @@ def self_test():
     else:
         raise AssertionError("Invalid checksum accepted")
     assert norm(" a \n b ") == "a b"
-    print("Production acceptance self-tests PASS: 3 assertions")
+    assert len(GALLERY_ROUTES) == 2
+    assert sum(n for n, _ in GALLERY_ROUTES.values()) == 10
+    assert all(route.endswith("/") for route in GALLERY_ROUTES)
+    print("Production acceptance self-tests PASS: 6 assertions")
 
 def main():
     if sys.argv[1:] == ["--self-test"]:
@@ -186,8 +281,10 @@ def main():
     with concurrent.futures.ThreadPoolExecutor(max_workers=6) as pool:
         verified = list(pool.map(check_media, assets))
     print(f"Independent deployed media SHA256 PASS: {len(verified)}/82")
-    visits = check_browser(index)
+    visits, gallery_visits = check_browser(index)
     print(f"Independent deployed Chromium PASS: {visits}/30 published page visits, desktop/mobile, search, noindex, visible text, console")
+    print(f"Independent production gallery interaction PASS: {gallery_visits}/4 gallery visits, 10 images per viewport, modal, keyboard, focus, original fallback links")
+    print("Production security headers and noindex HTTP 404 PASS: 30 published routes, 2 homepages and 2 missing-route checks")
     print("WordPress historical fidelity, rights, PDFs, native comments, security/performance remain separate acceptance items.")
 
 if __name__ == "__main__":
