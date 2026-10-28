@@ -19,6 +19,10 @@ The published WordPress material proposes a 1773 archiepiscopal visitation, a 17
 
 No images, PDF derivatives, third-party text quotations, WordPress writes, private drafts, media rights decisions, or public-launch changes are part of this change. The historical CS12 correction restriction CHM-B040 is unrelated and remains untouched.
 
+## Newly resolved 1775 archival shelfmark (research-only)
+
+The original published site's Dionisio Kelly map citation can now be matched to the British Library's **Add MS 17641 C**, a 1775 Manila-environs paper-roll plan ([institutional catalog](https://searcharchives.bl.uk/catalog/040-002027896)). Its catalog record establishes the map's existence, creator attribution, date and repository, but **does not show the map or prove that the Olympia Casa Hacienda was depicted**. The separate **Add MS 17641 D** is an 1800 Gregorio Clavero map and must not be substituted. See [full source register](heritage-map-source-register-20261028.md), including the still-unverified 1773 visitation and 1910/1926 photo provenance. **Do not add a 1775 site/building event to the published timeline until the actual map has been inspected.**
+
 ## Acceptance scope
 
 One marked, keyboard-readable homepage timeline section with four chronological entries and linked source evidence; no JavaScript, animation, new images, or new public routes. A synthetic fail-closed build test checks date/order/source/links/privacy and regression protections. The independent deployed heritage audit will detect the timeline marker but must retain **PENDING_INDEPENDENT_FEATURE_QA** until exact-main deployment and separate browser/source verification. Six other heritage features remain unimplemented.
