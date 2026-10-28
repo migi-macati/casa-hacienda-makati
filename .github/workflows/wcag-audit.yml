@@ -1,0 +1,30 @@
+name: Published HTML WCAG browser acceptance (read-only)
+on:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  wcag-published-browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: npm install --no-save --no-audit --no-fund axe-core@4.10.3
+      - run: pip install playwright==1.57.0
+      - run: python -m playwright install --with-deps chromium
+      - run: python -m py_compile scripts/audit-wcag.py
+      - run: python scripts/audit-wcag.py --self-test
+      - run: python scripts/audit-wcag.py --gate --output wcag-accessibility-audit.json
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: published-wcag-desktop-mobile
+          path: wcag-accessibility-audit.json
+          if-no-files-found: ignore
