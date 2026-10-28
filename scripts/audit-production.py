@@ -214,7 +214,9 @@ def check_browser(index):
                     raise AssertionError("Heading mismatch: " + entry["url"])
                 if norm(page.evaluate(VISIBLE_TEXT)) != norm(entry["text"]):
                     raise AssertionError("Browser-visible text mismatch: " + entry["url"])
-                if page.locator('img:not([alt]), img[alt=""]').count():
+                # Closed native gallery dialogs contain an unpopulated image; check visible images here.
+                # The gallery test separately requires a nonempty alt once its modal opens.
+                if page.locator('img:not([alt]):visible, img[alt=""]:visible').count():
                     raise AssertionError("Image alternative missing: " + entry["url"])
                 if page.evaluate("document.documentElement.scrollWidth > innerWidth + 3"):
                     offenders = page.evaluate("""() => [...document.querySelectorAll('body *')].map(e => ({tag:e.tagName,cls:typeof e.className==='string'?e.className.slice(0,90):'',right:Math.round(e.getBoundingClientRect().right),left:Math.round(e.getBoundingClientRect().left),width:Math.round(e.getBoundingClientRect().width)})).filter(x=>x.right>innerWidth+3||x.left< -3).slice(0,12)""")
