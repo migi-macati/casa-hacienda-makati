@@ -12,6 +12,16 @@ from pathlib import Path
 
 from playwright.sync_api import sync_playwright
 
+
+class SameOrigin(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        if urllib.parse.urlsplit(newurl).netloc != urllib.parse.urlsplit(ORIGIN).netloc:
+            raise AssertionError("Cross-origin redirect rejected")
+        return super().redirect_request(req, fp, code, msg, headers, newurl)
+
+
+OPENER = urllib.request.build_opener(SameOrigin)
+
 ORIGIN = "https://casa-hacienda-makati.vercel.app"
 MISSING = "/__chm_qa_unpublished_route_20261028__/"
 EXPECTED_LINKS = [
@@ -20,13 +30,18 @@ EXPECTED_LINKS = [
 ]
 
 
-def published_routes(index):
+def published_routes(index, locked_documents=None):
     assert isinstance(index, list) and len(index) == 15, "Published index count changed"
     assert sum(x.get("type") == "article" for x in index) == 13
     assert sum(x.get("type") == "page" for x in index) == 2
     paths = [x["url"] for x in index]
     assert len(set(paths)) == 15, "Duplicate published route"
     assert all(re.fullmatch(r"/[a-z0-9/-]+/", p) and ".." not in p for p in paths)
+    if locked_documents is None:
+        locked_documents = json.loads(Path("ops/published-search-sources.json").read_text())["documents"]
+    expected = [("/" + d["file"].removesuffix("index.html"), d["type"]) for d in locked_documents]
+    actual = [(x["url"], x["type"]) for x in index]
+    assert len(expected) == 15 and actual == expected, "Deployed index differs from pinned published-source routes"
     return paths
 
 
@@ -35,7 +50,7 @@ def read_production_index():
         ORIGIN + "/search-index.json",
         headers={"User-Agent": "CasaHaciendaReadOnlyQA/1.0"},
     )
-    with urllib.request.urlopen(request, timeout=40) as response:
+    with OPENER.open(request, timeout=40) as response:
         assert response.status == 200
         assert urllib.parse.urlsplit(response.url).netloc == urllib.parse.urlsplit(ORIGIN).netloc
         raw = response.read(2 * 1024 * 1024 + 1)
@@ -77,20 +92,22 @@ def self_test():
         {"url": f"/2023/01/{i:02d}/sample/", "type": "article" if i <= 13 else "page"}
         for i in range(1, 16)
     ]
-    assert len(published_routes(sample)) == 15
+    lock = [{"file": x["url"].lstrip("/") + "index.html", "type": x["type"]} for x in sample]
+    assert len(published_routes(sample, lock)) == 15
     for changed in (
         sample[:-1],
         sample[:-1] + [dict(sample[0])],
         sample[:-1] + [{"url": "/private/", "type": "article"}],
         sample[:-1] + [{"url": "/../hidden/", "type": "page"}],
+        sample[:-1] + [{"url": "/2023/01/15/other/", "type": "page"}],
     ):
         try:
-            published_routes(changed)
+            published_routes(changed, lock)
         except AssertionError:
             continue
         raise AssertionError("Invalid published-route fixture accepted")
     assert len(EXPECTED_LINKS) == 5 and EXPECTED_LINKS[0] == "/"
-    print("Native navigation route/allowlist synthetic tests PASS: 6 assertions")
+    print("Native navigation route/allowlist synthetic tests PASS: 7 assertions")
 
 
 def main():
