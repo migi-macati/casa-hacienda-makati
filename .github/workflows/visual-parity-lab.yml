@@ -1,0 +1,32 @@
+name: Original WordPress visual and deployed lab baseline (read-only)
+on:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  public-visual-lab:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install playwright==1.57.0
+      - run: python -m playwright install --with-deps chromium
+      - run: python -m py_compile scripts/audit-visual-lab.py
+      - run: python scripts/audit-visual-lab.py --self-test
+      - run: python scripts/audit-visual-lab.py --output-dir visual-lab-evidence
+      - if: always()
+        run: |
+          if [ -f visual-lab-evidence/visual-lab-report.md ]; then
+            cat visual-lab-evidence/visual-lab-report.md >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: original-wordpress-versus-deployed-visual-lab
+          path: visual-lab-evidence/
+          if-no-files-found: ignore
+          retention-days: 7
