@@ -1,0 +1,30 @@
+name: Independent deployed heritage feature inventory (read-only)
+on:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  deployed-heritage-inventory:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m py_compile scripts/audit-heritage-features.py
+      - run: python scripts/audit-heritage-features.py --self-test
+      - run: python scripts/audit-heritage-features.py --output-dir heritage-evidence
+      - if: always()
+        run: |
+          if [ -f heritage-evidence/heritage-coverage.md ]; then
+            cat heritage-evidence/heritage-coverage.md >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: independent-deployed-heritage-inventory
+          path: heritage-evidence/
+          if-no-files-found: ignore
+          retention-days: 7
