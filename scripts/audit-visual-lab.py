@@ -52,6 +52,19 @@ METRICS_JS = r'''() => {
    horizontalOverflow:document.documentElement.scrollWidth > innerWidth + 3
  };
 }'''
+CAROUSEL_SOURCE_JS = r'''() => {
+ const root = document.querySelector('.wp-block-newspack-blocks-carousel');
+ if (!root) return [];
+ return [...root.querySelectorAll('img')].slice(0, 24).map((img, index) => {
+   const item = img.closest('.swiper-slide, [class*=carousel__slide]');
+   const a = img.closest('a[href]') || item?.querySelector('a[href]');
+   const srcset = (img.getAttribute('srcset') || '').split(',').map(x => x.trim().split(/\s+/)[0]);
+   return {index, sources: [img.getAttribute('data-large-file'), img.getAttribute('data-src'),
+       img.getAttribute('src'), img.currentSrc, ...srcset].filter(Boolean).slice(0, 16),
+       href: a ? a.href : null};
+ });
+}'''
+
 OBSERVER_JS = r'''(() => {
  window.__chmVisualLab = {lcp:0, cls:0};
  try {new PerformanceObserver(l => {for (const e of l.getEntries())
@@ -99,6 +112,87 @@ def compare_pair(original, deployed):
 def carousel_delta(original,deployed):
     return len(original.get('carouselCandidates',[])),len(deployed.get('carouselCandidates',[]))
 
+def canonical_source_path(value):
+    """Normalize only public WordPress media URLs; reject unknown hosts/paths."""
+    try:
+        u = urllib.parse.urlsplit(urllib.parse.urljoin(ORIGINAL + '/', value))
+        if u.scheme != 'https' or u.username or u.password or u.port:
+            return None
+        host = (u.hostname or '').lower()
+        path = urllib.parse.unquote(u.path)
+        if host in ('i0.wp.com', 'i1.wp.com', 'i2.wp.com', 'i3.wp.com'):
+            prefix = '/casahaciendamakati.wordpress.com/'
+            if not path.startswith(prefix):
+                return None
+            path = '/' + path[len(prefix):]
+        elif host == 'casahaciendamakati.files.wordpress.com':
+            path = '/wp-content/uploads' + path
+        elif host != 'casahaciendamakati.wordpress.com':
+            return None
+        if not re.fullmatch(r'/wp-content/uploads/[0-9]{4}/[0-9]{2}/[A-Za-z0-9._%+-]+', path):
+            return None
+        return re.sub(r'-[0-9]+x[0-9]+(?=\.[A-Za-z0-9]+$)', '', path).casefold()
+    except (ValueError, TypeError):
+        return None
+
+def published_link(value, routes):
+    if not value:
+        return None
+    try:
+        u = urllib.parse.urlsplit(urllib.parse.urljoin(ORIGINAL + '/', value))
+        if u.scheme != 'https' or u.hostname != 'casahaciendamakati.wordpress.com' or u.username or u.password or u.port:
+            return None
+        return u.path if u.path in routes and not u.query else None
+    except (ValueError, TypeError):
+        return None
+
+def inventory_carousel(slides, routes, manifest):
+    """Only report manifest-verified media and links to published public routes."""
+    known = {}
+    for asset in manifest['assets']:
+        key = canonical_source_path(asset['source'])
+        if key is None or key in known:
+            raise AssertionError('Media manifest source missing or duplicated')
+        known[key] = asset
+    rows = []
+    for i, slide in enumerate(slides):
+        matches = {known[key]['path']: known[key] for source in slide.get('sources', [])
+                   if (key := canonical_source_path(source)) in known}
+        asset = next(iter(matches.values())) if len(matches) == 1 else None
+        target = published_link(slide.get('href'), routes)
+        rows.append({'position': i + 1, 'manifestMediaPath': asset['path'] if asset else None,
+                     'originalMediaSource': asset['source'] if asset else None,
+                     'publishedDestination': target,
+                     'mediaMatch': 'verified_manifest' if asset else 'unresolved',
+                     'destinationMatch': 'published' if target else 'unresolved'})
+    return {'observedSlides': len(rows),
+            'verifiedMedia': sum(x['mediaMatch'] == 'verified_manifest' for x in rows),
+            'publishedDestinations': sum(x['destinationMatch'] == 'published' for x in rows),
+            'uniqueVerifiedMedia': len({x['manifestMediaPath'] for x in rows if x['manifestMediaPath']}),
+            'slides': rows,
+            'limitations': 'Public DOM observation only; manifest match is source identity, NOT copyright or reuse permission. Unknown links/media are redacted.'}
+
+def write_carousel_inventory(out, rows, routes):
+    home = next(x for x in rows if x['route'] == '/' and x['viewport'] == '1280x800')
+    slides = home['original'].get('sourceCarouselSlides', [])
+    manifest = json.loads(Path('media-manifest.json').read_text())
+    inventory = inventory_carousel(slides, routes, manifest)
+    if inventory['observedSlides'] != 12:
+        raise AssertionError('Original public homepage carousel changed: expected 12 images')
+    (out / 'carousel-source-inventory.json').write_text(json.dumps(inventory, indent=2) + '\n')
+    lines = ['# Original public WordPress carousel source inventory', '',
+             'Read-only original homepage, desktop. Unknown or nonpublished link destinations and unverified media sources are redacted.',
+             'Manifest identity does not establish third-party reproduction rights. No new images are published.', '',
+             f"Observed image nodes: {inventory['observedSlides']}; mapped to 82-asset original source manifest: {inventory['verifiedMedia']}; linked to published routes: {inventory['publishedDestinations']}.",
+             '', '| Position | Verified existing media | Published article destination |',
+             '|---:|---|---|']
+    for item in inventory['slides']:
+        lines.append(f"| {item['position']} | {item['manifestMediaPath'] or 'UNRESOLVED'} | {item['publishedDestination'] or 'UNRESOLVED'} |")
+    lines += ['', 'Unresolved items require manual source and rights review before any image reuse.',
+              'The migrated articles already expose a text-only research archive sidebar; this inventory does not establish interactive carousel parity.']
+    (out / 'carousel-source-inventory.md').write_text('\n'.join(lines) + '\n')
+    return inventory
+
 def self_test():
     idx=[{'url':f'/2023/10/21/published-{i}/','type':'article'} for i in range(13)] + [
         {'url':'/about/','type':'page'}, {'url':'/cultural-significance/','type':'page'}]
@@ -119,7 +213,16 @@ def self_test():
     assert not compare_pair(a,{**b,'h1':'Different'})['h1Match']
     assert carousel_delta({'carouselCandidates':[{'images':3}]},{'carouselCandidates':[]}) == (1,0)
     assert carousel_delta({'carouselCandidates':[]},{'carouselCandidates':[{'images':2}]}) == (0,1)
-    print('Visual parity/lab performance self-tests PASS: routes, unsafe paths, percentile, H1/layout')
+    fixture = {'assets': [{'source': ORIGINAL + '/wp-content/uploads/2023/07/cs-1.png', 'path': '/media/2023/07/cs-1.webp'}]}
+    assert canonical_source_path('https://i0.wp.com/casahaciendamakati.wordpress.com/wp-content/uploads/2023/07/cs-1-300x200.png?resize=300%2C200') == '/wp-content/uploads/2023/07/cs-1.png'
+    assert canonical_source_path('https://evil.example/wp-content/uploads/2023/07/cs-1.png') is None
+    assert published_link(ORIGINAL + '/about/', ['/about/']) == '/about/'
+    assert published_link(ORIGINAL + '/private/', ['/about/']) is None
+    good = inventory_carousel([{'sources': [ORIGINAL + '/wp-content/uploads/2023/07/cs-1.png'], 'href': ORIGINAL + '/about/'}], ['/about/'], fixture)
+    assert good['verifiedMedia'] == 1 and good['publishedDestinations'] == 1
+    redacted = inventory_carousel([{'sources': ['https://evil.example/private.jpg'], 'href': ORIGINAL + '/private/'}], ['/about/'], fixture)
+    assert redacted['slides'][0]['originalMediaSource'] is None and redacted['slides'][0]['publishedDestination'] is None
+    print('Visual parity/lab self-tests PASS: routes, unsafe paths, H1/layout, carousel source provenance and privacy')
 
 def fetch_index():
     req=urllib.request.Request(DEPLOYED+'/search-index.json',headers={'User-Agent':'CasaHaciendaReadOnlyVisualQA/1.0'})
@@ -155,6 +258,8 @@ def capture(routes, out):
                             raise AssertionError('Production noindex missing: '+route)
                     page.wait_for_timeout(700)
                     m=page.evaluate(METRICS_JS)
+                    if key == 'original' and route == '/' and width == 1280:
+                        m['sourceCarouselSlides'] = page.evaluate(CAROUSEL_SOURCE_JS)
                     if not m['h1'] or not m['stylesheets']:
                         raise AssertionError(f'{key} route has missing H1 or stylesheets: {route}')
                     m.update({'status':response.status,'finalUrl':page.url})
@@ -235,6 +340,8 @@ def main():
     routes=valid_routes(fetch_index())
     rows=capture(routes,out)
     stats=summary(rows)
+    carousel=write_carousel_inventory(out,rows,routes)
+    print('Original carousel source identity:',carousel['verifiedMedia'],'/12 manifest matches;',carousel['publishedDestinations'],'/12 published destinations',flush=True)
     if stats['routeViewportPairs']!=32 or stats['originalLoaded']!=32 or stats['deployedLoaded']!=32:
         raise AssertionError('Incomplete 16-route × 2-viewport public comparison')
     (out/'visual-lab-data.json').write_text(json.dumps({'scope':'16 public routes × 2 viewports × 2 read-only origins',
