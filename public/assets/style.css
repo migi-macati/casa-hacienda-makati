@@ -28,3 +28,6 @@
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
 }
+
+/* WCAG 2.2 AA: original WordPress PDF download links need usable touch targets. */
+.content .wp-block-file a.wp-block-file__button{display:inline-flex;align-items:center;min-height:44px;padding:10px 12px;margin:5px 0;line-height:1.4}
