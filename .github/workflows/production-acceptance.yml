@@ -21,6 +21,16 @@ jobs:
       - run: python -m py_compile scripts/audit-live-timeline.py
       - run: python scripts/audit-live-timeline.py --self-test
       - run: python scripts/audit-live-timeline.py --output-dir timeline-browser-evidence
+      - run: python -m py_compile scripts/audit-live-sources.py
+      - run: python scripts/audit-live-sources.py --self-test
+      - run: python scripts/audit-live-sources.py --output-dir source-register-browser-evidence
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: independent-live-sources-browser
+          path: source-register-browser-evidence/
+          if-no-files-found: ignore
+          retention-days: 7
       - if: always()
         uses: actions/upload-artifact@v4
         with:
