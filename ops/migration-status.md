@@ -1,3 +1,9 @@
+# Verified-source offline rebuild candidate — 2026-10-28 ~12:38 PHT
+
+**CANDIDATE; NOT YET MERGED OR DEPLOYED.** Baseline main `ef0f3ec51f7f36c25a5a4a98562ff7bb6348531b`, Vercel production `dpl_3xqPqjtuXnBYwKyDbgLKXeWXtXH3` READY exact SHA, CI SUCCESS. This atomic candidate adds an ephemeral verified original-media cache, an offline second media build from pristine public sources, a byte-for-byte generated-tree comparator, and synthetic fail-closed cache regressions. GitHub Actions must PASS the complete double build before merge. This is an offline **media-input** rebuild with the same installed npm dependencies, not a fully air-gapped package installation or an assertion of historical accuracy or rights. No original WordPress writes, no original media committed, no private draft metadata, and no noindex changes. CHM-B040 safety restriction unchanged. Highest baseline DEPLOYED, NOT FULLY LIVE_VERIFIED.
+
+---
+
 # Verified No. 10 external citation correction — 2026-10-28 ~11:33 PHT
 
 **CANDIDATE, NOT MERGED/DEPLOYED AT TIME OF WRITING.** Baseline main `c1e9a79679f34225b351769e93e20365c0c2c041`, production `dpl_FDLEusGmA7Y6T1CeRfekUhFE5Qxf` READY exact baseline; highest DEPLOYED, NOT FULLY LIVE_VERIFIED. This coherent PR proposes one fail-closed post-restoration href correction to a publisher-verified relocated Pacific Wrecks page, with 12 local synthetic assertions and final build check. Do not claim released until GitHub CI, preview, merge, and exact-main production are independently confirmed. Original footnote archival JSON and WordPress read-only, 4 private drafts, 82 media and noindex preserved. CHM-B040 safety restriction unchanged. Rights/privacy/noindex-public-launch owner decisions unchanged. Continue hourly until FULL acceptance.
