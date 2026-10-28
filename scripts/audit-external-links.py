@@ -56,12 +56,12 @@ def safe_public_url(raw):
     except (ValueError, TypeError):
         return None
 
-def fetch(url, method="GET", timeout=9):
+def fetch(url, method="GET", timeout=9, read_body=True):
     started = time.monotonic()
     try:
         req = request.Request(url, method=method, headers={"User-Agent": USER_AGENT})
         with OPENER.open(req, timeout=timeout) as response:
-            data = response.read(MAX_BYTES + 1) if method == "GET" else b""
+            data = response.read(MAX_BYTES + 1) if method == "GET" and read_body else b""
             if len(data) > MAX_BYTES:
                 raise ValueError("Response exceeded 3 MiB")
             return {"status": response.status, "location": response.headers.get("Location", ""),
@@ -104,8 +104,10 @@ def extract_external(markup):
 
 def check_external(url):
     result = fetch(url, "HEAD")
-    if result["status"] in (405, 501):
-        result = fetch(url, "GET")
+    if result["status"] in (404, 410, 405, 501):
+        # Some servers return a false 404 to HEAD; verify using GET headers.
+        # No body is downloaded, including for large PDF citations.
+        result = fetch(url, "GET", read_body=False)
     return {"url": url, "status": result["status"], "category": classify(result["status"]),
             "location": result["location"], "elapsed_ms": result["elapsed_ms"],
             **({"error": result["error"]} if "error" in result else {})}
