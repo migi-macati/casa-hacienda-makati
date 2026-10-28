@@ -1,5 +1,6 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import { createSourceReader } from './media-source-cache.mjs';
 import sharp from 'sharp';
 import manifest from '../media-manifest.json' with { type: 'json' };
 import provenance from '../ops/original-media-provenance.json' with { type: 'json' };
@@ -17,6 +18,13 @@ for (const a of assets) {
 let next = 0;
 let copied = 0;
 const errors = [];
+const mediaMode = process.env.CHM_MEDIA_CACHE_MODE || 'network';
+const readSource = createSourceReader({
+  mode: mediaMode,
+  cacheDir: process.env.CHM_MEDIA_CACHE_DIR,
+  fetchBytes: get,
+  verifyBytes: (asset, bytes) => assertSourceBytes(asset, bytes, sourceRecords)
+});
 
 function goodBytes(data, output) {
   if (data.length < 32) return false;
@@ -45,12 +53,11 @@ async function copy(asset) {
   const output = path.join(root, asset.path.slice(1));
   await fs.mkdir(path.dirname(output), { recursive: true });
   let error;
-  for (let attempt = 1; attempt <= 3; attempt++) {
+  for (let attempt = 1; attempt <= (mediaMode === 'offline' ? 1 : 3); attempt++) {
     try {
       // Verify original WordPress bytes against the owner-supplied TAR before
       // any conversion. Never trust mutable mirrors as source provenance.
-      let bytes = await get(asset.source);
-      assertSourceBytes(asset, bytes, sourceRecords);
+      let bytes = await readSource(asset);
       if (asset.convert) {
         bytes = await sharp(bytes, { limitInputPixels: 150000000 })
           .rotate()
@@ -65,7 +72,7 @@ async function copy(asset) {
       return;
     } catch (e) {
       error = e;
-      if (attempt < 3) await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+      if (attempt < (mediaMode === 'offline' ? 1 : 3)) await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
     }
   }
   errors.push(asset.path + ': ' + error?.message);
