@@ -18,3 +18,13 @@ jobs:
       - run: python scripts/audit-production.py
       - run: python scripts/audit-mobile-nav.py --self-test
       - run: python scripts/audit-mobile-nav.py --production
+      - run: python -m py_compile scripts/audit-live-timeline.py
+      - run: python scripts/audit-live-timeline.py --self-test
+      - run: python scripts/audit-live-timeline.py --output-dir timeline-browser-evidence
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: independent-live-timeline-browser
+          path: timeline-browser-evidence/
+          if-no-files-found: ignore
+          retention-days: 7
