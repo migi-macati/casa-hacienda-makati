@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 const original='/2023/08/12/cultural-significance-no-3/';
 const independent='https://bluprint-onemega.com/architecture/heritage/poblacion-heritage-district/';
+const official='https://www.makati.gov.ph/barangay/poblacion/34';
 function verify(html){
  assert.ok(html.includes('<meta name="robots" content="noindex,nofollow">'),'noindex missing');
  assert.equal((html.match(/<h1\b/g)||[]).length,1,'homepage H1 drift');
@@ -16,13 +17,15 @@ function verify(html){
  assert.ok(section.includes('expressly distinguishes this location'),'original two-site distinction missing');
  assert.ok(section.includes('now Poblacion Park'),'Poblacion account missing');
  assert.ok(section.includes('Independent secondary account'),'evidence tier missing');
+ assert.ok(section.includes('Official city account:'),'official Poblacion corroboration missing');
+ assert.ok(section.includes('does not verify the Olympia building'),'city evidence limitation missing');
  assert.ok(section.includes('have not yet been independently verified against this parcel'),'Olympia uncertainty missing');
  assert.ok(section.includes('cannot establish that the surviving Olympia remains and the former Poblacion offices are the same building'),'continuity caveat missing');
  assert.ok(section.includes('not a verified parcel-level identification'),'parcel certainty caveat missing');
  assert.ok(section.includes('reproduction rights remain unverified'),'rights boundary missing');
  assert.ok(section.includes('No historical photograph, map image or location overlay is reproduced here'),'media boundary missing');
  const hrefs=[...section.matchAll(/href="([^"]+)"/g)].map(x=>x[1]);
- assert.deepEqual(hrefs,[original,independent,'/about/'],'source link allowlist drift');
+ assert.deepEqual(hrefs,[original,official,independent,'/about/'],'source link allowlist drift');
  assert.ok(!/<(?:img|video|audio|iframe|script|canvas|object|embed)\b/i.test(section),'unapproved media or scripts');
  assert.ok(!/autoplay|setInterval|animation:/i.test(section),'motion not authorized');
  return true;
@@ -40,7 +43,9 @@ const variants=[
  html.replace('cannot establish that the surviving Olympia remains and the former Poblacion offices are the same building','proves that both are the same building'),
  html.replace('not a verified parcel-level identification','a verified parcel-level identification'),
  html.replace(independent,'https://example.invalid/unverified'),
+ html.replace(official,'https://example.invalid/city'),
+ html.replace('does not verify the Olympia building\'s identity','proves the Olympia building\'s identity'),
  html.replace('No historical photograph, map image or location overlay is reproduced here','<img src="/unapproved-photo.jpg" alt="photo">')
 ];
 for(const variant of variants)assert.throws(()=>verify(variant));
-console.log('Two-location research guide: 2 claims, 11 fail-closed regressions PASS.');
+console.log('Two-location research guide: 2 claims, 13 fail-closed regressions PASS.');
