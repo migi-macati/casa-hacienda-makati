@@ -5,6 +5,9 @@ Uses pinned axe-core in Chromium. Does not assess PDF interiors, manual
 screen-reader operation, original WordPress visual parity or media rights.
 """
 import argparse
+import functools
+import http.server
+import threading
 import json
 import re
 import urllib.parse
@@ -119,12 +122,28 @@ def main():
     parser.add_argument('--self-test', action='store_true')
     parser.add_argument('--output', default='wcag-accessibility-audit.json')
     parser.add_argument('--gate', action='store_true')
+    parser.add_argument('--local', action='store_true', help='Audit the generated public/ site through a temporary loopback HTTP server')
     args = parser.parse_args()
     if args.self_test:
         self_test()
         return
-    routes = validate_routes(fetch_index())
-    scans = audit(routes)
+    global ORIGIN
+    server = None
+    if args.local:
+        if not Path('public/search-index.json').is_file():
+            raise AssertionError('Local generated site missing: run npm run build first')
+        handler = functools.partial(http.server.SimpleHTTPRequestHandler, directory=str(Path('public').resolve()))
+        server = http.server.ThreadingHTTPServer(('127.0.0.1', 0), handler)
+        thread = threading.Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        ORIGIN = f'http://127.0.0.1:{server.server_port}'
+    try:
+        routes = validate_routes(fetch_index())
+        scans = audit(routes)
+    finally:
+        if server:
+            server.shutdown()
+            server.server_close()
     summary = summarize(scans)
     Path(args.output).write_text(json.dumps({
         'scope':'homepage + 13 published articles + 2 published pages',
