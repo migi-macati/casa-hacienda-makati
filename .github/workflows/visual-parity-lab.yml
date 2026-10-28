@@ -18,10 +18,16 @@ jobs:
       - run: python -m py_compile scripts/audit-visual-lab.py
       - run: python scripts/audit-visual-lab.py --self-test
       - run: python scripts/audit-visual-lab.py --output-dir visual-lab-evidence
+      - run: python -m py_compile scripts/audit-carousel-interactions.py
+      - run: python scripts/audit-carousel-interactions.py --self-test
+      - run: python scripts/audit-carousel-interactions.py --output-dir visual-lab-evidence
       - if: always()
         run: |
           if [ -f visual-lab-evidence/visual-lab-report.md ]; then
             cat visual-lab-evidence/visual-lab-report.md >> "$GITHUB_STEP_SUMMARY"
+          fi
+          if [ -f visual-lab-evidence/carousel-behavior.md ]; then
+            cat visual-lab-evidence/carousel-behavior.md >> "$GITHUB_STEP_SUMMARY"
           fi
       - if: always()
         uses: actions/upload-artifact@v4
