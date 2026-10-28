@@ -23,6 +23,8 @@ METRICS_JS = r'''() => {
      e.getBoundingClientRect().height > 0 && getComputedStyle(e).visibility !== 'hidden';
  const h1 = [...document.querySelectorAll('h1')].find(shown);
  const main = document.querySelector('main') || document.querySelector('article') || document.body;
+ const prose = [...document.querySelectorAll('main p, article p, .entry-content p, .wp-block-post-content p')]
+     .find(e => shown(e) && e.innerText.trim().length > 80);
  const box = e => { const b=e.getBoundingClientRect(); return {
    x:Math.round(b.x),y:Math.round(b.y),width:Math.round(b.width),height:Math.round(b.height)}; };
  const s = h1 ? getComputedStyle(h1) : null;
@@ -34,6 +36,7 @@ METRICS_JS = r'''() => {
    h1Box:h1 ? box(h1) : null,
    h1Font:s ? {family:s.fontFamily,size:s.fontSize,weight:s.fontWeight,lineHeight:s.lineHeight,color:s.color} : null,
    mainBox:box(main),
+   firstLongParagraphBox:prose ? box(prose) : null,
    background:getComputedStyle(document.body).backgroundColor,
    stylesheets:[...document.styleSheets].length,
    images:imgs.length,
@@ -87,7 +90,8 @@ def compare_pair(original, deployed):
     return {'h1Match':True,
             'h1HorizontalShiftPx':deployed['h1Box']['x']-original['h1Box']['x'],
             'h1VerticalShiftPx':deployed['h1Box']['y']-original['h1Box']['y'],
-            'mainWidthDifferencePx':deployed['mainBox']['width']-original['mainBox']['width'],
+            'firstLongParagraphWidthDifferencePx':(deployed['firstLongParagraphBox']['width']-original['firstLongParagraphBox']['width'])
+                if original.get('firstLongParagraphBox') and deployed.get('firstLongParagraphBox') else None,
             'h1FontSizeMatch':original['h1Font']['size']==deployed['h1Font']['size'],
             'h1FontFamilyMatch':original['h1Font']['family']==deployed['h1Font']['family']}
 
@@ -103,10 +107,10 @@ def self_test():
     assert percentile([10,20,30,40])==30
     assert percentile([10,20,30,40],.95)==40
     assert percentile([]) is None
-    a={'h1':'A\xa0 Title','h1Box':{'x':10,'y':20},'mainBox':{'width':100},'h1Font':{'size':'24px','family':'serif'}}
-    b={'h1':'A Title','h1Box':{'x':15,'y':27},'mainBox':{'width':130},'h1Font':{'size':'24px','family':'sans-serif'}}
+    a={'h1':'A\xa0 Title','h1Box':{'x':10,'y':20},'mainBox':{'width':100},'firstLongParagraphBox':{'width':100},'h1Font':{'size':'24px','family':'serif'}}
+    b={'h1':'A Title','h1Box':{'x':15,'y':27},'mainBox':{'width':130},'firstLongParagraphBox':{'width':130},'h1Font':{'size':'24px','family':'sans-serif'}}
     c=compare_pair(a,b)
-    assert c['h1Match'] and c['h1HorizontalShiftPx']==5 and c['mainWidthDifferencePx']==30
+    assert c['h1Match'] and c['h1HorizontalShiftPx']==5 and c['firstLongParagraphWidthDifferencePx']==30
     assert c['h1FontSizeMatch'] and not c['h1FontFamilyMatch']
     assert not compare_pair(a,{**b,'h1':'Different'})['h1Match']
     print('Visual parity/lab performance self-tests PASS: routes, unsafe paths, percentile, H1/layout')
@@ -191,11 +195,11 @@ def write_markdown(out,rows,stats):
            f"- Deployed lab LCP page-sample p75 by viewport (ms): {stats['deployedLabLcpP75MsByViewport']}",
            f"- Deployed lab CLS page-sample p75 by viewport: {stats['deployedLabClsP75ByViewport']}",
            '', '## Layout comparisons', '',
-           '| Route | Viewport | H1 match | H1 x shift | H1 y shift | Main width difference | WP font → migrated font |',
+           '| Route | Viewport | H1 match | H1 x shift | H1 y shift | First long paragraph width difference | WP font → migrated font |',
            '|---|---|---|---:|---:|---:|---|']
     for x in rows:
         c=x['comparison']; a=x['original']; b=x['deployed']
-        lines.append(f"| \u0060{x['route']}\u0060 | {x['viewport']} | {'yes' if c['h1Match'] else 'NO'} | {c.get('h1HorizontalShiftPx','n/a')} | {c.get('h1VerticalShiftPx','n/a')} | {c.get('mainWidthDifferencePx','n/a')} | {a['h1Font']['size']} {a['h1Font']['family'].split(',')[0]} → {b['h1Font']['size']} {b['h1Font']['family'].split(',')[0]} |")
+        lines.append(f"| \u0060{x['route']}\u0060 | {x['viewport']} | {'yes' if c['h1Match'] else 'NO'} | {c.get('h1HorizontalShiftPx','n/a')} | {c.get('h1VerticalShiftPx','n/a')} | {c.get('firstLongParagraphWidthDifferencePx','n/a')} | {a['h1Font']['size']} {a['h1Font']['family'].split(',')[0]} → {b['h1Font']['size']} {b['h1Font']['family'].split(',')[0]} |")
     lines += ['', '## Screenshot evidence', '',
               'Representative viewport captures for homepage, About, Cultural Significance No. 1 and No. 12 are stored in this workflow artifact.',
               'Inspect original/deployed pairs visually; do not infer full theme parity from H1/text/box measurements.',
