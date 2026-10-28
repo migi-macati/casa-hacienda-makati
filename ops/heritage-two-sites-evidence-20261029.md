@@ -1,0 +1,11 @@
+# Two Casa Hacienda locations: evidence-limited comparison — 2026-10-29 PHT
+
+## Independently read public sources
+- The project's **published** Cultural Significance No. 3 (2023-08-12) locates its proposed surviving remains at **9126 Sultana Street, Barangay Olympia** and explicitly distinguishes the better-known Casa Hacienda at **Poblacion Park**. https://casahaciendamakati.wordpress.com/2023/08/12/cultural-significance-no-3/ . This is the project's interpretation, not independently verified title, survey or archive-photo identity.
+- Leon M. Mayo, *Pobs before the pubs: Poblacion heritage you need to know*, **BluPrint**, posted 2018-08-14, originally in 2011 Special Issue 1, describes a **different site** at the Pasig waterfront / Poblacion Park associated with Ayala y Compañía offices. https://bluprint-onemega.com/architecture/heritage/poblacion-heritage-district/ . Mayo is identified as CONCEP president and co-founder; this is informed **secondary planning history**, not a primary land record. Its historical image is not copied.
+- The original published About page explicitly calls the Olympia identification a **theory**: https://casahaciendamakati.wordpress.com/about/ . The 1910 and 1926 FHL photographs and BL 1775 map sheet have not been inspected or cleared for new reproduction; neither is assigned definitively to the Olympia structure.
+
+## Site change and quality boundary
+Add a text-only homepage `data-heritage-feature="places"` section with two distinct attributed records, source links, limits and a caveat against equating buildings. Responsive two-column CSS collapses to one column at 710px. No new route, image, map, photo, JavaScript, third-party rights claim or edit to published WordPress articles. Eleven fail-closed tests check two identities, source allowlist, uncertainty, noindex, 13 published article cards, accessible heading, media/motion exclusions.
+
+**Acceptance remains partial:** direct primary accession captions, deeds/parcel plans, map sheet, dated photos and rights must be checked. Even if merged and Vercel READY, do not mark the full places feature LIVE_VERIFIED without independent deployed browser and source-truth review. Preserve four private drafts, 82 media, noindex, WordPress read-only, and CHM-B040 rejected-operation restriction. Owner rights/privacy/public launch decisions unchanged.
