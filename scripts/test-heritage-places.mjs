@@ -4,9 +4,9 @@ const original='/2023/08/12/cultural-significance-no-3/';
 const independent='https://bluprint-onemega.com/architecture/heritage/poblacion-heritage-district/';
 function verify(html){
  assert.ok(html.includes('<meta name="robots" content="noindex,nofollow">'),'noindex missing');
- assert.equal((html.match(/<h1\\b/g)||[]).length,1,'homepage H1 drift');
+ assert.equal((html.match(/<h1\b/g)||[]).length,1,'homepage H1 drift');
  assert.equal((html.match(/<article class="card"/g)||[]).length,13,'published cards drift');
- const matches=[...html.matchAll(/<section\\b[^>]*data-heritage-feature="places"[^>]*>([\\s\\S]*?)<\\/section>/g)];
+ const matches=[...html.matchAll(/<section\b[^>]*data-heritage-feature="places"[^>]*>([\s\S]*?)<\/section>/g)];
  assert.equal(matches.length,1,'one places section required');
  const full=matches[0][0],section=matches[0][1];
  assert.ok(full.includes('aria-labelledby="heritage-places-title"')&&section.includes('id="heritage-places-title"'),'named region missing');
@@ -23,7 +23,7 @@ function verify(html){
  assert.ok(section.includes('No historical photograph, map image or location overlay is reproduced here'),'media boundary missing');
  const hrefs=[...section.matchAll(/href="([^"]+)"/g)].map(x=>x[1]);
  assert.deepEqual(hrefs,[original,independent,'/about/'],'source link allowlist drift');
- assert.ok(!/<(?:img|video|audio|iframe|script|canvas|object|embed)\\b/i.test(section),'unapproved media or scripts');
+ assert.ok(!/<(?:img|video|audio|iframe|script|canvas|object|embed)\b/i.test(section),'unapproved media or scripts');
  assert.ok(!/autoplay|setInterval|animation:/i.test(section),'motion not authorized');
  return true;
 }
