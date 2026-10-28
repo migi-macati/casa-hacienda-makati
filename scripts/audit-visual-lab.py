@@ -40,6 +40,7 @@ METRICS_JS = r'''() => {
    background:getComputedStyle(document.body).backgroundColor,
    stylesheets:[...document.styleSheets].length,
    images:imgs.length,
+   carouselCandidates:[...document.querySelectorAll('.wp-block-jetpack-slideshow, .wp-block-gallery, .wp-block-jetpack-tiled-gallery, .gallery, [class*=carousel], [class*=slideshow], [data-gallery]')].filter(shown).slice(0,20).map(e=>({tag:e.tagName.toLowerCase(),className:String(e.className||'').slice(0,120),images:e.querySelectorAll('img').length,buttons:[...e.querySelectorAll('button, [role=button]')].filter(shown).length})),
    brokenVisibleImages:imgs.filter(i=>i.complete && i.naturalWidth===0).length,
    navLabels:[...document.querySelectorAll('header nav a, nav[aria-label] a')]
        .filter(shown).map(e=>e.innerText.replace(/\s+/g,' ').trim()).filter(Boolean).slice(0,12),
@@ -95,6 +96,9 @@ def compare_pair(original, deployed):
             'h1FontSizeMatch':original['h1Font']['size']==deployed['h1Font']['size'],
             'h1FontFamilyMatch':original['h1Font']['family']==deployed['h1Font']['family']}
 
+def carousel_delta(original,deployed):
+    return len(original.get('carouselCandidates',[])),len(deployed.get('carouselCandidates',[]))
+
 def self_test():
     idx=[{'url':f'/2023/10/21/published-{i}/','type':'article'} for i in range(13)] + [
         {'url':'/about/','type':'page'}, {'url':'/cultural-significance/','type':'page'}]
@@ -113,6 +117,8 @@ def self_test():
     assert c['h1Match'] and c['h1HorizontalShiftPx']==5 and c['firstLongParagraphWidthDifferencePx']==30
     assert c['h1FontSizeMatch'] and not c['h1FontFamilyMatch']
     assert not compare_pair(a,{**b,'h1':'Different'})['h1Match']
+    assert carousel_delta({'carouselCandidates':[{'images':3}]},{'carouselCandidates':[]}) == (1,0)
+    assert carousel_delta({'carouselCandidates':[]},{'carouselCandidates':[{'images':2}]}) == (0,1)
     print('Visual parity/lab performance self-tests PASS: routes, unsafe paths, percentile, H1/layout')
 
 def fetch_index():
@@ -171,6 +177,8 @@ def summary(rows):
             'originalLoaded':sum(x['original']['status']==200 for x in rows),
             'deployedLoaded':sum(x['deployed']['status']==200 for x in rows),
             'deployedOverflow':sum(x['deployed']['horizontalOverflow'] for x in rows),
+            'originalCarouselCandidateOccurrences':sum(carousel_delta(x['original'],x['deployed'])[0] for x in rows),
+            'deployedCarouselCandidateOccurrences':sum(carousel_delta(x['original'],x['deployed'])[1] for x in rows),
             'deployedBrokenVisibleImages':sum(x['deployed']['brokenVisibleImages'] for x in rows),
             'deployedLabLcpP75MsByViewport':{
                 vp:percentile([x['deployed']['lcpLabMs'] for x in rows if x['viewport']==vp])
@@ -191,6 +199,7 @@ def write_markdown(out,rows,stats):
            f"- Original HTTP 200: {stats['originalLoaded']}; deployed HTTP 200: {stats['deployedLoaded']}",
            f"- Normalized visible H1 matches: {stats['h1Matches']}/{stats['routeViewportPairs']}",
            f"- Deployed horizontal overflow observations: {stats['deployedOverflow']}",
+           f"- Original/deployed carousel-or-gallery candidate occurrences (heuristic, not functional parity): {stats['originalCarouselCandidateOccurrences']}/{stats['deployedCarouselCandidateOccurrences']}",
            f"- Deployed broken visible image observations: {stats['deployedBrokenVisibleImages']}",
            f"- Deployed lab LCP page-sample p75 by viewport (ms): {stats['deployedLabLcpP75MsByViewport']}",
            f"- Deployed lab CLS page-sample p75 by viewport: {stats['deployedLabClsP75ByViewport']}",
@@ -200,6 +209,14 @@ def write_markdown(out,rows,stats):
     for x in rows:
         c=x['comparison']; a=x['original']; b=x['deployed']
         lines.append(f"| \u0060{x['route']}\u0060 | {x['viewport']} | {'yes' if c['h1Match'] else 'NO'} | {c.get('h1HorizontalShiftPx','n/a')} | {c.get('h1VerticalShiftPx','n/a')} | {c.get('firstLongParagraphWidthDifferencePx','n/a')} | {a['h1Font']['size']} {a['h1Font']['family'].split(',')[0]} → {b['h1Font']['size']} {b['h1Font']['family'].split(',')[0]} |")
+    lines += ['', '## Carousel/gallery candidate inventory (read-only)', '',
+              'DOM candidates are heuristic selectors, not proof of working controls, visual equivalence, or image order.', '',
+              '| Route | Viewport | WordPress candidates | Migrated candidates |',
+              '|---|---|---:|---:|']
+    for x in rows:
+        o,d=carousel_delta(x['original'],x['deployed'])
+        if o or d:
+            lines.append(f"| `{x['route']}` | {x['viewport']} | {o} | {d} |")
     lines += ['', '## Screenshot evidence', '',
               'Representative viewport captures for homepage, About, Cultural Significance No. 1 and No. 12 are stored in this workflow artifact.',
               'Inspect original/deployed pairs visually; do not infer full theme parity from H1/text/box measurements.',
