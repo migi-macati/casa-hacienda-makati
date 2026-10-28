@@ -31,3 +31,20 @@
 
 /* WCAG 2.2 AA: original WordPress PDF download links need usable touch targets. */
 .content .wp-block-file a.wp-block-file__button{display:inline-flex;align-items:center;min-height:44px;padding:10px 12px;margin:5px 0;line-height:1.4}
+
+/* Native no-JavaScript mobile navigation; desktop retains all five links. */
+.mobile-nav{display:none}
+@media(max-width:710px){
+.headrow{flex-wrap:nowrap;gap:10px;padding:12px}
+.brand{min-width:0;font-size:1rem}
+.brand small{font-size:.52rem;letter-spacing:.07em}
+.desktop-nav{display:none}
+.mobile-nav{display:block;position:relative;flex-shrink:0;margin-left:auto}
+.mobile-nav>summary{display:list-item;list-style:none;cursor:pointer;border:1px solid var(--border);background:var(--paper);padding:10px 14px;min-height:44px;line-height:22px;font-size:.88rem;font-weight:700}
+.mobile-nav>summary::-webkit-details-marker{display:none}
+.mobile-nav>summary:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+.mobile-nav>nav{display:none;position:absolute;right:0;top:calc(100% + 8px);z-index:20;flex-direction:column;flex-wrap:nowrap;gap:0;min-width:190px;max-width:calc(100vw - 24px);padding:7px;background:var(--paper);border:1px solid var(--border);box-shadow:0 8px 20px #0002}
+.mobile-nav[open]>nav{display:flex}
+.mobile-nav>nav a{display:flex;align-items:center;min-height:44px;padding:8px 12px;font-size:.93rem;line-height:1.4}
+.mobile-nav>nav a:hover{background:var(--bg)}
+}
