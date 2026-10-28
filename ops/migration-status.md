@@ -1,3 +1,9 @@
+# Independent deployed no-JS mobile navigation candidate — 2026-10-28 ~15:31 PHT
+
+**CANDIDATE, NOT YET MERGED/DEPLOYED.** Baseline main `52b9cd5ae222b7530b4ab62356be9e4a872aae04`, authenticated production `dpl_FCSGVGQQsAwDhsgJu7MnRvPP1fwb` READY exact SHA. This integrated independent production Chromium gate extends existing production media/browser QA to verify 17 routes at 1280/375px with JavaScript disabled, exact public nav link closure, CSS visibility, mobile toggle, noindex and HTTP 404. Merge only after full PR CI/preview success; do not claim FULLY LIVE_VERIFIED. Original WordPress READ-ONLY, 4 drafts private, 82 media and noindex preserved. CHM-B040 safety restriction unchanged; media rights/privacy/public launch owner decisions remain open.
+
+---
+
 # Native mobile navigation candidate — 2026-10-28 ~14:35 PHT
 
 **CANDIDATE; NOT YET MERGED OR DEPLOYED.** Baseline main `c198e595bb58c28b09b5c2bd70ed5aba00f22f90` and production `dpl_2NbdBMck9ZW5Yfy6WxNgT9s9o8WM` READY exact SHA. Proposed native no-JS mobile navigation across 15 published routes + homepage + 404, with full-build browser gate and noindex preservation. Do not merge without CI and preview success. Highest baseline DEPLOYED, NOT FULLY LIVE_VERIFIED. WordPress read-only, four drafts private, all 82 media, noindex preserved. CHM-B040 safety rejection unchanged. Rights/privacy and separate launch decisions remain with owner.

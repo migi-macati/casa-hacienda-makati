@@ -16,3 +16,5 @@ jobs:
       - run: python -m py_compile scripts/audit-production.py
       - run: python scripts/audit-production.py --self-test
       - run: python scripts/audit-production.py
+      - run: python scripts/audit-mobile-nav.py --self-test
+      - run: python scripts/audit-mobile-nav.py --production
