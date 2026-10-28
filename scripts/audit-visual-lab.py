@@ -56,7 +56,7 @@ CAROUSEL_SOURCE_JS = r'''() => {
  const root = document.querySelector('.wp-block-newspack-blocks-carousel');
  if (!root) return [];
  return [...root.querySelectorAll('img')].slice(0, 24).map((img, index) => {
-   const item = img.closest('.swiper-slide, [class*=carousel__slide], article, li') || img.parentElement?.parentElement;
+   const item = img.closest('.swiper-slide, [class*=carousel__slide]');
    const a = img.closest('a[href]') || item?.querySelector('a[href]');
    const srcset = (img.getAttribute('srcset') || '').split(',').map(x => x.trim().split(/\s+/)[0]);
    return {index, sources: [img.getAttribute('data-large-file'), img.getAttribute('data-src'),
