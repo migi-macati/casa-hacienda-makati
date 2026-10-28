@@ -24,6 +24,16 @@ jobs:
       - run: python -m py_compile scripts/audit-live-sources.py
       - run: python scripts/audit-live-sources.py --self-test
       - run: python scripts/audit-live-sources.py --output-dir source-register-browser-evidence
+      - run: python -m py_compile scripts/audit-live-places.py
+      - run: python scripts/audit-live-places.py --self-test
+      - run: python scripts/audit-live-places.py --output-dir places-browser-evidence
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: independent-live-places-browser
+          path: places-browser-evidence/
+          if-no-files-found: ignore
+          retention-days: 7
       - if: always()
         uses: actions/upload-artifact@v4
         with:
