@@ -7,9 +7,9 @@ const sourceUrls=[
 ];
 function verify(html){
  assert.ok(html.includes('<meta name="robots" content="noindex,nofollow">'),'noindex missing');
- assert.equal((html.match(/<h1\\b/g)||[]).length,1,'H1 drift');
+ assert.equal((html.match(/<h1\b/g)||[]).length,1,'H1 drift');
  assert.equal((html.match(/<article class="card"/g)||[]).length,13,'published cards drift');
- const matches=[...html.matchAll(/<section\\b[^>]*data-heritage-feature="sources"[^>]*>([\\s\\S]*?)<\\/section>/g)];
+ const matches=[...html.matchAll(/<section\b[^>]*data-heritage-feature="sources"[^>]*>([\s\S]*?)<\/section>/g)];
  assert.equal(matches.length,1,'one sources section required');
  const section=matches[0][1];
  assert.ok(matches[0][0].includes('aria-labelledby="heritage-sources-title"'),'accessible name missing');
@@ -24,7 +24,7 @@ function verify(html){
  assert.ok(section.includes('Add MS 17641 C')&&section.includes('040-002027896'),'BL catalog identity missing');
  const hrefs=[...section.matchAll(/href="([^"]+)"/g)].map(x=>x[1]);
  assert.deepEqual(hrefs,[...sourceUrls,'/cultural-significance/'],'source link allowlist drift');
- assert.ok(!/<(?:img|video|audio|iframe|script|canvas|object|embed)\\b/i.test(section),'unapproved media');
+ assert.ok(!/<(?:img|video|audio|iframe|script|canvas|object|embed)\b/i.test(section),'unapproved media');
  assert.ok(!/autoplay|setInterval|animation:/i.test(section),'motion not authorized');
  return true;
 }
