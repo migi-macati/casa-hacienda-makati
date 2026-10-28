@@ -1,0 +1,7 @@
+# Independent production native mobile navigation acceptance — 2026-10-28
+
+This integrated read-only extension tests the actual deployed primary alias, not a generated-site preview. The existing independent production browser/media workflow now runs the same native navigation checks against the 15 published search-index routes, homepage and an intentionally nonexistent route, at 1280px desktop and 375px mobile, with JavaScript disabled. All 34 visits must pass.
+
+The gate verifies HTTP status (including a real noindex 404), noindex on each route, exactly one desktop and mobile navigation structure, five exact public link destinations with matching hrefs, accessible navigation labels, desktop/mobile CSS visibility, and mobile Menu open/close behavior. It also rejects duplicate/unauthorized published-index routes and runs synthetic route-closure assertions. No Facebook requests are made. No private-draft routes or identifiers are used.
+
+This is a candidate audit and is **not evidence of a passing production run until its GitHub Actions job completes successfully**. It does not establish WordPress theme/carousel visual parity, manual screen-reader quality, accessible PDF alternatives, native comments, real-user Core Web Vitals, media rights, or permission for public launch. The original WordPress site is read-only; four private drafts, all 82 media, and noindex are preserved. CHM-B040 remains an operation-specific safety restriction and must never be retried or bypassed.
