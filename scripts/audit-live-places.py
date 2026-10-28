@@ -13,7 +13,6 @@ ORIGIN = "https://casa-hacienda-makati.vercel.app"
 PLACE_IDS = ["olympia-claim", "poblacion-account"]
 LINKS = [
     "/2023/08/12/cultural-significance-no-3/",
-    "https://www.makati.gov.ph/barangay/poblacion/34",
     "https://bluprint-onemega.com/architecture/heritage/poblacion-heritage-district/",
     "/about/",
 ]
@@ -22,15 +21,14 @@ LINKS = [
 def check_links(hrefs):
     if hrefs != LINKS:
         raise AssertionError("Location source links or ordering changed")
-    for href in (hrefs[0], hrefs[3]):
+    for href in (hrefs[0], hrefs[2]):
         parts = urlsplit(href)
         if parts.scheme or parts.netloc or parts.query or parts.fragment or not href.startswith("/") or href.startswith("//"):
             raise AssertionError("Internal source link is not canonical relative path")
-    for href, expected_host in ((hrefs[1], "www.makati.gov.ph"), (hrefs[2], "bluprint-onemega.com")):
-        external = urlsplit(href)
-        if (external.scheme != "https" or external.netloc != expected_host or
-                external.username or external.password or external.port or external.query or external.fragment):
-            raise AssertionError("Unapproved external source URL")
+    external = urlsplit(hrefs[1])
+    if (external.scheme != "https" or external.netloc != "bluprint-onemega.com" or
+            external.username or external.password or external.port or external.query or external.fragment):
+        raise AssertionError("Unapproved external source URL")
     return True
 
 
@@ -38,15 +36,13 @@ def self_test():
     assert check_links(LINKS)
     bad = [
         LINKS[:-1],
-        [LINKS[3], LINKS[1], LINKS[2], LINKS[0]],
-        [LINKS[0], "https://example.invalid/heritage", LINKS[2], LINKS[3]],
-        [LINKS[0], "http://www.makati.gov.ph/barangay/poblacion/34", LINKS[2], LINKS[3]],
-        [LINKS[0], LINKS[1] + "?tracking=1", LINKS[2], LINKS[3]],
-        [LINKS[0], LINKS[1], "http://bluprint-onemega.com/architecture/heritage/poblacion-heritage-district/", LINKS[3]],
-        [LINKS[0], LINKS[1], LINKS[2] + "?tracking=1", LINKS[3]],
-        ["//evil.invalid/2023/08/12/cultural-significance-no-3/", LINKS[1], LINKS[2], LINKS[3]],
-        [LINKS[0] + "#unverified", LINKS[1], LINKS[2], LINKS[3]],
-        [LINKS[0], LINKS[1], LINKS[2], "/private/"],
+        [LINKS[2], LINKS[1], LINKS[0]],
+        [LINKS[0], "https://example.invalid/heritage", LINKS[2]],
+        [LINKS[0], "http://bluprint-onemega.com/architecture/heritage/poblacion-heritage-district/", LINKS[2]],
+        [LINKS[0], LINKS[1] + "?tracking=1", LINKS[2]],
+        ["//evil.invalid/2023/08/12/cultural-significance-no-3/", LINKS[1], LINKS[2]],
+        [LINKS[0] + "#unverified", LINKS[1], LINKS[2]],
+        [LINKS[0], LINKS[1], "/private/"],
     ]
     for case in bad:
         try:
@@ -54,7 +50,7 @@ def self_test():
         except AssertionError:
             continue
         raise AssertionError("Unsafe location URL fixture passed")
-    print("Live places URL allowlist: ten fail-closed fixtures PASS", flush=True)
+    print("Live places URL allowlist: eight fail-closed fixtures PASS", flush=True)
 
 
 def inspect(page, width, js_enabled, reduced_motion):
@@ -79,8 +75,6 @@ def inspect(page, width, js_enabled, reduced_motion):
         "expressly distinguishes this location",
         "now Poblacion Park",
         "Independent secondary account",
-        "Official city account:",
-        "does not verify the Olympia building",
         "have not yet been independently verified against this parcel",
         "cannot establish that the surviving Olympia remains and the former Poblacion offices are the same building",
         "not a verified parcel-level identification",
@@ -100,9 +94,7 @@ def inspect(page, width, js_enabled, reduced_motion):
     page.keyboard.press("Tab")
     assert links.nth(1).evaluate("e => document.activeElement === e"), "Keyboard source-link focus order"
     page.keyboard.press("Tab")
-    assert links.nth(2).evaluate("e => document.activeElement === e"), "Keyboard secondary-source focus order"
-    page.keyboard.press("Tab")
-    assert links.nth(3).evaluate("e => document.activeElement === e"), "Keyboard About link focus order"
+    assert links.nth(2).evaluate("e => document.activeElement === e"), "Keyboard About link focus order"
     if width == 375:
         assert page.locator("details.mobile-nav summary").is_visible(), "Mobile menu missing"
     else:
