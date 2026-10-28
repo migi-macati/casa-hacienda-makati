@@ -1,0 +1,29 @@
+name: Public external links and canonical redirects (read-only)
+on:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  public-links:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m py_compile scripts/audit-external-links.py
+      - run: python scripts/audit-external-links.py --self-test
+      - run: python scripts/audit-external-links.py --output external-link-audit.json --markdown external-link-audit.md
+      - if: always()
+        run: |
+          if [ -f external-link-audit.md ]; then cat external-link-audit.md >> "$GITHUB_STEP_SUMMARY"; fi
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: public-external-link-observations
+          path: |
+            external-link-audit.json
+            external-link-audit.md
+          if-no-files-found: ignore
