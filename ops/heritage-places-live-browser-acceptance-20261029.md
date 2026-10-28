@@ -1,0 +1,9 @@
+# Independent live two-location guide acceptance — 2026-10-29 PHT
+
+The published homepage comparison is **evidence-limited**. Olympia at 9126 Sultana Street is attributed to the original project's published Cultural Significance No. 3, which distinguishes the better-known Poblacion Park location. The Poblacion account is attributed to Leon M. Mayo's secondary planning history. This audit does not verify deeds, archival photograph captions, the 1775 British Library map sheet, building continuity or reproduction rights.
+
+`scripts/audit-live-places.py` adds an **independent read-only production Chromium gate** to the required `production-acceptance.yml` workflow. It checks eight combinations: 1280px/375px × JavaScript on/off × reduced-motion on/off. Each context must return HTTP 200 and same-origin homepage, exact noindex, 13 published article cards, one accessible named places region, two ordered and separately attributed location accounts, all critical uncertainty/rights statements, three approved links, keyboard Tab focus order, responsive navigation, no horizontal overflow and no embedded media. Eight synthetic URL mutations must fail closed. It emits public-only JSON and best-effort screenshots as a seven-day artifact.
+
+**Important:** The workflow runs against the current production alias on a pull request. Passing branch CI is independent acceptance of the **already deployed** places section, not evidence of new content being deployed from the PR. Do not count the full places feature or the entire migration as LIVE_VERIFIED: primary photo/parcel/map identity, manual screen reader, WordPress parity and owner rights decisions remain outstanding. Preserve four private drafts, 82 media, noindex and the original WordPress read-only. CHM-B040's historical rejected operation must never be repeated or bypassed.
+
+Merge only after exact-final-head seven-workflow CI, review, preview, and production SHA verification.
