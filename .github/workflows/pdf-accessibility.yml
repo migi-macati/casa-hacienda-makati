@@ -24,10 +24,14 @@ jobs:
         run: npm run build
       - name: Inventory PDF pages, text layers and structure flags
         run: python scripts/audit-pdf-accessibility.py
+      - name: Check PDF link labels and embedded-document fallback links
+        run: python scripts/audit-pdf-link-accessibility.py
       - name: Preserve PDF accessibility evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: public-pdf-accessibility-inventory
-          path: artifacts/pdf-accessibility.json
+          path: |
+            artifacts/pdf-accessibility.json
+            artifacts/pdf-link-accessibility.json
           if-no-files-found: warn
