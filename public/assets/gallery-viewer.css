@@ -7,6 +7,8 @@
 .chm-gallery-dialog h2{font-size:1.25rem;margin:.25rem 0 1rem;color:#fffdf5}
 .chm-gallery-dialog .chm-gallery-image{display:block;width:auto;max-width:100%;height:auto;max-height:calc(95vh - 13rem);margin:auto;object-fit:contain}
 .chm-gallery-caption{font-size:.9rem;line-height:1.45;margin:.75rem 0;color:#fffdf5}
+/* Screen-reader status is visually hidden but remains available to assistive technology. */
+.chm-gallery-status{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 .chm-gallery-controls{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
 .chm-gallery-dialog button{padding:.55rem .9rem;border:1px solid #e2c58b;border-radius:3px;background:#f9f1de;color:#172b22;font:600 .9rem system-ui;cursor:pointer}
 .chm-gallery-dialog button:disabled{opacity:.45;cursor:not-allowed}
