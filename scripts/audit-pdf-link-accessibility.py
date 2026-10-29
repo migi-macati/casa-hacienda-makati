@@ -63,7 +63,7 @@ class PageParser(HTMLParser):
                 self.group_stack.append(len(self.groups) - 1)
         group = self.group_stack[-1] if self.group_stack else None
         if tag in ('object', 'iframe', 'embed'):
-            source = attrs.get('data', '') if tag == 'object' else attrs.get('src', '')
+            source = (attrs.get('data') if tag == 'object' else attrs.get('src')) or ''
             target, error = classify_url(source)
             if error:
                 self.errors.append(error)
@@ -218,7 +218,9 @@ def self_test():
         declared = embed.replace("aria-label='Makati City", "type='application/pdf' aria-label='Makati City", 1)
         declared = declared.replace(path, 'https://example.org/reader', 1)
         assert any('unpinned PDF embed' in e for e in inspect_html(declared, 'fixture')['errors']), element
-    print('Public PDF links: 3 valid embedding fixtures + 28 fail-closed mutations + external citation PASS')
+        missing = embed.replace(f"src='{path}'", "src='' type='application/pdf'", 1)
+        assert any('unpinned PDF embed' in e for e in inspect_html(missing, 'fixture')['errors']), element
+    print('Public PDF links: 3 valid embedding fixtures + 31 fail-closed mutations + external citation PASS')
 
 
 if __name__ == '__main__':
