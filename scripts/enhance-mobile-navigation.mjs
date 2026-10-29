@@ -2,6 +2,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 const root=path.resolve('public');
+const keyboardScript='<script defer src="/assets/mobile-nav-keyboard.js"></script>';
 const header=/<header class="siteheader"><div class="headrow">([\s\S]*?)<nav>([\s\S]*?)<\/nav><\/div><\/header>/g;
 export function transform(html,file='fixture'){
  if(!html.includes('<meta name="robots" content="noindex,nofollow">'))throw Error('Missing noindex: '+file);
@@ -9,12 +10,14 @@ export function transform(html,file='fixture'){
   if((html.match(/class="mobile-nav"/g)||[]).length!==1||
     !html.includes('<nav class="desktop-nav" aria-label="Primary">')||
     (html.match(/class="skip-link"/g)||[]).length!==1||
+    html.split(keyboardScript).length!==2||
     !html.includes('<a class="skip-link" href="#main-content">Skip to main content</a>')||
     !html.includes('<main id="main-content" tabindex="-1">'))
     throw Error('Invalid prior enhancement: '+file);
   return html;
  }
- if((html.match(/<main>/g)||[]).length!==1||
+ if((html.match(/<\/head>/g)||[]).length!==1||html.includes(keyboardScript)||
+    (html.match(/<main>/g)||[]).length!==1||
     html.includes('id="main-content"')||html.includes('class="skip-link"'))
    throw Error('Missing or ambiguous main landmark: '+file);
  let count=0;
@@ -29,6 +32,7 @@ export function transform(html,file='fixture'){
  });
  if(count!==1)throw Error('Missing or duplicate header: '+file);
  return result
+  .replace('</head>',keyboardScript+'</head>')
   .replace('<header class="siteheader">','<a class="skip-link" href="#main-content">Skip to main content</a><header class="siteheader">')
   .replace('<main>','<main id="main-content" tabindex="-1">');
 }
