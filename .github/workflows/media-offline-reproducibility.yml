@@ -16,7 +16,26 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - run: npm install --no-audit --no-fund
+      - name: Warm npm package cache (network permitted only in this phase)
+        env:
+          npm_config_cache: ${{ runner.temp }}/chm-npm-cache
+        run: npm install --no-audit --no-fund
+      - name: Reinstall npm dependencies in a network-isolated container
+        run: |
+          set -eu
+          test -s package-lock.json
+          cp package-lock.json "$RUNNER_TEMP/chm-npm-lock-before.json"
+          docker pull node:22.16.0-bookworm-slim
+          rm -rf node_modules
+          docker run --rm --network none \
+            --user "$(id -u):$(id -g)" \
+            -e HOME=/tmp -e npm_config_cache=/npm-cache \
+            -v "$PWD:/work" \
+            -v "$RUNNER_TEMP/chm-npm-cache:/npm-cache" \
+            -w /work node:22.16.0-bookworm-slim \
+            sh -ec 'npm ci --offline --no-audit --no-fund && node -e "require(\"sharp\")"'
+          cmp package-lock.json "$RUNNER_TEMP/chm-npm-lock-before.json"
+          node -e 'require("sharp")'
       - run: node scripts/test-media-source-cache.mjs
       - run: python scripts/compare-build-trees.py --self-test
       - name: Preserve pristine published source tree
