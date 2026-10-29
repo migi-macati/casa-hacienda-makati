@@ -62,12 +62,13 @@ class PageParser(HTMLParser):
                 self.groups.append({'depth': self.depth, 'links': []})
                 self.group_stack.append(len(self.groups) - 1)
         group = self.group_stack[-1] if self.group_stack else None
-        if tag == 'object':
-            target, error = classify_url(attrs.get('data', ''))
+        if tag in ('object', 'iframe', 'embed'):
+            source = attrs.get('data', '') if tag == 'object' else attrs.get('src', '')
+            target, error = classify_url(source)
             if error:
                 self.errors.append(error)
             if target:
-                self.objects.append({'path': target, 'name': attrs.get('aria-label', '') or attrs.get('title', ''), 'group': group})
+                self.objects.append({'path': target, 'name': attrs.get('aria-label', '') or attrs.get('title', ''), 'group': group, 'element': tag})
         if tag == 'a':
             target, error = classify_url(attrs.get('href', ''))
             if error:
@@ -116,10 +117,10 @@ def inspect_html(html, filename):
     for obj in parser.objects:
         paths.add(obj['path'])
         if len(obj['name'].strip()) < 12:
-            errors.append(f'{filename}: PDF embed lacks descriptive name: {obj["path"]}')
+            errors.append(f'{filename}: {obj["element"]} PDF embed lacks descriptive name: {obj["path"]}')
         group = obj['group']
         if group is None or not any(link['path'] == obj['path'] for link in parser.groups[group]['links']):
-            errors.append(f'{filename}: PDF embed lacks same-block fallback link: {obj["path"]}')
+            errors.append(f'{filename}: {obj["element"]} PDF embed lacks same-block fallback link: {obj["path"]}')
     return {'paths': paths, 'links': len(parser.anchors), 'embeds': len(parser.objects), 'errors': errors}
 
 
@@ -165,6 +166,17 @@ def self_test():
              "<a id='document-label' href='" + path + "'>Makati City Resolution No. 2009-120</a>"
              "<a href='" + path + "' aria-describedby='document-label'>Download</a></div>")
     assert not inspect_html(valid, 'fixture')['errors']
+    # Every HTML embedding element must obey the same name and fallback rules.
+    for element in ('iframe', 'embed'):
+        alternate = valid.replace("<object data='", f"<{element} src='")
+        alternate = alternate.replace('</object>', '</iframe>' if element == 'iframe' else '')
+        assert not inspect_html(alternate, 'fixture')['errors'], f'valid {element} rejected'
+        without_name = alternate.replace("aria-label='Makati City Resolution No. 2009-120'", "aria-label='PDF'")
+        assert inspect_html(without_name, 'fixture')['errors'], f'unlabelled {element} accepted'
+        without_fallback = alternate.replace("<a id='document-label' href='" + path + "'>Makati City Resolution No. 2009-120</a>", '')
+        assert inspect_html(without_fallback, 'fixture')['errors'], f'{element} without fallback accepted'
+        unbundled = alternate.replace(path, 'https://casahaciendamakati.wordpress.com/wp-content/uploads/2024/04/2009-120.pdf')
+        assert inspect_html(unbundled, 'fixture')['errors'], f'unbundled {element} accepted'
     mutations = [
         valid.replace('noindex,nofollow', 'index,follow'),
         valid.replace("aria-label='Makati City Resolution No. 2009-120'", "aria-label='PDF'"),
