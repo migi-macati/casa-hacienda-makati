@@ -1,0 +1,22 @@
+# 1906 Hacienda de San Pedro Macati parcel-C record retrieval plan
+
+Read-only source-critical research, 29 October 2026 ~10:40 PHT. This is an archival retrieval plan, not a verified building identification or an authorization to purchase records.
+
+## What the court text establishes
+
+The published transcription of *Roxas v. Tuason*, G.R. L-3788, 9 Phil. 408 (21 December 1907), recounts a 19 February 1906 application with four mapped parcels A–D. It names a strong-materials **Casa-Quinta / Casa de Ingenieros** within parcel C, occupying **8,430 sq m together with appurtenances**. That number is not the building footprint, and parcel C is not mapped to 9126 Sultana Street or Poblacion Park by the judgment. The case references an accompanying registration plan, technical-description corrections and a boundary dispute. The 1906 plan, registration case record, and the relevant survey/title chain have not been inspected.
+
+Sources: https://www.chanrobles.com/scdecisions/jurisprudence1907/dec1907/gr_l-3788_1907.php ; https://lawyerly.ph/juris/view/c15f . These are third-party transcriptions, not a directly inspected official printed decision. The Supreme Court E-Library publicly lists *Philippine Reports* vol. 9 (8 October 1907–23 January 1908), but its row does not offer a downloadable file in the observed page: https://elibrary.judiciary.gov.ph/philippinereports . Library Services lists libraryservices.sc@judiciary.gov.ph; no inquiry sent.
+
+## Verified official record-request channels, without submitting requests
+
+1. **1906 registration plan and case record:** ask the Supreme Court Library Services or appropriate court/archive custodian for the official 9 Phil. 408 scan and the underlying 1906 land-registration case plan/technical descriptions. Custody of the original plan has **not** been confirmed; do not imply the court library holds it.
+2. **Modern Olympia title chain:** Land Registration Authority eSerbisyo/Registry of Deeds supports certified true copies of OCT/TCT/CCT, requiring Registry of Deeds, title type and title number. Original publicly linked 2009 city resolutions mention TCT Nos. 215633 and 215634 and an aggregate approximately 6,795 sq m; this does not prove current title status, executed sale or historical identity. LRA FAQ: https://lra.gov.ph/frequently-asked-questions/ ; eSerbisyo FAQ: https://eserbisyo.lra.gov.ph/land-title-certified-true-copy-faq . The LRA currently quotes PHP 644.97 for the first two pages via eSerbisyo (plus PHP 38.19 for each additional page); fees may change. **No purchase, account registration, title request or payment authorized or made.**
+3. **Survey record:** DENR Land Management Bureau's official Land Records/Status Request offers a *Survey Records* category but its public form requires a lot number and **survey number** as well as location, requester identification and other personal information: https://elandservices.lmb.gov.ph/request.aspx . The necessary historic and modern survey numbers have not been established. **No form submitted and no personal data supplied.**
+4. **Parcel matching:** compare authenticated 1906 plan coordinates/boundaries with the complete subsequent subdivision/survey plans and title annotations, then with present parcels. The 8,430-sq-m 1906 building-and-appurtenances description and 6,795-sq-m 2009 two-parcel aggregate are different descriptions, with no verified chain connecting them. Do not identify either Olympia or Poblacion structures from area alone.
+
+## Evidence acceptance before any public identity claim
+
+Require (a) archival document identifier, date, custodian and image/scan provenance; (b) certified plan/technical descriptions with parcel C boundary geometry; (c) intervening survey/title chain connecting old and modern parcels; (d) independent building location evidence; (e) rights/privacy review before any image or deed publication. A court opinion is a legal record, not a surveyed building location or construction date. No private-draft content, media or rights assertions are included here.
+
+Existing restrictions remain: original WordPress READ-ONLY; four private drafts, 82 media and noindex preserved. CHM-B040 operation-specific historical CS12 safety rejection is never retried or bypassed. The 1906 record research must not be used as an alternate route to publish that rejected correction. Full heritage and WordPress parity acceptance remain pending.
