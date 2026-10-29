@@ -62,22 +62,26 @@ def hrefs(locator):
     return [link.get_attribute("href") for link in locator.all()]
 
 
-def check_navigation(page, route, width, expected_status):
+def check_navigation(page, route, width, expected_status, require_skip=True):
     response = page.goto(route, wait_until="load", timeout=45000)
     assert response and response.status == expected_status, (route, expected_status)
     assert page.locator('meta[name="robots"]').get_attribute("content") == "noindex,nofollow", route
-    skip = page.locator('a.skip-link[href="#main-content"]')
-    main = page.locator('main#main-content[tabindex="-1"]')
-    assert skip.count() == main.count() == 1, ("skip landmark", route)
-    page.keyboard.press("Tab")
-    assert skip.evaluate("(e) => document.activeElement === e"), ("skip first focus", route)
-    assert skip.is_visible(), ("skip visible on focus", route)
-    box = skip.bounding_box()
-    assert box and box["width"] >= 44 and box["height"] >= 44, ("skip target size", route)
-    assert 0 <= box["x"] < width and 0 <= box["y"] < 812, ("skip in viewport", route)
-    page.keyboard.press("Enter")
-    assert page.evaluate("location.hash") == "#main-content", ("skip target", route)
-    assert main.evaluate("(e) => document.activeElement === e"), ("skip focus transfer", route)
+    if require_skip:
+        skip = page.locator('a.skip-link[href="#main-content"]')
+        main = page.locator('main#main-content[tabindex="-1"]')
+        assert skip.count() == main.count() == 1, ("skip landmark", route)
+        page.keyboard.press("Tab")
+        assert skip.evaluate("(e) => document.activeElement === e"), ("skip first focus", route)
+        assert skip.is_visible(), ("skip visible on focus", route)
+        box = skip.bounding_box()
+        assert box and box["width"] >= 44 and box["height"] >= 44, ("skip target size", route)
+        assert 0 <= box["x"] < width and 0 <= box["y"] < 812, ("skip in viewport", route)
+        page.keyboard.press("Enter")
+        assert page.evaluate("location.hash") == "#main-content", ("skip target", route)
+        assert main.evaluate("(e) => document.activeElement === e"), ("skip focus transfer", route)
+    else:
+        assert page.locator('a.skip-link').count() == 0, ("legacy production skip", route)
+        assert page.locator('main#main-content').count() == 0, ("legacy production main", route)
     desktop = page.locator("nav.desktop-nav")
     mobile = page.locator("details.mobile-nav")
     assert desktop.count() == mobile.count() == 1, route
@@ -126,9 +130,10 @@ def main():
     if sys.argv[1:] == ["--self-test"]:
         self_test()
         return
-    production = sys.argv[1:] == ["--production"]
-    if sys.argv[1:] not in ([], ["--production"]):
-        raise SystemExit("Usage: audit-mobile-nav.py [--self-test|--production]")
+    baseline = sys.argv[1:] == ["--production", "--baseline"]
+    production = sys.argv[1:] in (["--production"], ["--production", "--baseline"])
+    if sys.argv[1:] not in ([], ["--production"], ["--production", "--baseline"]):
+        raise SystemExit("Usage: audit-mobile-nav.py [--self-test|--production [--baseline]]")
     server = None
     if production:
         paths = published_routes(read_production_index())
@@ -158,7 +163,7 @@ def main():
                 page = context.new_page()
                 for path in paths:
                     expected_status = 404 if production and path == MISSING else 200
-                    check_navigation(page, origin + path, width, expected_status)
+                    check_navigation(page, origin + path, width, expected_status, require_skip=not baseline)
                     visits += 1
                     print(f"Native nav PASS {width}px {path}", flush=True)
                 context.close()
@@ -170,7 +175,7 @@ def main():
     assert visits == 34
     print(
         f"{'Independent production' if production else 'Generated-site'} "
-        "native mobile navigation PASS: 17 routes x 2 viewports, no JavaScript."
+        f"native mobile navigation PASS: 17 routes x 2 viewports, no JavaScript; skip requirement={'baseline legacy' if baseline else 'enforced'}."
     )
 
 
