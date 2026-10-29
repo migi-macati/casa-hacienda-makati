@@ -20,6 +20,17 @@ jobs:
         env:
           npm_config_cache: ${{ runner.temp }}/chm-npm-cache
         run: npm install --no-audit --no-fund
+      - name: Validate generated npm lockfile provenance
+        run: |
+          node scripts/audit-npm-lockfile.mjs --self-test
+          node scripts/audit-npm-lockfile.mjs
+      - name: Retain generated npm lockfile for independent review
+        uses: actions/upload-artifact@v4
+        with:
+          name: chm-npm-lockfile
+          path: package-lock.json
+          if-no-files-found: error
+          retention-days: 7
       - name: Reinstall npm dependencies in a network-isolated container
         run: |
           set -eu
