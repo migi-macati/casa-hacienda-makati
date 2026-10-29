@@ -1,0 +1,33 @@
+name: Public PDF accessibility inventory
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  published-pdf-structure:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: npm install --no-audit --no-fund
+      - run: python -m pip install pypdf==5.9.0
+      - run: python scripts/audit-pdf-accessibility.py --self-test
+      - name: Generate all published media without changing source files
+        run: npm run build
+      - name: Inventory PDF pages, text layers and structure flags
+        run: python scripts/audit-pdf-accessibility.py
+      - name: Preserve PDF accessibility evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: public-pdf-accessibility-inventory
+          path: artifacts/pdf-accessibility.json
+          if-no-files-found: warn
