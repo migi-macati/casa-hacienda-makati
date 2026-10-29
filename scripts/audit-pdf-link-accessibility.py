@@ -73,7 +73,7 @@ class PageParser(HTMLParser):
                 # remain permitted; embedded PDF readers must use bundled media.
                 parsed = urlsplit(source.strip())
                 pdf_path = unquote(parsed.path).lower().endswith('.pdf')
-                pdf_type = attrs.get('type', '').split(';', 1)[0].strip().lower() == 'application/pdf'
+                pdf_type = (attrs.get('type') or '').split(';', 1)[0].strip().lower() == 'application/pdf'
                 inline_pdf = source.strip().lower().startswith('data:application/pdf')
                 if pdf_path or pdf_type or inline_pdf:
                     self.errors.append(f'{tag} unpinned PDF embed: {source[:120]}')
@@ -207,7 +207,7 @@ def self_test():
                 "Historical external PDF citation</a>")
     assert not inspect_html(citation, 'fixture')['errors']
     for element in ('object', 'iframe', 'embed'):
-        embed = valid.replace("<object data='", f"<{element} src='")
+        embed = valid if element == 'object' else valid.replace("<object data='", f"<{element} src='")
         embed = embed.replace('</object>', '</iframe>' if element == 'iframe' else '')
         for bad_source in ('https://example.org/remote.pdf',
                            '//example.org/remote.pdf',
@@ -218,7 +218,8 @@ def self_test():
         declared = embed.replace("aria-label='Makati City", "type='application/pdf' aria-label='Makati City", 1)
         declared = declared.replace(path, 'https://example.org/reader', 1)
         assert any('unpinned PDF embed' in e for e in inspect_html(declared, 'fixture')['errors']), element
-        missing = embed.replace(f"src='{path}'", "src='' type='application/pdf'", 1)
+        source_attr = 'data' if element == 'object' else 'src'
+        missing = embed.replace(f"{source_attr}='{path}'", f"{source_attr}='' type='application/pdf'", 1)
         assert any('unpinned PDF embed' in e for e in inspect_html(missing, 'fixture')['errors']), element
     print('Public PDF links: 3 valid embedding fixtures + 31 fail-closed mutations + external citation PASS')
 
