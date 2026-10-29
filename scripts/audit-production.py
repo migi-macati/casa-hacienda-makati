@@ -272,6 +272,60 @@ def check_live_reading_column(page, width, route):
     return validate_reading_column_geometry(g, width, route)
 
 
+
+def validate_comment_bridge_snapshot(s, route):
+    """Check one public article's existing WordPress discussion fallback."""
+    expected = 'https://casahaciendamakati.wordpress.com' + route
+    if not re.fullmatch(r'/\d{4}/\d{2}/\d{2}/[a-z0-9-]+/', route):
+        raise AssertionError('Invalid published article route for discussion QA')
+    if s.get('originalCount') != 1 or s.get('bridgeCount') != 1 or s.get('bridgeLinks') != 1:
+        raise AssertionError('Missing or duplicated original discussion bridge: ' + route)
+    if s.get('originalHref') != expected or s.get('bridgeHref') != expected + '#respond':
+        raise AssertionError('Discussion bridge target differs from published WordPress route: ' + route)
+    if s.get('target') != '_blank' or set((s.get('rel') or '').split()) != {'noopener', 'noreferrer'}:
+        raise AssertionError('Unsafe original WordPress discussion target: ' + route)
+    if (s.get('name') != 'Read or leave a comment on WordPress ↗' or
+            s.get('inOriginal') is not True or s.get('visible') is not True or
+            s.get('keyboardFocusable') is not True):
+        raise AssertionError('Inaccessible or misplaced WordPress discussion bridge: ' + route)
+    if s.get('localCommentForms') != 0:
+        raise AssertionError('Unreviewed local comment collection appeared: ' + route)
+    return True
+
+
+def check_live_comment_bridge(page, route):
+    s = page.evaluate("""() => {
+      const originals = [...document.querySelectorAll('.original')];
+      const bridges = [...document.querySelectorAll('.comment-bridge')];
+      const links = bridges.flatMap(e => [...e.querySelectorAll('a[href]')]);
+      const original = originals[0];
+      const bridge = bridges[0];
+      const link = links[0];
+      const rect = link?.getBoundingClientRect();
+      const style = link && getComputedStyle(link);
+      return {originalCount:originals.length, bridgeCount:bridges.length,
+        bridgeLinks:links.length, originalHref:original?.querySelector(':scope > a[href]')?.href,
+        bridgeHref:link?.href, target:link?.getAttribute('target'),
+        rel:link?.getAttribute('rel'), name:link?.textContent.trim(),
+        inOriginal:!!(original && bridge && bridge.parentElement === original),
+        visible:!!(rect && rect.width>0 && rect.height>0 && style.display!=='none' && style.visibility==='visible'),
+        keyboardFocusable:!!(link && link.tabIndex>=0),
+        localCommentForms:document.querySelectorAll('form[action*="comment"], textarea[name="comment"], #respond form').length};
+    }""")
+    validate_comment_bridge_snapshot(s, route)
+    link = page.locator('.original .comment-bridge a')
+    link.focus()
+    if not link.evaluate('(el) => document.activeElement === el'):
+        raise AssertionError('WordPress discussion link cannot receive focus: ' + route)
+    page.keyboard.press('Shift+Tab')
+    if not page.locator('.original > a[href]').evaluate('(el) => document.activeElement === el'):
+        raise AssertionError('Original-publication link not reachable before discussion link: ' + route)
+    page.keyboard.press('Tab')
+    if not link.evaluate('(el) => document.activeElement === el'):
+        raise AssertionError('Discussion link not keyboard reachable: ' + route)
+    return True
+
+
 def check_browser(index):
     from playwright.sync_api import sync_playwright
     errors = []
@@ -307,8 +361,7 @@ def check_browser(index):
                     raise AssertionError("Horizontal overflow: " + entry["url"] + " width=" + str(width) + " scrollWidth=" + str(page.evaluate("document.documentElement.scrollWidth")) + " offenders=" + json.dumps(offenders))
                 if entry["type"] == "article":
                     check_live_reading_column(page, width, entry["url"])
-                    if page.locator('a[href*="casahaciendamakati.wordpress.com"]').count() == 0:
-                        raise AssertionError("Original discussion bridge missing: " + entry["url"])
+                    check_live_comment_bridge(page, entry["url"])
                 if entry["url"] in GALLERY_ROUTES:
                     check_live_gallery(page, entry["url"], *GALLERY_ROUTES[entry["url"]])
                     gallery_visits += 1
@@ -393,7 +446,32 @@ def self_test():
             pass
         else:
             raise AssertionError("Invalid live reading geometry accepted")
-    print("Production acceptance self-tests PASS: media/index/gallery and 11 HTTP privacy fixtures")
+
+    route = '/2023/08/12/cultural-significance-no-1/'
+    expected = 'https://casahaciendamakati.wordpress.com' + route
+    valid = {'originalCount': 1, 'bridgeCount': 1, 'bridgeLinks': 1,
+             'originalHref': expected, 'bridgeHref': expected + '#respond',
+             'target': '_blank', 'rel': 'noopener noreferrer',
+             'name': 'Read or leave a comment on WordPress ↗',
+             'inOriginal': True, 'visible': True, 'keyboardFocusable': True,
+             'localCommentForms': 0}
+    assert validate_comment_bridge_snapshot(valid, route)
+    for field, value in (
+            ('originalCount', 2), ('bridgeCount', 0), ('bridgeLinks', 2),
+            ('originalHref', 'https://example.invalid/'),
+            ('bridgeHref', 'https://example.invalid/#respond'),
+            ('target', '_self'), ('rel', 'noopener'), ('name', 'Comment'),
+            ('inOriginal', False), ('visible', False),
+            ('keyboardFocusable', False), ('localCommentForms', 1)):
+        invalid = dict(valid)
+        invalid[field] = value
+        try:
+            validate_comment_bridge_snapshot(invalid, route)
+        except AssertionError:
+            pass
+        else:
+            raise AssertionError('Invalid discussion bridge accepted: ' + field)
+    print("Production acceptance self-tests PASS: media/index/gallery and 11 HTTP privacy and 12 discussion negative fixtures")
 
 def main():
     if sys.argv[1:] == ["--self-test"]:
@@ -411,6 +489,7 @@ def main():
     visits, gallery_visits = check_browser(index)
     print(f"Independent deployed Chromium PASS: {visits}/30 published page visits, desktop/mobile, search, noindex, visible text, console")
     print("Live article reading-column geometry PASS: 26/26 desktop/mobile visits; prose width, sidebar separation and mobile stacking")
+    print("Live original WordPress discussion fallback PASS: 26/26 article visits; exact targets, keyboard order, visible links and no local collection")
     print(f"Independent production gallery interaction PASS: {gallery_visits}/4 gallery visits, 10 images per viewport, modal, keyboard, focus, original fallback links")
     print("Production security + X-Robots-Tag PASS: 82 media, JSON/robots, 30 published routes, 2 homepages and 2 HTTP 404 checks")
     print("WordPress historical fidelity, rights, PDFs, native comments, security/performance remain separate acceptance items.")
