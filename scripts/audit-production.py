@@ -26,6 +26,7 @@ def get_bytes(path, cap=45 * 1024 * 1024):
     with OPENER.open(req, timeout=40) as res:
         if res.status != 200 or urllib.parse.urlsplit(res.url).netloc != urllib.parse.urlsplit(ORIGIN).netloc:
             raise AssertionError("Unexpected response: " + path)
+        check_noindex_response_header(res.headers, path)
         data = res.read(cap + 1)
         if len(data) > cap:
             raise AssertionError("Response exceeds size limit: " + path)
@@ -97,8 +98,22 @@ GALLERY_ROUTES = {
     '/2023/10/21/history-of-barrio-olimpia-makati-rizal/': (7, True),
 }
 
+def check_noindex_response_header(headers, route):
+    """Require the deployed HTTP privacy header, including on static assets.
+
+    HTML meta and robots.txt cannot protect direct PDF or media responses.
+    Refuse duplicate, missing or contradictory directives.
+    """
+    values = (headers.get_all("X-Robots-Tag") if hasattr(headers, "get_all")
+              else [headers.get("x-robots-tag")])
+    if (not values or len(values) != 1 or not isinstance(values[0], str) or
+        not re.fullmatch(r"\s*noindex\s*,\s*nofollow\s*", values[0], re.I)):
+        raise AssertionError("Global noindex/nofollow HTTP header missing or changed: " + route)
+
+
 def check_security_headers(response, route):
     headers = response.headers
+    check_noindex_response_header(headers, route)
     expected = {
         'x-content-type-options': 'nosniff',
         'x-frame-options': 'SAMEORIGIN',
@@ -294,7 +309,27 @@ def self_test():
     assert len(GALLERY_ROUTES) == 2
     assert sum(n for n, _ in GALLERY_ROUTES.values()) == 10
     assert all(route.endswith("/") for route in GALLERY_ROUTES)
-    print("Production acceptance self-tests PASS: 6 assertions")
+    check_noindex_response_header({"x-robots-tag": "noindex, nofollow"}, "/test.pdf")
+    check_noindex_response_header({"x-robots-tag": "NOINDEX,NOFOLLOW"}, "/test.pdf")
+    for bad in (None, "", "index, follow", "noindex", "nofollow",
+                "noindex, follow", "noindex, nofollow, index",
+                "noindex, nofollow; index"):
+        try:
+            check_noindex_response_header({"x-robots-tag": bad}, "/test.pdf")
+        except AssertionError:
+            pass
+        else:
+            raise AssertionError("Invalid privacy response header accepted: " + str(bad))
+    class DuplicateHeaders:
+        def get_all(self, name):
+            return ["noindex, nofollow", "index, follow"]
+    try:
+        check_noindex_response_header(DuplicateHeaders(), "/test.pdf")
+    except AssertionError:
+        pass
+    else:
+        raise AssertionError("Duplicate contradictory privacy header accepted")
+    print("Production acceptance self-tests PASS: media/index/gallery and 11 HTTP privacy fixtures")
 
 def main():
     if sys.argv[1:] == ["--self-test"]:
@@ -312,7 +347,7 @@ def main():
     visits, gallery_visits = check_browser(index)
     print(f"Independent deployed Chromium PASS: {visits}/30 published page visits, desktop/mobile, search, noindex, visible text, console")
     print(f"Independent production gallery interaction PASS: {gallery_visits}/4 gallery visits, 10 images per viewport, modal, keyboard, focus, original fallback links")
-    print("Production security headers and noindex HTTP 404 PASS: 30 published routes, 2 homepages and 2 missing-route checks")
+    print("Production security + X-Robots-Tag PASS: 82 media, JSON/robots, 30 published routes, 2 homepages and 2 HTTP 404 checks")
     print("WordPress historical fidelity, rights, PDFs, native comments, security/performance remain separate acceptance items.")
 
 if __name__ == "__main__":
