@@ -172,11 +172,12 @@ def self_test():
         alternate = alternate.replace('</object>', '</iframe>' if element == 'iframe' else '')
         assert not inspect_html(alternate, 'fixture')['errors'], f'valid {element} rejected'
         without_name = alternate.replace("aria-label='Makati City Resolution No. 2009-120'", "aria-label='PDF'")
-        assert inspect_html(without_name, 'fixture')['errors'], f'unlabelled {element} accepted'
+        assert any('lacks descriptive name' in e for e in inspect_html(without_name, 'fixture')['errors']), f'unlabelled {element} accepted'
         without_fallback = alternate.replace("<a id='document-label' href='" + path + "'>Makati City Resolution No. 2009-120</a>", '')
-        assert inspect_html(without_fallback, 'fixture')['errors'], f'{element} without fallback accepted'
+        without_fallback = without_fallback.replace("<a href='" + path + "' aria-describedby='document-label'>Download</a>", '')
+        assert any('same-block fallback' in e for e in inspect_html(without_fallback, 'fixture')['errors']), f'{element} without fallback accepted'
         unbundled = alternate.replace(path, 'https://casahaciendamakati.wordpress.com/wp-content/uploads/2024/04/2009-120.pdf')
-        assert inspect_html(unbundled, 'fixture')['errors'], f'unbundled {element} accepted'
+        assert any('unbundled original WordPress' in e for e in inspect_html(unbundled, 'fixture')['errors']), f'unbundled {element} accepted'
     mutations = [
         valid.replace('noindex,nofollow', 'index,follow'),
         valid.replace("aria-label='Makati City Resolution No. 2009-120'", "aria-label='PDF'"),
