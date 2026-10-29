@@ -82,7 +82,8 @@ def check_navigation(page, route, width, expected_status, require_skip=True):
         # The fragment jump can still be smoothly scrolling through a long article.
         # Reload before testing the sticky mobile menu so its click is assessed
         # from a settled, independent navigation state rather than mid-scroll.
-        fresh = page.reload(wait_until="load", timeout=45000)
+        page.goto("about:blank", wait_until="load")
+        fresh = page.goto(route, wait_until="load", timeout=45000)
         assert fresh and fresh.status == expected_status, ("navigation reload", route)
         assert page.locator('meta[name="robots"]').get_attribute("content") == "noindex,nofollow", route
         assert page.locator('a.skip-link[href="#main-content"]').count() == 1, ("skip retained", route)
@@ -103,10 +104,11 @@ def check_navigation(page, route, width, expected_status, require_skip=True):
     else:
         assert not desktop.is_visible() and summary.is_visible(), route
         assert not mobile.locator("nav").is_visible() and mobile.get_attribute("open") is None, route
-        summary.click()
+        summary.press("Enter")
+        assert summary.evaluate("(e) => document.activeElement === e"), ("menu keyboard focus", route)
         assert mobile.locator("nav").is_visible() and mobile.get_attribute("open") is not None, route
         assert all(link.is_visible() for link in mobile.locator("nav a").all()), route
-        summary.click()
+        summary.press("Enter")
         assert not mobile.locator("nav").is_visible() and mobile.get_attribute("open") is None, route
 
 
