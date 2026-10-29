@@ -80,8 +80,8 @@ def check_navigation(page, route, width, expected_status, require_skip=True):
         assert page.evaluate("location.hash") == "#main-content", ("skip target", route)
         assert main.evaluate("(e) => document.activeElement === e"), ("skip focus transfer", route)
         # The fragment jump can still be smoothly scrolling through a long article.
-        # Reload before testing the sticky mobile menu so its click is assessed
-        # from a settled, independent navigation state rather than mid-scroll.
+        # Start a fresh document before testing the sticky mobile menu by keyboard,
+        # isolating its focus and visibility checks from the prior fragment scroll.
         page.goto("about:blank", wait_until="load")
         fresh = page.goto(route, wait_until="load", timeout=45000)
         assert fresh and fresh.status == expected_status, ("navigation reload", route)
