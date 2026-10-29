@@ -6,8 +6,15 @@
   const dialog = document.createElement('dialog');
   dialog.className = 'chm-gallery-dialog';
   dialog.setAttribute('aria-labelledby', 'chm-gallery-title');
+  dialog.setAttribute('aria-describedby', 'chm-gallery-help');
   const heading = document.createElement('h2');
   heading.id = 'chm-gallery-title';
+  heading.setAttribute('aria-live', 'polite');
+  heading.setAttribute('aria-atomic', 'true');
+  const help = document.createElement('p');
+  help.id = 'chm-gallery-help';
+  help.className = 'chm-gallery-help';
+  help.textContent = 'Use Left and Right arrow keys to move between images, or Home and End to jump.';
   const close = document.createElement('button');
   close.type = 'button';
   close.className = 'chm-gallery-close';
@@ -25,7 +32,7 @@
   next.type = 'button';
   next.textContent = 'Next image';
   controls.append(previous, next);
-  dialog.append(close, heading, image, caption, controls);
+  dialog.append(close, heading, help, image, caption, controls);
   document.body.append(dialog);
 
   let active = null;
@@ -61,9 +68,14 @@
     if (trigger?.isConnected) trigger.focus({ preventScroll: true });
   });
   dialog.addEventListener('keydown', event => {
+    if (!active) return;
     if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
       event.preventDefault();
       move(event.key === 'ArrowRight' ? 1 : -1);
+    } else if (event.key === 'Home' || event.key === 'End') {
+      event.preventDefault();
+      active.index = event.key === 'Home' ? 0 : active.items.length - 1;
+      show();
     }
   });
   dialog.addEventListener('click', event => {
