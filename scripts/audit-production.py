@@ -236,6 +236,42 @@ def validate_index(index, provenance):
         raise AssertionError("Published search provenance mismatch")
     return index
 
+def validate_reading_column_geometry(g, width, route):
+    """Fail closed if deployed article prose reverts to the over-wide desktop column."""
+    required = ("layout", "prose", "sidebar", "proseRight", "sidebarLeft",
+                "articleBottom", "sidebarTop")
+    if any(k not in g or not isinstance(g[k], (int, float)) for k in required):
+        raise AssertionError("Incomplete live reading geometry: " + route)
+    if width == 1280:
+        if not (930 <= g["layout"] <= 965 and 610 <= g["prose"] <= 665
+                and 210 <= g["sidebar"] <= 240
+                and g["sidebarLeft"] - g["proseRight"] >= 25):
+            raise AssertionError("Desktop reading-width/sidebar regression: " + route + " " + str(g))
+    elif width == 375:
+        if not (g["layout"] <= 375 and 295 <= g["prose"] <= 335
+                and g["sidebarTop"] >= g["articleBottom"] - 3):
+            raise AssertionError("Mobile reading-width/stacking regression: " + route + " " + str(g))
+    else:
+        raise AssertionError("Unreviewed reading-width viewport")
+    return True
+
+
+def check_live_reading_column(page, width, route):
+    g = page.evaluate("""() => {
+      const layout = document.querySelector('.layout');
+      const article = document.querySelector('article.content');
+      const sidebar = document.querySelector('.sidebar');
+      if (!layout || !article || !sidebar) throw new Error('Reading layout missing');
+      const l = layout.getBoundingClientRect();
+      const a = article.getBoundingClientRect();
+      const s = sidebar.getBoundingClientRect();
+      return {layout:l.width, prose:a.width, sidebar:s.width,
+              proseRight:a.right, sidebarLeft:s.left,
+              articleBottom:a.bottom, sidebarTop:s.top};
+    }""")
+    return validate_reading_column_geometry(g, width, route)
+
+
 def check_browser(index):
     from playwright.sync_api import sync_playwright
     errors = []
@@ -269,8 +305,10 @@ def check_browser(index):
                 if page.evaluate("document.documentElement.scrollWidth > innerWidth + 3"):
                     offenders = page.evaluate("""() => [...document.querySelectorAll('body *')].map(e => ({tag:e.tagName,cls:typeof e.className==='string'?e.className.slice(0,90):'',right:Math.round(e.getBoundingClientRect().right),left:Math.round(e.getBoundingClientRect().left),width:Math.round(e.getBoundingClientRect().width)})).filter(x=>x.right>innerWidth+3||x.left< -3).slice(0,12)""")
                     raise AssertionError("Horizontal overflow: " + entry["url"] + " width=" + str(width) + " scrollWidth=" + str(page.evaluate("document.documentElement.scrollWidth")) + " offenders=" + json.dumps(offenders))
-                if entry["type"] == "article" and page.locator('a[href*="casahaciendamakati.wordpress.com"]').count() == 0:
-                    raise AssertionError("Original discussion bridge missing: " + entry["url"])
+                if entry["type"] == "article":
+                    check_live_reading_column(page, width, entry["url"])
+                    if page.locator('a[href*="casahaciendamakati.wordpress.com"]').count() == 0:
+                        raise AssertionError("Original discussion bridge missing: " + entry["url"])
                 if entry["url"] in GALLERY_ROUTES:
                     check_live_gallery(page, entry["url"], *GALLERY_ROUTES[entry["url"]])
                     gallery_visits += 1
@@ -334,6 +372,27 @@ def self_test():
         pass
     else:
         raise AssertionError("Duplicate contradictory privacy header accepted")
+    desktop = {"layout": 960, "prose": 638, "sidebar": 225,
+               "proseRight": 824, "sidebarLeft": 869,
+               "articleBottom": 600, "sidebarTop": 250}
+    mobile = {"layout": 375, "prose": 323, "sidebar": 323,
+              "proseRight": 349, "sidebarLeft": 26,
+              "articleBottom": 900, "sidebarTop": 930}
+    assert validate_reading_column_geometry(desktop, 1280, "/test/")
+    assert validate_reading_column_geometry(mobile, 375, "/test/")
+    bad_cases = [(dict(desktop, prose=828), 1280),
+                 (dict(desktop, sidebarLeft=830), 1280),
+                 (dict(mobile, prose=370), 375),
+                 (dict(mobile, sidebarTop=850), 375),
+                 (dict(mobile, layout=420), 375),
+                 (dict(desktop, prose=None), 1280)]
+    for bad, viewport in bad_cases:
+        try:
+            validate_reading_column_geometry(bad, viewport, "/test/")
+        except AssertionError:
+            pass
+        else:
+            raise AssertionError("Invalid live reading geometry accepted")
     print("Production acceptance self-tests PASS: media/index/gallery and 11 HTTP privacy fixtures")
 
 def main():
@@ -351,6 +410,7 @@ def main():
     print(f"Independent deployed media SHA256 PASS: {len(verified)}/82")
     visits, gallery_visits = check_browser(index)
     print(f"Independent deployed Chromium PASS: {visits}/30 published page visits, desktop/mobile, search, noindex, visible text, console")
+    print("Live article reading-column geometry PASS: 26/26 desktop/mobile visits; prose width, sidebar separation and mobile stacking")
     print(f"Independent production gallery interaction PASS: {gallery_visits}/4 gallery visits, 10 images per viewport, modal, keyboard, focus, original fallback links")
     print("Production security + X-Robots-Tag PASS: 82 media, JSON/robots, 30 published routes, 2 homepages and 2 HTTP 404 checks")
     print("WordPress historical fidelity, rights, PDFs, native comments, security/performance remain separate acceptance items.")
