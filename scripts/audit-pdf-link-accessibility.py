@@ -63,10 +63,20 @@ class PageParser(HTMLParser):
                 self.group_stack.append(len(self.groups) - 1)
         group = self.group_stack[-1] if self.group_stack else None
         if tag in ('object', 'iframe', 'embed'):
-            source = attrs.get('data', '') if tag == 'object' else attrs.get('src', '')
+            source = (attrs.get('data') if tag == 'object' else attrs.get('src')) or ''
             target, error = classify_url(source)
             if error:
                 self.errors.append(error)
+            elif target is None:
+                # A PDF embedded from a remote, relative, inline, or viewer URL would
+                # otherwise evade the pinned-media checks. External citation anchors
+                # remain permitted; embedded PDF readers must use bundled media.
+                parsed = urlsplit(source.strip())
+                pdf_path = unquote(parsed.path).lower().endswith('.pdf')
+                pdf_type = (attrs.get('type') or '').split(';', 1)[0].strip().lower() == 'application/pdf'
+                inline_pdf = source.strip().lower().startswith('data:application/pdf')
+                if pdf_path or pdf_type or inline_pdf:
+                    self.errors.append(f'{tag} unpinned PDF embed: {source[:120]}')
             if target:
                 self.objects.append({'path': target, 'name': attrs.get('aria-label', '') or attrs.get('title', ''), 'group': group, 'element': tag})
         if tag == 'a':
@@ -191,7 +201,27 @@ def self_test():
         assert mutation != valid, f'mutation {idx} did not apply'
         assert inspect_html(mutation, 'fixture')['errors'], f'unsafe PDF mutation {idx} accepted'
     assert classify_url('https://history.army.mil/external.pdf') == (None, None)
-    print('Public PDF links: 3 valid embedding fixtures + 13 fail-closed mutations + external citation PASS')
+    # External scholarly citations are allowed as links, but an external PDF
+    # rendered in an embedded reader must not bypass fallback/privacy checks.
+    citation = ("<a href='https://history.army.mil/external.pdf'>"
+                "Historical external PDF citation</a>")
+    assert not inspect_html(citation, 'fixture')['errors']
+    for element in ('object', 'iframe', 'embed'):
+        embed = valid if element == 'object' else valid.replace("<object data='", f"<{element} src='")
+        embed = embed.replace('</object>', '</iframe>' if element == 'iframe' else '')
+        for bad_source in ('https://example.org/remote.pdf',
+                           '//example.org/remote.pdf',
+                           'relative/remote.pdf',
+                           'data:application/pdf;base64,JVBERi0='):
+            mutation = embed.replace(path, bad_source, 1)
+            assert any('unpinned PDF embed' in e for e in inspect_html(mutation, 'fixture')['errors']), (element, bad_source)
+        declared = embed.replace("aria-label='Makati City", "type='application/pdf' aria-label='Makati City", 1)
+        declared = declared.replace(path, 'https://example.org/reader', 1)
+        assert any('unpinned PDF embed' in e for e in inspect_html(declared, 'fixture')['errors']), element
+        source_attr = 'data' if element == 'object' else 'src'
+        missing = embed.replace(f"{source_attr}='{path}'", f"{source_attr}='' type='application/pdf'", 1)
+        assert any('unpinned PDF embed' in e for e in inspect_html(missing, 'fixture')['errors']), element
+    print('Public PDF links: 3 valid embedding fixtures + 31 fail-closed mutations + external citation PASS')
 
 
 if __name__ == '__main__':
