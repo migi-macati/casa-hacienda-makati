@@ -1,0 +1,7 @@
+# Independent production browser QA for people register — 2026-10-29
+
+**QA-ONLY CANDIDATE.** The source-grounded text-only three-person register was deployed by PR #72 at main `fb94a4d7251309e7f8973d2ac857f2e5852b50a8`, production deployment `dpl_6rWXKKWgv6Po7p6TPCNKngZV7LuF` READY exact SHA. This PR adds permanent independent read-only production Chromium acceptance, without changing any published content, historical article, source citation, image, PDF, media, draft, WordPress or noindex.
+
+The gate checks 8 desktop/mobile (1280/375 px) × JavaScript on/off × reduced-motion on/off combinations, the accessible named region, three source-bound identities, court/marker date and appurtenance qualifications, three exact source URLs, keyboard Tab focus, 13 article cards, noindex, absence of overflow and embedded media. Nine malicious URL mutations must fail closed. Eight best-effort screenshots and structured JSON are retained briefly as workflow artifacts. The independent production test is a rendered/interaction gate only; it cannot prove the historical building identity, the official 1907 report scan, the 1906 parcel survey, rights, or manual screen-reader accessibility.
+
+**Acceptance:** exact-final-head seven GitHub Actions green, inspect actual independent browser results and preview, review diff, merge and verify matching READY production. Until independently passed, people feature remains DEPLOYED but not independently feature-verified. CHM-B040 remains prohibited; owner rights and public-launch decisions remain open.
