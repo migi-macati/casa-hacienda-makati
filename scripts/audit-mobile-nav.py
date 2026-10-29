@@ -79,6 +79,13 @@ def check_navigation(page, route, width, expected_status, require_skip=True):
         page.keyboard.press("Enter")
         assert page.evaluate("location.hash") == "#main-content", ("skip target", route)
         assert main.evaluate("(e) => document.activeElement === e"), ("skip focus transfer", route)
+        # The fragment jump can still be smoothly scrolling through a long article.
+        # Reload before testing the sticky mobile menu so its click is assessed
+        # from a settled, independent navigation state rather than mid-scroll.
+        fresh = page.reload(wait_until="load", timeout=45000)
+        assert fresh and fresh.status == expected_status, ("navigation reload", route)
+        assert page.locator('meta[name="robots"]').get_attribute("content") == "noindex,nofollow", route
+        assert page.locator('a.skip-link[href="#main-content"]').count() == 1, ("skip retained", route)
     else:
         assert page.locator('a.skip-link').count() == 0, ("legacy production skip", route)
         assert page.locator('main#main-content').count() == 0, ("legacy production main", route)
