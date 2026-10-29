@@ -9,12 +9,10 @@
   dialog.setAttribute('aria-describedby', 'chm-gallery-help');
   const heading = document.createElement('h2');
   heading.id = 'chm-gallery-title';
-  heading.setAttribute('aria-live', 'polite');
-  heading.setAttribute('aria-atomic', 'true');
   const help = document.createElement('p');
   help.id = 'chm-gallery-help';
   help.className = 'chm-gallery-help';
-  help.textContent = 'Use Left and Right arrow keys to move between images, or Home and End to jump.';
+  help.textContent = 'Use Left and Right arrow keys to move between images, Home and End to jump, or Escape to close.';
   const close = document.createElement('button');
   close.type = 'button';
   close.className = 'chm-gallery-close';
@@ -24,6 +22,11 @@
   const caption = document.createElement('p');
   caption.className = 'chm-gallery-caption';
   caption.id = 'chm-gallery-caption';
+  const status = document.createElement('p');
+  status.className = 'chm-gallery-status';
+  status.setAttribute('role', 'status');
+  status.setAttribute('aria-live', 'polite');
+  status.setAttribute('aria-atomic', 'true');
   const controls = document.createElement('div');
   controls.className = 'chm-gallery-controls';
   const previous = document.createElement('button');
@@ -33,7 +36,7 @@
   next.type = 'button';
   next.textContent = 'Next image';
   controls.append(previous, next);
-  dialog.append(close, heading, help, image, caption, controls);
+  dialog.append(close, heading, help, image, caption, status, controls);
   document.body.append(dialog);
 
   let active = null;
@@ -43,6 +46,8 @@
     image.src = item.image.currentSrc || item.image.src;
     image.alt = item.image.alt;
     caption.textContent = item.caption || item.image.alt;
+    // One atomic live message announces both position and description on navigation.
+    status.textContent = `${heading.textContent}. ${caption.textContent}`;
     // Associate distinct source captions with the displayed image for screen readers.
     // The visible alt fallback is not announced twice when no separate caption exists.
     if (item.caption && item.caption !== item.image.alt)
