@@ -30,7 +30,7 @@ function validate(input) {
     'no portraits or archival images are reproduced']) {
     if(!region.includes(s)) throw Error('Missing evidence qualification: '+s);
   }
-  if (/<(?:img|video|audio|iframe|script|picture|source)\\b/i.test(region)) throw Error('Unauthorized embedded content');
+  if (/<(?:img|video|audio|iframe|script|picture|source)\b/i.test(region)) throw Error('Unauthorized embedded content');
   if ((input.match(/data-heritage-feature="people"/g)||[]).length!==1) throw Error('Duplicate people feature');
 }
 validate(html);
