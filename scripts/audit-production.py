@@ -149,6 +149,20 @@ def check_live_gallery(page, route, expected_count, linked):
         image = dialog.locator('img.chm-gallery-image')
         if not image.get_attribute('alt') or '/media/' not in image.get_attribute('src'):
             raise AssertionError('Gallery image lacks local media or alt: ' + route)
+        # Verify the deployed viewer describes distinct original captions and
+        # avoids duplicating alt text when a source figure has no caption.
+        source_figure = gallery.locator('figure.wp-block-image').nth(i)
+        source_alt = source_figure.locator('img').get_attribute('alt')
+        source_caption_node = source_figure.locator('figcaption')
+        source_caption = ((source_caption_node.first.text_content() or '').strip()
+                          if source_caption_node.count() else '')
+        modal_caption = dialog.locator('p#chm-gallery-caption')
+        if modal_caption.count() != 1 or norm(modal_caption.inner_text()) != norm(source_caption or source_alt):
+            raise AssertionError('Gallery caption differs from source figure: ' + route)
+        expected_description = ('chm-gallery-caption'
+                                if source_caption and source_caption != source_alt else None)
+        if image.get_attribute('aria-describedby') != expected_description:
+            raise AssertionError('Gallery image caption association incorrect: ' + route)
         page.wait_for_function("""() => {
             const im = document.querySelector('dialog.chm-gallery-dialog img.chm-gallery-image');
             return im && im.complete && im.naturalWidth > 0;
