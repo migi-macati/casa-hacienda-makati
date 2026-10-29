@@ -176,6 +176,26 @@ def main():
                     visits += 1
                     print(f"Native nav PASS {width}px {path}", flush=True)
                 context.close()
+            if not production:
+                # Verify the optional JS behavior against generated files.
+                # All 34 no-JS checks above remain mandatory.
+                context = browser.new_context(
+                    viewport={"width": 375, "height": 812},
+                    java_script_enabled=True,
+                )
+                page = context.new_page()
+                response = page.goto(origin + "/", wait_until="load", timeout=45000)
+                assert response and response.status == 200
+                menu = page.locator("details.mobile-nav")
+                summary = menu.locator("summary")
+                summary.press("Enter")
+                assert menu.get_attribute("open") is not None
+                menu.locator("nav a").first.focus()
+                page.keyboard.press("Escape")
+                assert menu.get_attribute("open") is None, "Escape did not close mobile menu"
+                assert summary.evaluate("(e) => document.activeElement === e"), "Escape did not restore summary focus"
+                context.close()
+                print("Generated-site mobile Escape/focus Chromium PASS (JS enabled)", flush=True)
             browser.close()
     finally:
         if server:
