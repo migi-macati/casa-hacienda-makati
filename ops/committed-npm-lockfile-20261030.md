@@ -1,0 +1,9 @@
+# Committed npm lockfile and deterministic CI installation — 2026-10-30 PHT
+
+Baseline main: `89fdfc3bdbf535134392e36725212bb57ba53f58`. This change adds the exact npm v3 lockfile independently reviewed from PR #94's successful media workflow artifact (local SHA256 `23f4dd16821b9d5507dace3e1b5aadabeeb1d0739fa8c30d79b884a9f2976ab5`; 32 registry-pinned dependency entries). The original artifact remains a separately retained evidence copy.
+
+Four workflows that install project dependencies now use `npm ci` against the committed lockfile rather than generating or resolving a new project lock through `npm install`. The media workflow continues to warm the cache while network access is permitted, validates lockfile provenance, then reinstalls in a Docker container with `--network none`, loads Sharp and compares the two full generated public trees byte-for-byte. The search/privacy and PDF workflows audit the lockfile before building. The WCAG workflow installs the separately pinned `axe-core@4.10.3` with `--no-save --package-lock=false` after `npm ci`, and verifies the committed lockfile is unchanged. This temporary axe-core installation is NOT itself covered by the committed project lock.
+
+Acceptance requires exact-head CI success for all eight workflows, independent production checks, reviewed PR diff, squash merge, and authenticated Vercel READY deployment at the exact main SHA. Do not infer a successful release from this note alone.
+
+Limitations: cache warming and Docker image retrieval still need network; the Docker tag is not digest-pinned; an initially empty fully air-gapped environment is NOT demonstrated. No original WordPress writes, public HTML/PDF/media/article changes, private draft writes, rights authorization, noindex change or public launch. CHM-B040 safety-rejected historical CS12 operation remains prohibited and is neither retried nor bypassed.

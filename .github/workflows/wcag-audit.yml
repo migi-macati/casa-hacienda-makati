@@ -16,7 +16,10 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - run: npm install --no-save --no-audit --no-fund axe-core@4.10.3
+      - run: npm ci --no-audit --no-fund
+      - run: node scripts/audit-npm-lockfile.mjs
+      - run: npm install --no-save --package-lock=false --no-audit --no-fund axe-core@4.10.3
+      - run: git diff --exit-code -- package-lock.json
       - run: pip install playwright==1.57.0
       - run: python -m playwright install --with-deps chromium
       - run: python -m py_compile scripts/audit-wcag.py
