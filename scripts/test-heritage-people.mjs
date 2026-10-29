@@ -45,7 +45,7 @@ const mutations = [
   [html.replace('not the house\'s footprint','the house\'s footprint'),'footprint qualification'],
   [html.replace('official report scan and 1906 parcel plan have not been inspected','official report scan has been verified'),'source access'],
   [html.replace('https://lawyerly.ph/juris/view/c15f','https://example.invalid/c15f'),'source allowlist'],
-  [html.replace('https://philhistoricsites.nhcp.gov.ph/registry_database/san-pedro-macati/','https://philhistoricsites.nhcp.gov.ph.evil.test/registry_database/san-pedro-macati/'),'host allowlist'],
+  [html.replace('href="https://philhistoricsites.nhcp.gov.ph/registry_database/san-pedro-macati/">Read the NHCP historical marker','href="https://philhistoricsites.nhcp.gov.ph.evil.test/registry_database/san-pedro-macati/">Read the NHCP historical marker'),'host allowlist'],
   [html.replace('no portraits or archival images are reproduced','<img src="/media/unknown.webp"> no portraits or archival images are reproduced'),'embedded media']
 ];
 for (const [candidate, label] of mutations) {
