@@ -6,9 +6,17 @@ const header=/<header class="siteheader"><div class="headrow">([\s\S]*?)<nav>([\
 export function transform(html,file='fixture'){
  if(!html.includes('<meta name="robots" content="noindex,nofollow">'))throw Error('Missing noindex: '+file);
  if(html.includes('class="mobile-nav"')){
-  if((html.match(/class="mobile-nav"/g)||[]).length!==1||!html.includes('<nav class="desktop-nav" aria-label="Primary">'))throw Error('Invalid prior enhancement: '+file);
+  if((html.match(/class="mobile-nav"/g)||[]).length!==1||
+    !html.includes('<nav class="desktop-nav" aria-label="Primary">')||
+    (html.match(/class="skip-link"/g)||[]).length!==1||
+    !html.includes('<a class="skip-link" href="#main-content">Skip to main content</a>')||
+    !html.includes('<main id="main-content" tabindex="-1">'))
+    throw Error('Invalid prior enhancement: '+file);
   return html;
  }
+ if((html.match(/<main>/g)||[]).length!==1||
+    html.includes('id="main-content"')||html.includes('class="skip-link"'))
+   throw Error('Missing or ambiguous main landmark: '+file);
  let count=0;
  const result=html.replace(header,(_all,before,links)=>{
   count++;
@@ -20,7 +28,9 @@ export function transform(html,file='fixture'){
    '<details class="mobile-nav"><summary>Menu</summary><nav aria-label="Mobile">'+links+'</nav></details></div></header>';
  });
  if(count!==1)throw Error('Missing or duplicate header: '+file);
- return result;
+ return result
+  .replace('<header class="siteheader">','<a class="skip-link" href="#main-content">Skip to main content</a><header class="siteheader">')
+  .replace('<main>','<main id="main-content" tabindex="-1">');
 }
 export async function enhance(){
  const lock=JSON.parse(await fs.readFile('ops/published-search-sources.json','utf8'));
