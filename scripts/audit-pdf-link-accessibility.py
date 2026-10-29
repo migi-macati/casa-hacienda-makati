@@ -191,7 +191,7 @@ def self_test():
         assert mutation != valid, f'mutation {idx} did not apply'
         assert inspect_html(mutation, 'fixture')['errors'], f'unsafe PDF mutation {idx} accepted'
     assert classify_url('https://history.army.mil/external.pdf') == (None, None)
-    print('Public PDF links: 1 valid synthetic + 7 fail-closed mutations + external citation PASS')
+    print('Public PDF links: 3 valid embedding fixtures + 13 fail-closed mutations + external citation PASS')
 
 
 if __name__ == '__main__':
