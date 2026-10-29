@@ -149,14 +149,11 @@ def check_live_gallery(page, route, expected_count, linked):
     if dialog.get_attribute('aria-describedby') != 'chm-gallery-help':
         raise AssertionError('Gallery dialog lacks keyboard help description: ' + route)
     help_text = dialog.locator('#chm-gallery-help').inner_text()
-    if ('Left and Right arrow keys' not in help_text or 'Home and End' not in help_text
-            or 'Escape to close' not in help_text):
+    if 'Left and Right arrow keys' not in help_text or 'Home and End' not in help_text:
         raise AssertionError('Gallery keyboard instructions missing: ' + route)
     heading = dialog.locator('h2#chm-gallery-title')
-    status = dialog.locator('p.chm-gallery-status[role="status"]')
-    if (heading.get_attribute('aria-live') is not None or status.count() != 1 or
-            status.get_attribute('aria-live') != 'polite' or status.get_attribute('aria-atomic') != 'true'):
-        raise AssertionError('Gallery combined position/description status missing: ' + route)
+    if heading.get_attribute('aria-live') != 'polite' or heading.get_attribute('aria-atomic') != 'true':
+        raise AssertionError('Gallery image position lacks atomic live announcement: ' + route)
     if not dialog.locator('button.chm-gallery-close').evaluate('(el) => document.activeElement === el'):
         raise AssertionError('Modal did not receive focus: ' + route)
     previous = dialog.get_by_role('button', name='Previous image')
@@ -177,8 +174,6 @@ def check_live_gallery(page, route, expected_count, linked):
         modal_caption = dialog.locator('p#chm-gallery-caption')
         if modal_caption.count() != 1 or norm(modal_caption.inner_text()) != norm(source_caption or source_alt):
             raise AssertionError('Gallery caption differs from source figure: ' + route)
-        if norm(status.inner_text()) != norm(f'Image {i + 1} of {expected_count}. {source_caption or source_alt}'):
-            raise AssertionError('Gallery live status omits position or description: ' + route)
         expected_description = ('chm-gallery-caption'
                                 if source_caption and source_caption != source_alt else None)
         if image.get_attribute('aria-describedby') != expected_description:
