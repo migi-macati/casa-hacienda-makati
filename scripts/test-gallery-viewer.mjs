@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
+import vm from 'node:vm';
 import { enhanceGalleryPage, GALLERY_PAGES } from './enhance-galleries.mjs';
 
 const figure = i => `<figure class="wp-block-image"><img src="/media/test${i}.webp" alt="Scanned page ${i}"></figure>`;
@@ -21,3 +22,93 @@ for (const [relative, count] of GALLERY_PAGES) {
   assert.ok(enhanced.includes('gallery-viewer.js'));
 }
 console.log('Gallery enhancement synthetic/source checks PASS: two pinned galleries, 10 images, noindex, alt and single injection.');
+
+ 
+// Exercise the actual shipped browser script in a minimal isolated DOM.
+// This is deterministic, offline and requires no additional dependency.
+function fakeNode(tag) {
+  const listeners = new Map(), attrs = new Map();
+  return {
+    tag, children: [], isConnected: true,
+    append(...nodes) { this.children.push(...nodes); },
+    before(node) { this.beforeNode = node; },
+    addEventListener(event, fn) { listeners.set(event, fn); },
+    setAttribute(key, value) { attrs.set(key, value); },
+    getAttribute(key) { return attrs.get(key); },
+    removeAttribute(key) { attrs.delete(key); if (key === 'src') this.src = undefined; },
+    focus(options) { this.focused = true; this.focusOptions = options; },
+    showModal() { this.open = true; },
+    close() { this.open = false; listeners.get('close')?.(); },
+    fire(event, properties = {}) {
+      let prevented = false;
+      listeners.get(event)?.({ ...properties, preventDefault() { prevented = true; } });
+      return prevented;
+    },
+  };
+}
+const galleryImages = Array.from({ length: 3 }, (_, i) => Object.assign(fakeNode('img'), {
+  alt: 'Original description ' + (i + 1),
+  src: '/media/photo' + (i + 1) + '.webp',
+  currentSrc: '/media/photo' + (i + 1) + '.webp',
+}));
+const figures = galleryImages.map((img, i) => ({
+  querySelector(selector) {
+    if (selector === 'img') return img;
+    if (selector === 'figcaption') return { textContent: 'Caption ' + (i + 1) };
+    if (selector === 'a[href]') return null;
+  },
+}));
+const gallery = { querySelectorAll(selector) {
+  assert.equal(selector, 'figure.wp-block-image');
+  return figures;
+}};
+const body = fakeNode('body');
+const fakeDocument = {
+  body, createElement: fakeNode,
+  querySelectorAll(selector) {
+    assert.equal(selector, 'article.content .wp-block-gallery');
+    return [gallery];
+  },
+};
+class FakeDialog {}
+FakeDialog.prototype.showModal = () => {};
+vm.runInNewContext(await fs.readFile('public/assets/gallery-viewer.js', 'utf8'), {
+  document: fakeDocument, HTMLDialogElement: FakeDialog,
+});
+const dialog = body.children[0];
+assert.equal(dialog.tag, 'dialog');
+assert.equal(dialog.getAttribute('aria-labelledby'), 'chm-gallery-title');
+assert.equal(dialog.getAttribute('aria-describedby'), 'chm-gallery-help');
+const [close, heading, help, modalImage, caption, controls] = dialog.children;
+assert.equal(heading.getAttribute('aria-live'), 'polite');
+assert.equal(heading.getAttribute('aria-atomic'), 'true');
+assert.match(help.textContent, /Home and End/);
+const [previous, next] = controls.children;
+const trigger = galleryImages[0].beforeNode;
+assert.equal(trigger.tag, 'button');
+trigger.fire('click');
+assert.equal(dialog.open, true);
+assert.equal(close.focused, true);
+assert.equal(heading.textContent, 'Image 1 of 3');
+assert.equal(modalImage.src, '/media/photo1.webp');
+assert.equal(caption.textContent, 'Caption 1');
+assert.equal(previous.disabled, true);
+assert.equal(next.disabled, false);
+assert.equal(dialog.fire('keydown', { key: 'End' }), true);
+assert.equal(heading.textContent, 'Image 3 of 3');
+assert.equal(next.disabled, true);
+assert.equal(dialog.fire('keydown', { key: 'ArrowRight' }), true);
+assert.equal(heading.textContent, 'Image 3 of 3');
+assert.equal(dialog.fire('keydown', { key: 'Home' }), true);
+assert.equal(heading.textContent, 'Image 1 of 3');
+assert.equal(dialog.fire('keydown', { key: 'ArrowRight' }), true);
+assert.equal(heading.textContent, 'Image 2 of 3');
+assert.equal(dialog.fire('keydown', { key: 'ArrowLeft' }), true);
+assert.equal(heading.textContent, 'Image 1 of 3');
+assert.equal(dialog.fire('keydown', { key: 'Tab' }), false);
+close.fire('click');
+assert.equal(dialog.open, false);
+assert.equal(modalImage.src, undefined);
+assert.equal(trigger.focused, true);
+assert.equal(trigger.focusOptions.preventScroll, true);
+console.log('Gallery keyboard runtime PASS: announcements, Home/End, arrows, bounds and focus restoration.');
