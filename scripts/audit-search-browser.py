@@ -71,5 +71,58 @@ with sync_playwright() as pw:
                 raise AssertionError(f"Computed CSS visibility mismatch {item['url']} at {viewport} offset {first}; "
                                      f"index={indexed[max(0,first-35):first+55]!r} "
                                      f"browser={visible[max(0,first-35):first+55]!r}")
+
+    # Generated-homepage search interactions: actual Chromium DOM and pinned public index.
+    # This read-only local server never accesses private drafts or the original WordPress.
+    import functools
+    import http.server
+    import threading
+    class QuietHandler(http.server.SimpleHTTPRequestHandler):
+        def log_message(self, *_args):
+            pass
+
+    server = http.server.ThreadingHTTPServer(
+        ("127.0.0.1", 0),
+        functools.partial(QuietHandler, directory=str(ROOT)),
+    )
+    worker = threading.Thread(target=server.serve_forever, daemon=True)
+    worker.start()
+    try:
+        with page.expect_response(lambda r: r.url.endswith("/search-index.json") and r.status == 200):
+            page.goto(f"http://127.0.0.1:{server.server_port}/", wait_until="domcontentloaded")
+        page.wait_for_function(
+            "document.querySelector('#search-status')?.textContent === 'Showing 13 articles.'"
+        )
+        assert page.locator('meta[name="robots"]').get_attribute("content") == "noindex,nofollow"
+        for width in (1280, 375):
+            page.set_viewport_size({"width": width, "height": 812})
+            def results(query):
+                page.locator("#find").fill(query)
+                status = page.locator("#search-status").inner_text()
+                assert "temporarily unavailable" not in status, ("Index fallback", query)
+                articles = page.locator(".card:visible h3 a").evaluate_all(
+                    "(nodes) => nodes.map(n => n.getAttribute('href'))"
+                )
+                pages = page.locator("#page-results a").evaluate_all(
+                    "(nodes) => nodes.map(n => n.getAttribute('href'))"
+                )
+                return articles, pages
+            assert results("Macati") == results("Makati"), ("Historical spelling", width)
+            assert sum(map(len, results("Makati"))) > 0, ("Expected Makati matches", width)
+            assert results("Haciénda") == results("Hacienda"), ("Accented query", width)
+            assert sum(map(len, results("Hacienda"))) > 0, ("Expected Hacienda matches", width)
+            assert results("bahay-na-bato") == results("bahay na bato"), ("Punctuation", width)
+            assert sum(map(len, results("bahay na bato"))) > 0, ("Expected architecture matches", width)
+            assert results("unfindableqzxyz") == ([], []), ("Unexpected match", width)
+            assert page.locator("#nothing").is_visible(), ("No-results notice", width)
+            assert results("—") == ([], []), ("Punctuation-only query", width)
+            results("")
+            assert page.locator(".card:visible").count() == 13, ("Unfiltered archive", width)
+            assert page.locator("#page-results").is_hidden(), ("Empty-query pages", width)
+    finally:
+        server.shutdown()
+        server.server_close()
+        worker.join(timeout=5)
+
     browser.close()
-print('Chromium search privacy PASS: 15/15 documents, desktop and mobile computed CSS; synthetic CSS-hidden case excluded.')
+print('Chromium search privacy and UI PASS: 15/15 documents, 30 computed-CSS scans and 2 viewport search interaction suites.')
