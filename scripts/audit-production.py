@@ -131,6 +131,14 @@ def check_live_gallery(page, route, expected_count, linked):
         raise AssertionError('Native modal did not open: ' + route)
     if dialog.get_attribute('aria-labelledby') != 'chm-gallery-title':
         raise AssertionError('Gallery dialog lacks accessible title: ' + route)
+    if dialog.get_attribute('aria-describedby') != 'chm-gallery-help':
+        raise AssertionError('Gallery dialog lacks keyboard help description: ' + route)
+    help_text = dialog.locator('#chm-gallery-help').inner_text()
+    if 'Left and Right arrow keys' not in help_text or 'Home and End' not in help_text:
+        raise AssertionError('Gallery keyboard instructions missing: ' + route)
+    heading = dialog.locator('h2#chm-gallery-title')
+    if heading.get_attribute('aria-live') != 'polite' or heading.get_attribute('aria-atomic') != 'true':
+        raise AssertionError('Gallery image position lacks atomic live announcement: ' + route)
     if not dialog.locator('button.chm-gallery-close').evaluate('(el) => document.activeElement === el'):
         raise AssertionError('Modal did not receive focus: ' + route)
     previous = dialog.get_by_role('button', name='Previous image')
@@ -151,6 +159,12 @@ def check_live_gallery(page, route, expected_count, linked):
             page.keyboard.press('ArrowRight')
     if not next_button.is_disabled():
         raise AssertionError('Next enabled at final image: ' + route)
+    page.keyboard.press('Home')
+    if heading.inner_text() != f'Image 1 of {expected_count}' or not previous.is_disabled():
+        raise AssertionError('Home failed to reach first gallery image: ' + route)
+    page.keyboard.press('End')
+    if heading.inner_text() != f'Image {expected_count} of {expected_count}' or not next_button.is_disabled():
+        raise AssertionError('End failed to reach final gallery image: ' + route)
     page.keyboard.press('ArrowLeft')
     if dialog.locator('h2').inner_text() != f'Image {expected_count - 1} of {expected_count}':
         raise AssertionError('Previous keyboard navigation failed: ' + route)
