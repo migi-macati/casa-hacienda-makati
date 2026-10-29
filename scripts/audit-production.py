@@ -416,6 +416,70 @@ def check_mobile_nav_no_js(browser):
     finally:
         context.close()
 
+
+def validate_live_search_snapshot(s, known_routes, query):
+    """Validate live results against the already verified 15-route published index."""
+    if (s.get("query") != query or s.get("robots") != "noindex,nofollow" or
+            not isinstance(s.get("status"), str) or
+            "temporarily unavailable" in s["status"].lower()):
+        raise AssertionError("Live search input, privacy or index-loading regression")
+    articles, pages = s.get("articles"), s.get("pages")
+    if (not isinstance(articles, list) or not isinstance(pages, list) or
+            any(not isinstance(x, str) for x in articles + pages) or
+            len(set(articles + pages)) != len(articles + pages) or
+            any(x not in known_routes for x in articles + pages)):
+        raise AssertionError("Live search result outside published route inventory")
+    if query == "":
+        if (len(articles) != 13 or pages or not s.get("pagesHidden") or
+                s.get("nothingVisible") or s["status"] != "Showing 13 articles."):
+            raise AssertionError("Empty search did not restore the 13 published articles")
+    elif query in ("unfindableqzxyz", "—"):
+        if (articles or pages or not s.get("nothingVisible") or
+                not s["status"].startswith("0 results")):
+            raise AssertionError("No-match or punctuation-only query returned content")
+    elif "result" not in s["status"].lower():
+        raise AssertionError("Live search result status missing")
+    return articles, pages
+
+
+def check_live_historical_search(page, index, width):
+    """Independently exercise the already deployed search on production Chromium."""
+    page.wait_for_function(
+        "document.querySelector('#search-status')?.textContent === 'Showing 13 articles.'",
+        timeout=15000)
+    known_routes = {entry["url"] for entry in index}
+    def results(query):
+        page.locator("#find").fill(query)
+        s = {
+            "query": page.locator("#find").input_value(),
+            "status": page.locator("#search-status").inner_text(),
+            "robots": page.locator('meta[name="robots"]').get_attribute("content"),
+            "articles": page.locator(".card:visible h3 a").evaluate_all(
+                "(nodes) => nodes.map(n => n.getAttribute('href'))"),
+            "pages": page.locator("#page-results a").evaluate_all(
+                "(nodes) => nodes.map(n => n.getAttribute('href'))"),
+            "pagesHidden": page.locator("#page-results").is_hidden(),
+            "nothingVisible": page.locator("#nothing").is_visible(),
+        }
+        return validate_live_search_snapshot(s, known_routes, query)
+    for first, second, label in (
+            ("Macati", "Makati", "historical place spelling"),
+            ("Haciénda", "Hacienda", "diacritics"),
+            ("bahay-na-bato", "bahay na bato", "hyphen/space punctuation")):
+        a, b = results(first), results(second)
+        if a != b or not any(a):
+            raise AssertionError("Production search normalization failed: " + label +
+                                 " at " + str(width))
+    if results("unfindableqzxyz") != ([], []):
+        raise AssertionError("Unmatched live query returned results")
+    if results("—") != ([], []):
+        raise AssertionError("Punctuation-only live query returned results")
+    restored, pages = results("")
+    if len(restored) != 13 or pages:
+        raise AssertionError("Live archive was not restored after clearing search")
+    return True
+
+
 def check_browser(index):
     from playwright.sync_api import sync_playwright
     errors = []
@@ -468,14 +532,7 @@ def check_browser(index):
                 raise AssertionError("Homepage noindex missing")
             if page.evaluate("document.documentElement.scrollWidth > innerWidth + 3"):
                 raise AssertionError("Homepage horizontal overflow at width " + str(width))
-            page.locator("#find").fill("orphanage")
-            page.wait_for_function('document.querySelector("#search-status").textContent.includes("result")', timeout=15000)
-            if page.locator(".card:visible").count() < 1:
-                raise AssertionError("Homepage search failed")
-            page.locator("#find").fill("zzzzunlikelynonmatch123")
-            page.wait_for_function('document.querySelector("#search-status").textContent.startsWith("0 results")', timeout=15000)
-            if not page.locator("#nothing").is_visible():
-                raise AssertionError("Homepage no-results state missing")
+            check_live_historical_search(page, index, width)
             if width == 375:
                 check_live_mobile_nav(page, "/")
                 mobile_nav_visits += 1
@@ -593,7 +650,41 @@ def self_test():
             pass
         else:
             raise AssertionError("Invalid mobile navigation accepted: " + field)
-    print("Production acceptance self-tests PASS: media/index/gallery, 11 HTTP privacy, 12 discussion and 11 mobile-nav negative fixtures")
+
+    search_routes = {"/2023/08/12/example/", "/about/"}
+    good_search = {"query": "Macati", "status": "1 result", "robots": "noindex,nofollow",
+                   "articles": ["/2023/08/12/example/"], "pages": [],
+                   "pagesHidden": True, "nothingVisible": False}
+    assert validate_live_search_snapshot(good_search, search_routes, "Macati") == (
+        ["/2023/08/12/example/"], [])
+    for field, bad_value in (
+            ("query", "Makati"), ("status", "Search temporarily unavailable"),
+            ("robots", "index,follow"), ("articles", ["/private/"]),
+            ("articles", ["/2023/08/12/example/", "/2023/08/12/example/"]),
+            ("pages", ["/2023/08/12/example/"]), ("pages", None)):
+        bad = dict(good_search, **{field: bad_value})
+        try:
+            validate_live_search_snapshot(bad, search_routes, "Macati")
+        except AssertionError:
+            pass
+        else:
+            raise AssertionError("Invalid production search accepted: " + field)
+    for q in ("unfindableqzxyz", "—"):
+        bad = dict(good_search, query=q, status="0 results")
+        try:
+            validate_live_search_snapshot(bad, search_routes, q)
+        except AssertionError:
+            pass
+        else:
+            raise AssertionError("Invalid no-match search accepted: " + q)
+    empty = dict(good_search, query="", status="Showing 13 articles.")
+    try:
+        validate_live_search_snapshot(empty, search_routes, "")
+    except AssertionError:
+        pass
+    else:
+        raise AssertionError("Incomplete unfiltered archive accepted")
+    print("Production acceptance self-tests PASS: media/index/gallery, 11 HTTP privacy, 12 discussion and 11 mobile-nav negative fixtures plus 10 live-search mutations")
 
 def main():
     if sys.argv[1:] == ["--self-test"]:
@@ -614,6 +705,7 @@ def main():
     print("Live original WordPress discussion fallback PASS: 26/26 article visits; exact targets, keyboard order, visible links and no local collection")
     print(f"Independent production gallery interaction PASS: {gallery_visits}/4 gallery visits, 10 images per viewport, modal, keyboard, focus, original fallback links")
     print(f"Independent live mobile navigation PASS: {mobile_nav_visits}/17 published/home/404 routes; Escape/focus/outside-focus; no-JS native disclosure")
+    print("Independent live historical search PASS: 2/2 desktop/mobile suites; Macati, accents, punctuation, no-results and archive restore")
     print("Production security + X-Robots-Tag PASS: 82 media, JSON/robots, 30 published routes, 2 homepages and 2 HTTP 404 checks")
     print("WordPress historical fidelity, rights, PDFs, native comments, security/performance remain separate acceptance items.")
 
