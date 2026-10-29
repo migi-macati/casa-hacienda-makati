@@ -30,6 +30,16 @@ jobs:
       - run: python -m py_compile scripts/audit-live-people.py
       - run: python scripts/audit-live-people.py --self-test
       - run: python scripts/audit-live-people.py --output-dir people-browser-evidence
+      - run: python -m py_compile scripts/audit-live-events.py
+      - run: python scripts/audit-live-events.py --self-test
+      - run: python scripts/audit-live-events.py --output-dir events-browser-evidence
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: independent-live-events-browser
+          path: events-browser-evidence/
+          if-no-files-found: ignore
+          retention-days: 7
       - if: always()
         uses: actions/upload-artifact@v4
         with:
