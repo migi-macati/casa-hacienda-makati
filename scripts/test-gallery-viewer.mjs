@@ -54,7 +54,7 @@ const galleryImages = Array.from({ length: 3 }, (_, i) => Object.assign(fakeNode
 const figures = galleryImages.map((img, i) => ({
   querySelector(selector) {
     if (selector === 'img') return img;
-    if (selector === 'figcaption') return { textContent: 'Caption ' + (i + 1) };
+    if (selector === 'figcaption') return i === 2 ? null : { textContent: 'Caption ' + (i + 1) };
     if (selector === 'a[href]') return null;
   },
 }));
@@ -92,10 +92,14 @@ assert.equal(close.focused, true);
 assert.equal(heading.textContent, 'Image 1 of 3');
 assert.equal(modalImage.src, '/media/photo1.webp');
 assert.equal(caption.textContent, 'Caption 1');
+assert.equal(caption.id, 'chm-gallery-caption');
+assert.equal(modalImage.getAttribute('aria-describedby'), caption.id);
 assert.equal(previous.disabled, true);
 assert.equal(next.disabled, false);
 assert.equal(dialog.fire('keydown', { key: 'End' }), true);
 assert.equal(heading.textContent, 'Image 3 of 3');
+assert.equal(caption.textContent, 'Original description 3');
+assert.equal(modalImage.getAttribute('aria-describedby'), undefined);
 assert.equal(next.disabled, true);
 assert.equal(dialog.fire('keydown', { key: 'ArrowRight' }), true);
 assert.equal(heading.textContent, 'Image 3 of 3');
@@ -103,6 +107,7 @@ assert.equal(dialog.fire('keydown', { key: 'Home' }), true);
 assert.equal(heading.textContent, 'Image 1 of 3');
 assert.equal(dialog.fire('keydown', { key: 'ArrowRight' }), true);
 assert.equal(heading.textContent, 'Image 2 of 3');
+assert.equal(modalImage.getAttribute('aria-describedby'), caption.id);
 assert.equal(dialog.fire('keydown', { key: 'ArrowLeft' }), true);
 assert.equal(heading.textContent, 'Image 1 of 3');
 assert.equal(dialog.fire('keydown', { key: 'Tab' }), false);
