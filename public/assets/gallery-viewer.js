@@ -23,6 +23,7 @@
   image.className = 'chm-gallery-image';
   const caption = document.createElement('p');
   caption.className = 'chm-gallery-caption';
+  caption.id = 'chm-gallery-caption';
   const controls = document.createElement('div');
   controls.className = 'chm-gallery-controls';
   const previous = document.createElement('button');
@@ -42,6 +43,12 @@
     image.src = item.image.currentSrc || item.image.src;
     image.alt = item.image.alt;
     caption.textContent = item.caption || item.image.alt;
+    // Associate distinct source captions with the displayed image for screen readers.
+    // The visible alt fallback is not announced twice when no separate caption exists.
+    if (item.caption && item.caption !== item.image.alt)
+      image.setAttribute('aria-describedby', caption.id);
+    else
+      image.removeAttribute('aria-describedby');
     previous.disabled = active.index === 0;
     next.disabled = active.index === active.items.length - 1;
   }
