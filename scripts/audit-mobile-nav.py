@@ -66,6 +66,15 @@ def check_navigation(page, route, width, expected_status):
     response = page.goto(route, wait_until="load", timeout=45000)
     assert response and response.status == expected_status, (route, expected_status)
     assert page.locator('meta[name="robots"]').get_attribute("content") == "noindex,nofollow", route
+    skip = page.locator('a.skip-link[href="#main-content"]')
+    main = page.locator('main#main-content[tabindex="-1"]')
+    assert skip.count() == main.count() == 1, ("skip landmark", route)
+    page.keyboard.press("Tab")
+    assert skip.evaluate("(e) => document.activeElement === e"), ("skip first focus", route)
+    assert skip.is_visible(), ("skip visible on focus", route)
+    page.keyboard.press("Enter")
+    assert page.evaluate("location.hash") == "#main-content", ("skip target", route)
+    assert main.evaluate("(e) => document.activeElement === e"), ("skip focus transfer", route)
     desktop = page.locator("nav.desktop-nav")
     mobile = page.locator("details.mobile-nav")
     assert desktop.count() == mobile.count() == 1, route
