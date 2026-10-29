@@ -1,0 +1,9 @@
+# Independent production discussion fallback acceptance — 2026-10-30
+
+Scope: **read-only** verification of the existing published article discussion links. The static migration does not have a native comment form. Its established WordPress bridge directs a reader to the corresponding original post's #respond fragment. This change does not alter published HTML, original WordPress, comments, or any external service.
+
+The permanent `scripts/audit-production.py` Chromium gate now checks all 13 published articles at 1280px and 375px (26 visits). Each must have exactly one original-publication link and exactly one discussion bridge, an exact same-article original WordPress destination with #respond, a visible and keyboard-focusable link in the original-publication block, safe new-tab rel/target, and no unexpected local comment-collection form. It tests Shift+Tab and Tab order between the original-publication link and discussion link without activating external navigation. Twelve synthetic malformed snapshots fail closed in --self-test.
+
+**Limits:** This verifies the migrated bridge, not native commenting parity, WordPress comment submission, WordPress #respond runtime behavior, moderation, user consent, manual screen-reader usability, or source rights. The original WordPress is strictly READ-ONLY; no login, comment submission, account or paid service. Preserve four private drafts, 82 media assets and global noindex. CHM-B040's operation-specific historical safety rejection is unrelated and must never be retried or bypassed. No published article body, PDF, original media, rights or launch decision is changed.
+
+Acceptance requires exact-head all-eight Actions PASS, independent production Chromium evidence, reviewed two-file diff, squash merge and authenticated exact-main Vercel READY. Overall migration remains incomplete.
