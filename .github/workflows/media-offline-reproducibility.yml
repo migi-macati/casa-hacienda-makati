@@ -16,15 +16,17 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Warm npm package cache (network permitted only in this phase)
+      - name: Install committed lockfile and warm npm cache (network permitted only here)
         env:
           npm_config_cache: ${{ runner.temp }}/chm-npm-cache
-        run: npm install --no-audit --no-fund
-      - name: Validate generated npm lockfile provenance
+        run: |
+          npm ci --no-audit --no-fund
+          git diff --exit-code -- package-lock.json
+      - name: Validate committed npm lockfile provenance
         run: |
           node scripts/audit-npm-lockfile.mjs --self-test
           node scripts/audit-npm-lockfile.mjs
-      - name: Retain generated npm lockfile for independent review
+      - name: Retain committed npm lockfile for independent review
         uses: actions/upload-artifact@v4
         with:
           name: chm-npm-lockfile
