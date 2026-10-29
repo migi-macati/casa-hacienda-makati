@@ -1,0 +1,7 @@
+# Global noindex response header for non-HTML assets — 2026-10-29 ~18:40 PHT
+
+The existing migration safeguards include noindex HTML meta tags and a full-site robots.txt Disallow rule. Neither attaches an explicit noindex response directive to directly accessible PDFs or images. This change adds a global Vercel `X-Robots-Tag: noindex, nofollow` header without changing the original robots.txt or removing HTML meta safeguards. The header applies to all routes, including static PDFs and media, when served by Vercel.
+
+The mandatory dependency-free build preflight `scripts/test-privacy-headers.mjs` checks the catch-all header, security-header preservation and robots.txt, with eight fail-closed mutations. This is a configuration and CI safeguard, not independent proof of live response headers, removal from existing search indexes, rights clearance, or authorization for public launch. A robots.txt Disallow may prevent compliant crawlers from fetching the noindex response; do not claim guaranteed deindexing. Verify final production headers independently when accessible.
+
+Scope: Vercel configuration, package build preflight, one new test and this note. No original WordPress writes, public article or source-media edits, private-draft exposure, changes to 82 media bytes, paid services, or launch/indexing authorization. CHM-B040 historical CS12 safety rejection remains prohibited and must not be retried or bypassed.
