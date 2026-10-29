@@ -4,7 +4,7 @@
 
 The existing `scripts/audit-pdf-link-accessibility.py` checks published local PDF URLs, descriptive embedded-reader names, fallback links and noindex. Inspection of its parser found a bypass: a PDF embedded from an external HTTPS URL, protocol-relative URL, relative `.pdf` path or inline `data:application/pdf` URL returned no recognized local target and no error. A PDF reader declaring `type="application/pdf"` with a generic external viewer URL was likewise ignored. Such embeds could evade the local PDF inventory, fallback/accessibility gate and privacy expectations.
 
-This patch fails closed for these PDF-signalled embedded-reader sources in `object`, `iframe` and `embed`, while preserving ordinary external scholarly PDF **anchor citations**. It adds fifteen targeted negative fixtures (five per embedding element) to the existing thirteen, alongside the three valid embedding fixtures. Unrelated non-PDF embedded media is outside this audit's scope; manual review remains required.
+This patch fails closed for these PDF-signalled embedded-reader sources in `object`, `iframe` and `embed`, while preserving ordinary external scholarly PDF **anchor citations**. It adds eighteen targeted negative fixtures (six per embedding element) to the existing thirteen, alongside the three valid embedding fixtures. Unrelated non-PDF embedded media is outside this audit's scope; manual review remains required.
 
 ## Release and acceptance limits
 
