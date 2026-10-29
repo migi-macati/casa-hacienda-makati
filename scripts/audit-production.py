@@ -326,11 +326,102 @@ def check_live_comment_bridge(page, route):
     return True
 
 
+
+def validate_mobile_nav_snapshot(s, route):
+    """Fail closed on missing, duplicated or hidden live mobile navigation."""
+    links = ["/", "/about/", "/cultural-significance/", "/#archive",
+             "https://facebook.com/casahaciendamakati"]
+    if (s.get("menus") != 1 or s.get("summaries") != 1 or
+            s.get("summaryText") != "Menu" or s.get("navLabel") != "Mobile" or
+            s.get("links") != links or s.get("scriptCount") != 1 or
+            s.get("scriptSrc") != ORIGIN + "/assets/mobile-nav-keyboard.js" or
+            s.get("initiallyOpen") is not False or
+            s.get("summaryVisible") is not True or
+            s.get("desktopHidden") is not True or
+            s.get("summaryFocusable") is not True):
+        raise AssertionError("Production mobile navigation structure/visibility regression: " + route)
+    return True
+
+
+def check_live_mobile_nav(page, route):
+    snapshot = page.evaluate("""() => {
+      const menus = [...document.querySelectorAll('details.mobile-nav')];
+      const menu = menus[0];
+      const summary = menu?.querySelector(':scope > summary');
+      const nav = menu?.querySelector(':scope > nav');
+      const desktop = document.querySelector('nav.desktop-nav');
+      const rect = summary?.getBoundingClientRect();
+      return {
+        menus: menus.length, summaries: menu?.querySelectorAll(':scope > summary').length,
+        summaryText: summary?.textContent.trim(), navLabel: nav?.getAttribute('aria-label'),
+        links: nav && [...nav.querySelectorAll('a[href]')].map(a => a.getAttribute('href')),
+        scriptCount: document.querySelectorAll('script[src="/assets/mobile-nav-keyboard.js"]').length,
+        scriptSrc: document.querySelector('script[src="/assets/mobile-nav-keyboard.js"]')?.src,
+        initiallyOpen: menu?.open,
+        summaryVisible: !!(rect && rect.width > 0 && rect.height >= 44 &&
+          getComputedStyle(summary).visibility === 'visible'),
+        desktopHidden: !!(desktop && getComputedStyle(desktop).display === 'none'),
+        summaryFocusable: !!(summary && summary.tabIndex >= 0)
+      };
+    }""")
+    validate_mobile_nav_snapshot(snapshot, route)
+    summary = page.locator('details.mobile-nav > summary')
+    menu = page.locator('details.mobile-nav')
+    summary.click()
+    if not menu.evaluate('(el) => el.open'):
+        raise AssertionError('Mobile menu failed to open: ' + route)
+    link = menu.locator('nav a').nth(1)
+    link.focus()
+    if not link.evaluate('(el) => document.activeElement === el'):
+        raise AssertionError('Mobile menu link cannot receive keyboard focus: ' + route)
+    page.keyboard.press('ArrowDown')
+    if not menu.evaluate('(el) => el.open'):
+        raise AssertionError('Non-Escape key unexpectedly closed mobile menu: ' + route)
+    page.keyboard.press('Escape')
+    if menu.evaluate('(el) => el.open') or not summary.evaluate('(el) => document.activeElement === el'):
+        raise AssertionError('Escape failed to close mobile menu and restore focus: ' + route)
+    summary.click()
+    if not menu.evaluate('(el) => el.open'):
+        raise AssertionError('Mobile menu failed to reopen: ' + route)
+    page.locator('main#main-content').focus()
+    page.keyboard.press('Escape')
+    if not menu.evaluate('(el) => el.open'):
+        raise AssertionError('Escape outside mobile menu unexpectedly closed it: ' + route)
+    summary.click()
+    if menu.evaluate('(el) => el.open'):
+        raise AssertionError('Native summary failed to close mobile menu: ' + route)
+    return True
+
+
+def check_mobile_nav_no_js(browser):
+    """The native disclosure must remain usable if JavaScript is unavailable."""
+    context = browser.new_context(viewport={"width": 375, "height": 812},
+                                  java_script_enabled=False)
+    try:
+        page = context.new_page()
+        response = page.goto(ORIGIN + "/", wait_until="load", timeout=45000)
+        if not response or response.status != 200:
+            raise AssertionError('No-JS homepage unavailable')
+        check_security_headers(response, "/")
+        menu = page.locator('details.mobile-nav')
+        summary = menu.locator('summary')
+        if menu.count() != 1 or not summary.is_visible() or menu.evaluate('(el) => el.open'):
+            raise AssertionError('No-JS native mobile menu initial state invalid')
+        summary.click()
+        if not menu.evaluate('(el) => el.open') or menu.locator('nav a:visible').count() != 5:
+            raise AssertionError('No-JS native mobile menu failed to open')
+        summary.click()
+        if menu.evaluate('(el) => el.open'):
+            raise AssertionError('No-JS native mobile menu failed to close')
+    finally:
+        context.close()
+
 def check_browser(index):
     from playwright.sync_api import sync_playwright
     errors = []
     visits = 0
     gallery_visits = 0
+    mobile_nav_visits = 0
     with sync_playwright() as pw:
         browser = pw.chromium.launch(headless=True)
         for width, height in ((1280, 800), (375, 812)):
@@ -365,6 +456,9 @@ def check_browser(index):
                 if entry["url"] in GALLERY_ROUTES:
                     check_live_gallery(page, entry["url"], *GALLERY_ROUTES[entry["url"]])
                     gallery_visits += 1
+                if width == 375:
+                    check_live_mobile_nav(page, entry["url"])
+                    mobile_nav_visits += 1
                 visits += 1
             response = page.goto(ORIGIN + "/", wait_until="domcontentloaded", timeout=45000)
             if not response or response.status != 200:
@@ -382,12 +476,19 @@ def check_browser(index):
             page.wait_for_function('document.querySelector("#search-status").textContent.startsWith("0 results")', timeout=15000)
             if not page.locator("#nothing").is_visible():
                 raise AssertionError("Homepage no-results state missing")
+            if width == 375:
+                check_live_mobile_nav(page, "/")
+                mobile_nav_visits += 1
             check_missing_route(page)
+            if width == 375:
+                check_live_mobile_nav(page, "/__chm_qa_unpublished_route_20261028__/")
+                mobile_nav_visits += 1
             context.close()
+        check_mobile_nav_no_js(browser)
         browser.close()
     if errors:
         raise AssertionError("Browser JavaScript exceptions: " + "; ".join(errors[:5]))
-    return visits, gallery_visits
+    return visits, gallery_visits, mobile_nav_visits
 
 def self_test():
     manifest = {"assets": [{"path": f"/media/2023/07/sample{i}.webp"} for i in range(82)]}
@@ -471,7 +572,28 @@ def self_test():
             pass
         else:
             raise AssertionError('Invalid discussion bridge accepted: ' + field)
-    print("Production acceptance self-tests PASS: media/index/gallery and 11 HTTP privacy and 12 discussion negative fixtures")
+    valid_nav = {"menus": 1, "summaries": 1, "summaryText": "Menu",
+                 "navLabel": "Mobile", "links": ["/", "/about/",
+                 "/cultural-significance/", "/#archive",
+                 "https://facebook.com/casahaciendamakati"],
+                 "scriptCount": 1, "scriptSrc": ORIGIN + "/assets/mobile-nav-keyboard.js",
+                 "initiallyOpen": False, "summaryVisible": True,
+                 "desktopHidden": True, "summaryFocusable": True}
+    assert validate_mobile_nav_snapshot(valid_nav, "/test/")
+    for field, value in (
+            ("menus", 2), ("summaries", 0), ("summaryText", "Navigation"),
+            ("navLabel", None), ("links", ["/"]), ("scriptCount", 0),
+            ("scriptSrc", "https://example.invalid/mobile-nav-keyboard.js"),
+            ("initiallyOpen", True), ("summaryVisible", False),
+            ("desktopHidden", False), ("summaryFocusable", False)):
+        bad = dict(valid_nav, **{field: value})
+        try:
+            validate_mobile_nav_snapshot(bad, "/test/")
+        except AssertionError:
+            pass
+        else:
+            raise AssertionError("Invalid mobile navigation accepted: " + field)
+    print("Production acceptance self-tests PASS: media/index/gallery, 11 HTTP privacy, 12 discussion and 11 mobile-nav negative fixtures")
 
 def main():
     if sys.argv[1:] == ["--self-test"]:
@@ -486,11 +608,12 @@ def main():
     with concurrent.futures.ThreadPoolExecutor(max_workers=6) as pool:
         verified = list(pool.map(check_media, assets))
     print(f"Independent deployed media SHA256 PASS: {len(verified)}/82")
-    visits, gallery_visits = check_browser(index)
+    visits, gallery_visits, mobile_nav_visits = check_browser(index)
     print(f"Independent deployed Chromium PASS: {visits}/30 published page visits, desktop/mobile, search, noindex, visible text, console")
     print("Live article reading-column geometry PASS: 26/26 desktop/mobile visits; prose width, sidebar separation and mobile stacking")
     print("Live original WordPress discussion fallback PASS: 26/26 article visits; exact targets, keyboard order, visible links and no local collection")
     print(f"Independent production gallery interaction PASS: {gallery_visits}/4 gallery visits, 10 images per viewport, modal, keyboard, focus, original fallback links")
+    print(f"Independent live mobile navigation PASS: {mobile_nav_visits}/17 published/home/404 routes; Escape/focus/outside-focus; no-JS native disclosure")
     print("Production security + X-Robots-Tag PASS: 82 media, JSON/robots, 30 published routes, 2 homepages and 2 HTTP 404 checks")
     print("WordPress historical fidelity, rights, PDFs, native comments, security/performance remain separate acceptance items.")
 
