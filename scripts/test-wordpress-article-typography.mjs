@@ -33,8 +33,8 @@ function validate(text) {
   const section = text.split(marker)[1];
   assert.ok(section.includes('.content .has-large-font-size{font-size:clamp(1.75rem,3vw,2.25rem);line-height:1.3}'));
   assert.ok(section.includes('.content .has-x-large-font-size{font-size:clamp(2rem,3.7vw,2.625rem);line-height:1.24}'));
-  assert.ok(!/display\\s*:\\s*none|visibility\\s*:\\s*hidden|opacity\\s*:\\s*0/i.test(section));
-  assert.ok(!/@import|url\\(/i.test(section), 'no remote CSS assets');
+  assert.ok(!section.includes('display:none') && !section.includes('visibility:hidden') && !section.includes('opacity:0'), 'never hide original content');
+  assert.ok(!section.includes('@import') && !section.includes('url('), 'no remote CSS assets');
 }
 validate(css);
 const mutations = [
