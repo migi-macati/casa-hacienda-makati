@@ -265,6 +265,29 @@ with sync_playwright() as pw:
                 assert page.evaluate("document.documentElement.scrollWidth <= innerWidth + 1"), (
                     "Published article horizontal overflow", route, width)
 
+        # Original Gutenberg separator styling: source-preserving narrow centered rules.
+        # All external requests are blocked for these generated-site visits.
+        page.route("https://**", lambda route: route.abort())
+        for width in (320, 375, 1280):
+            page.set_viewport_size({"width": width, "height": 812})
+            for route, expected in (
+                ("/2023/08/12/cultural-significance-no-1/", 5),
+                ("/2023/10/21/history-of-barrio-olimpia-makati-rizal/", 3),
+                ("/2024/10/28/cultural-significance-no-12/", 1),
+            ):
+                page.goto(f"http://127.0.0.1:{server.server_port}{route}",
+                          wait_until="domcontentloaded")
+                separators = page.locator("article.content hr.wp-block-separator")
+                assert separators.count() == expected, ("Original separator count", route, width)
+                assert separators.evaluate_all(
+                    "(nodes) => nodes.every(e => {const s=getComputedStyle(e);return "
+                    "s.width==='100px' && s.height==='0px' && s.borderBottomWidth==='2px' "
+                    "&& s.borderBottomStyle==='solid' && s.opacity==='1' && "
+                    "s.display!=='none';})"
+                ), ("Gutenberg separator computed styles", route, width)
+                assert page.evaluate("document.documentElement.scrollWidth <= innerWidth + 1"), (
+                    "Separator page horizontal overflow", route, width)
+
     finally:
         server.shutdown()
         server.server_close()
