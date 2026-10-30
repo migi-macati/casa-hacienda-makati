@@ -21,7 +21,7 @@ assert.equal((html.match(/<tr>/g) || []).length, 5);
 assert.equal((html.match(/<td>/g) || []).length, 10);
 assert.ok(html.includes('Properties Available for Negotiated Sale'), 'original evidence heading');
 const marker = "/* Imported Gutenberg Land Bank callout and striped evidence table: restore missing block styles. */";
-const rule = ".content .wp-block-group.has-accent-background-color.has-background{background:#f0e2c9;padding:1rem}\n.content .wp-block-table.is-style-stripes{max-width:100%;overflow-x:auto}\n.content .wp-block-table.is-style-stripes table{display:table;width:100%;min-width:320px;table-layout:fixed}\n.content .wp-block-table.is-style-stripes tbody tr:nth-child(even){background:#f4f0e8}\n.content .wp-block-table.is-style-stripes td{vertical-align:top;overflow-wrap:anywhere}";
+const rule = ".content .wp-block-group.has-accent-background-color.has-background{min-width:0;max-width:100%;overflow-x:auto;background:#f0e2c9;padding:1rem}\n.content .wp-block-table.is-style-stripes{display:block;width:100%;min-width:0;max-width:100%;overflow-x:auto}\n.content .wp-block-table.is-style-stripes table{display:table;width:100%;min-width:320px;table-layout:fixed}\n.content .wp-block-table.is-style-stripes tbody tr:nth-child(even){background:#f4f0e8}\n.content .wp-block-table.is-style-stripes td{vertical-align:top;overflow-wrap:anywhere}";
 function validate(candidate) {
   assert.equal(candidate.split(marker).length, 2, 'one reviewed table section');
   assert.equal(candidate.split(marker)[1].trim(), rule, 'exact scoped callout/table rules');
