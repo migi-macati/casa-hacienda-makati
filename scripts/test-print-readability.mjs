@@ -59,7 +59,7 @@ const changes=[
  [required[10],required[10].replace('padding:0!important','padding:80px!important')],
  [required[11],required[11].replace('repeat(2','repeat(5')],
  [required[12],required[12].replace('overflow:visible','overflow:hidden')],
- [required[11]+'\\n  '+required[18],required[11]+'\\n  '+required[18].replace('repeat(2','repeat(4')],
+ [required[11]+'\n  '+required[18],required[11]+'\n  '+required[18].replace('repeat(2','repeat(4')],
  [required[13],required[13].replace('min-width:0','min-width:600px')],
  [required[14],required[14].replace('background:#fff','background:#000')],
  [required[15],required[15].replace('color:#111','color:transparent')],
