@@ -1,0 +1,7 @@
+# Archival print readability — 2026-10-31
+
+This is a print-only, source-preserving reader improvement for the 13 published articles and two pages. It uses local CSS to remove navigation and decorative spacers from paper output, retain all original article text and links, keep document scans within printable width, stack imported WordPress columns, and avoid clipping the existing Land Bank table. Screen styling is unchanged. It does not reproduce new media, create PDF derivatives, alter source WordPress, inspect private drafts, or change noindex.
+
+The mandatory build test pins all 15 published Git blobs and the stylesheet and exercises 18 fail-closed mutations. The search/privacy workflow also checks actual Chromium print-media computed styles at 375/1280px for all 15 routes, text/links preservation and noindex, with remote requests aborted. These checks are not a manual screen-reader test, a PDF/UA fix, field performance measurement, original Newspack print-theme pixel parity or proof of rights.
+
+CHM-B040's historical CS12 safety-rejected operation remains prohibited; this work does not retry it. The three original PDFs and their unresolved accessibility and rights remain unchanged. Preserve four private drafts, 82 media assets, noindex, and all existing original publication links. Merge only after all exact-head workflows and preview pass; READY exact main means DEPLOYED, not FULLY LIVE_VERIFIED.

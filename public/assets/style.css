@@ -119,3 +119,28 @@
 .content .has-primary-color.has-text-color{color:#1c3b30}
 .content .has-foreground-color.has-text-color{color:var(--ink)}
 .content .has-black-color.has-text-color{color:#111}
+
+/* Print-only archival reading: preserve original published text, source links and scans. */
+@media print{
+  @page{margin:16mm}
+  html{scroll-behavior:auto}
+  body{background:#fff!important;color:#111!important;font:11pt/1.5 Georgia,serif}
+  .notice,.siteheader,.skip-link,.sidebar,footer,.research-jump,.comment-bridge{display:none!important}
+  .layout{display:block;max-width:none;padding:0}
+  .entryhead{margin:0 0 1rem;padding-bottom:.5rem}
+  .content{font-size:11pt;line-height:1.5;overflow:visible;overflow-wrap:anywhere}
+  .content h1,.content h2,.content h3{break-after:avoid}
+  .content p,.content li{orphans:3;widows:3}
+  .content img{max-width:100%!important;height:auto!important;object-fit:contain}
+  .content figure,.content blockquote,.content .wp-block-table{break-inside:avoid}
+  .content .wp-block-spacer{display:none!important}
+  .content .wp-block-columns{display:block}
+  .content .wp-block-column{display:block;width:auto!important;min-width:0!important;padding:0!important}
+  .content .wp-block-gallery.has-nested-images{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+  .content .wp-block-table.is-style-stripes{overflow:visible}
+  .content .wp-block-table.is-style-stripes table{min-width:0;width:100%}
+  .content .wp-block-group.has-accent-background-color.has-background{overflow:visible;background:#fff!important;border:1px solid #777}
+  .content .wp-block-button__link{background:#fff!important;color:#111!important;border:1px solid #777}
+  .content a{color:#111!important;text-decoration:underline}
+  .original{background:#fff!important;border-top:1px solid #777}
+}

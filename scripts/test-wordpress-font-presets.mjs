@@ -22,7 +22,9 @@ assert.equal((significance.match(/has-medium-font-size/g) || []).length, 1, 'Sig
 const marker = '/* Imported Gutenberg font-size presets: preserve source classes and readable small text. */';
 function validate(text) {
   assert.equal(text.split(marker).length, 2, 'single reviewed font preset section');
-  const section = text.split(marker)[1];
+  const after = text.split(marker)[1];
+  const next = after.indexOf('\n\n/*');
+  const section = next < 0 ? after : after.slice(0, next);
   assert.ok(section.includes('.content .has-small-font-size{font-size:.875rem;line-height:1.6}'), 'small font and readable line height');
   assert.ok(section.includes('.content .has-medium-font-size{font-size:1.25rem;line-height:1.55}'), 'medium font and readable line height');
   assert.ok(!/display\s*:\s*none|visibility\s*:\s*hidden|opacity\s*:\s*0/i.test(section), 'never hide original content');
