@@ -33,7 +33,9 @@ const rule = '.content .wp-block-separator{box-sizing:content-box;width:100px;ma
   '.content .wp-block-separator.has-alpha-channel-opacity{opacity:1}';
 function validate(candidate) {
   assert.equal(candidate.split(marker).length, 2, 'one reviewed Gutenberg separator section');
-  assert.equal(candidate.split(marker)[1].trim(), rule, 'no unreviewed separator style change');
+  const next = '/* Imported Gutenberg Land Bank callout and striped evidence table: restore missing block styles. */';
+  assert.equal(candidate.split(next).length, 2, 'one reviewed subsequent Gutenberg section');
+  assert.equal(candidate.split(marker)[1].split(next)[0].trim(), rule, 'no unreviewed separator style change');
   assert.ok(!candidate.includes('@import'), 'no remote stylesheets');
 }
 validate(css);
