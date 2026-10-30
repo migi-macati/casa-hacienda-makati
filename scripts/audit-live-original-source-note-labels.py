@@ -90,6 +90,8 @@ def audit():
                     page = context.new_page()
                     response = page.goto(ORIGIN + route, wait_until='domcontentloaded', timeout=45000)
                     assert response and response.status == 200 and page.url == ORIGIN + route
+                    page.wait_for_load_state('load', timeout=20000)
+                    page.evaluate('() => Promise.race([document.fonts.ready, new Promise(r=>setTimeout(r,3000))])')
                     assert 'noindex' in response.headers.get('x-robots-tag','').lower()
                     assert 'nofollow' in response.headers.get('x-robots-tag','').lower()
                     matches = validate_html(response.text(), count)
@@ -111,7 +113,17 @@ def audit():
                     assert focus.evaluate('(e) => document.activeElement === e')
                     focus.press('Enter')
                     assert page.evaluate('location.hash').lstrip('#') == focus.get_attribute('href')[1:]
-                    assert page.evaluate('document.documentElement.scrollWidth <= innerWidth + 1')
+                    page.wait_for_timeout(250)
+                    overflow = page.evaluate("""() => ({
+                      scrollWidth: document.documentElement.scrollWidth,
+                      viewportWidth: innerWidth,
+                      offenders: [...document.querySelectorAll('body *')].filter(e => {
+                        const r=e.getBoundingClientRect();
+                        return r.width > 0 && r.right > innerWidth+1;
+                      }).slice(0,5).map(e=>({tag:e.tagName.toLowerCase(),
+                        classes:String(e.className||'').slice(0,80)}))
+                    })""")
+                    assert overflow['scrollWidth'] <= overflow['viewportWidth'] + 1, (route,width,js,overflow)
                     assert not external, ('third-party requests prohibited', external)
                     evidence.append({'route':route,'count':count,'viewport':width,'javascript':js,
                                      'status':response.status,'noindex':True,'keyboard':True,'external_requests':0})
