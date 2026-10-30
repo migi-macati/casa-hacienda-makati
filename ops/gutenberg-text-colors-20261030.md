@@ -1,0 +1,7 @@
+# Source-defined Gutenberg text-color fallback — 2026-10-30
+
+The original 15 locked published WordPress HTML sources include **16** `has-primary-color`, **55** `has-foreground-color` and **5** `has-black-color` classes paired with `has-text-color`. The migrated stylesheet lacked the original block-theme color rules. This release restores conservative readable local fallbacks, scoped to article content: primary #1c3b30, foreground the site's existing #243e30 ink, and black #111. The original Newspack palette has not been independently established; do **not** claim pixel-perfect parity.
+
+Source bytes remain pinned, and the stylesheet Git blob is pinned in `ops/published-search-sources.json`. A mandatory build test counts all three class families across all 13 posts and two pages and rejects twelve CSS mutations. Generated-site Chromium verifies computed styles and no horizontal overflow at 320, 375 and 1280px with all external requests blocked. These are automated checks, not manual screen-reader certification or final-production visual verification.
+
+No original WordPress writes, private draft/media/PDF/source changes, Facebook requests, rights grant, noindex or public launch. Four private drafts, 82 media and the CHM-B040 historical safety rejection remain untouched. This release does not resolve original Newspack global carousel fidelity, owner media rights, comments, field CWV/INP or PDF accessibility.
