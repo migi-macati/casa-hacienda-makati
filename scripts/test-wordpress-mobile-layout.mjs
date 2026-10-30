@@ -6,7 +6,7 @@ const css = readFileSync('public/assets/style.css', 'utf8');
 const lock = JSON.parse(readFileSync('ops/published-search-sources.json', 'utf8'));
 const about = readFileSync('public/about/index.html', 'utf8');
 const significance = readFileSync('public/cultural-significance/index.html', 'utf8');
-const gitBlob = text => createHash('sha1').update(`blob ${Buffer.byteLength(text)}\\0`).update(text).digest('hex');
+const gitBlob = text => { const bytes = Buffer.from(text); return createHash('sha1').update('blob ' + bytes.length).update(Buffer.from([0])).update(bytes).digest('hex'); };
 
 assert.equal(lock.documents.length, 15, 'published source closure');
 assert.equal(gitBlob(css), lock.stylesheetGitBlob, 'reviewed CSS must match search privacy source lock');
