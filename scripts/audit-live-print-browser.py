@@ -62,7 +62,7 @@ def inventory():
     found = {}
     for doc in docs:
         raw = (ROOT / "public" / doc["file"]).read_bytes()
-        digest = hashlib.sha1(b"blob " + str(len(raw)).encode() + b"\\0" + raw).hexdigest()
+        digest = hashlib.sha1(b"blob " + str(len(raw)).encode() + bytes([0]) + raw).hexdigest()
         assert digest == doc["gitBlob"], "Source lock mismatch: " + doc["file"]
         html = raw.decode("utf-8")
         assert '<meta name="robots" content="noindex,nofollow">' in html
@@ -82,7 +82,7 @@ def inventory():
 def validate(s, source, route, width):
     assert width in (375, 1280), "Unreviewed viewport"
     assert s.get("status") == 200, (route, "HTTP status")
-    assert re.fullmatch(r"noindex\\s*,\\s*nofollow", s.get("header") or "", re.I), (route, "noindex HTTP")
+    assert re.fullmatch(r"noindex\s*,\s*nofollow", s.get("header") or "", re.I), (route, "noindex HTTP")
     assert s.get("robots") == "noindex,nofollow", (route, "noindex meta")
     assert s.get("articles") == 1 and s.get("stylesheets", 0) >= 1, (route, "published HTML/CSS")
     assert s.get("originalHref") == source["original"] and s.get("originalVisible") is True, (route, "source attribution")
@@ -194,7 +194,7 @@ def live(sources):
     target.write_text(json.dumps({
         "origin":ORIGIN, "checks":len(evidence), "thirdPartyRequestsBlocked":len(blocked),
         "pdfsGenerated":0, "results":evidence
-    }, indent=2) + "\\n")
+    }, indent=2) + chr(10))
     print("Live production print QA:", len(evidence), "Chromium checks PASS; third-party requests blocked:", len(blocked))
 
 if __name__ == "__main__":
