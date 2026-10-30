@@ -79,7 +79,7 @@ def inventory():
     assert sum(x["table"] for x in found.values()) == 1
     return found
 
-def validate(s, source, route, width, allow_previous=False):
+def validate(s, source, route, width):
     assert width in (375, 1280), "Unreviewed viewport"
     assert s.get("status") == 200, (route, "HTTP status")
     assert re.fullmatch(r"noindex\s*,\s*nofollow", s.get("header") or "", re.I), (route, "noindex HTTP")
@@ -91,11 +91,7 @@ def validate(s, source, route, width, allow_previous=False):
     for key in ("headerHidden", "sidebarHidden", "footerHidden", "layoutBlock",
                 "articleVisible", "bodyWhite", "spacersHidden", "columnsStacked", "imagesFit"):
         assert s.get(key) is True, (route, key)
-    expected_gallery = [2] * source["galleries"]
-    if allow_previous and route == "/2023/10/21/history-of-barrio-olimpia-makati-rizal/":
-        assert s.get("galleryColumns") in ([2], [4]), (route, "controlled premerge gallery baseline")
-    else:
-        assert s.get("galleryColumns") == expected_gallery, (route, "gallery print layout")
+    assert s.get("galleryColumns") == [2] * source["galleries"], (route, "strict deployed gallery print layout")
     if source["table"]:
         t = s.get("table")
         assert t is not None and t["overflow"] == "visible" and t["minWidth"] == "0px", (route, "evidence table print layout")
@@ -158,21 +154,16 @@ def self_test(sources):
         pass
     else:
         raise AssertionError("Strict postmerge print gallery gate accepted four columns")
-    validate(gallery_case, gallery_source, gallery_route, 375, allow_previous=True)
     gallery_case["galleryColumns"] = [3]
     try:
-        validate(gallery_case, gallery_source, gallery_route, 375, allow_previous=True)
+        validate(gallery_case, gallery_source, gallery_route, 375)
     except AssertionError:
         pass
     else:
         raise AssertionError("Premerge gallery gate accepted an unknown layout")
-    print("Live print QA: 15 pinned sources, 17 negative fixtures, and strict/premerge gallery transition PASS")
+    print("Live print QA: 15 pinned sources, 17 negative fixtures and strict gallery failures PASS")
 
 def live(sources):
-    # Only PRs based on the exact pre-fix main SHA may observe the old 4-column
-    # Olympia gallery. After merge (or any subsequent PR), the gate is strict.
-    allow_previous = (os.environ.get("GITHUB_EVENT_NAME") == "pull_request"
-                      and os.environ.get("CHM_PR_BASE_SHA") == "04e649a2551684537dc1e2b567c4248d8c22180d")
     from playwright.sync_api import sync_playwright
     with sync_playwright() as pw:
         browser = pw.chromium.launch(headless=True)
@@ -207,7 +198,7 @@ def live(sources):
                         "linksPreserved":screen["links"] == printed["links"],
                         "imagesPreserved":screen["images"] == printed["images"],
                     })
-                    validate(printed, source, route, width, allow_previous=allow_previous)
+                    validate(printed, source, route, width)
                     evidence.append({
                         "route":route, "width":width, "status":response.status,
                         "noindex":True, "sourceTextAndLinksPreserved":True,
@@ -221,7 +212,7 @@ def live(sources):
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text(json.dumps({
         "origin":ORIGIN, "checks":len(evidence), "thirdPartyRequestsBlocked":len(blocked),
-        "pdfsGenerated":0, "premergeBaselineAllowed":allow_previous, "results":evidence
+        "pdfsGenerated":0, "strictPrintGallery":True, "results":evidence
     }, indent=2) + chr(10))
     print("Live production print QA:", len(evidence), "Chromium checks PASS; third-party requests blocked:", len(blocked))
 

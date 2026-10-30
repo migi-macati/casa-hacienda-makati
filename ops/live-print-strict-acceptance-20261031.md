@@ -1,0 +1,5 @@
+# Strict deployed print-gallery verification — 2026-10-31
+
+PR #121 fixed the four-column Olympia gallery print defect and deployed source-preserving CSS. This follow-up removes the temporary, exact-previous-main premerge exception from the independent live print gate. The production Chromium check must now observe **exactly two print columns** in both original historical-document galleries at 375px and 1280px, alongside 15 published routes, noindex HTTP/meta, preserved original text, source links, scan visibility, and Land Bank table legibility. Seventeen synthetic negative fixtures and two gallery-specific strict rejections remain mandatory. A public-only JSON artifact records 30 visits without reproducing scans or generating PDFs.
+
+No source article/page, CSS, media, PDF, private draft, rights, WordPress, Facebook, noindex, native comments or public-launch change. This independently verifies the already-deployed print repair, not exact Newspack theme parity, manual screen-reader WCAG, PDF/UA or full migration acceptance. CHM-B040 remains prohibited.
