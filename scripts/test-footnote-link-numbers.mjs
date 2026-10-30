@@ -7,20 +7,20 @@ const source = readFileSync('public/' + ARTICLE, 'utf8');
 const lock = JSON.parse(readFileSync('ops/published-search-sources.json', 'utf8'));
 const record = lock.documents.find(x => x.file === ARTICLE);
 assert.ok(record && lock.documents.length === 15, 'source-locked published inventory');
-const blob = bytes => createHash('sha1').update('blob ' + bytes.length + '\\0').update(bytes).digest('hex');
+const blob = bytes => createHash('sha1').update('blob ' + bytes.length + '\0').update(bytes).digest('hex');
 assert.equal(blob(Buffer.from(source)), record.gitBlob, 'original article Git blob remains pinned');
 const repaired = transform(source);
 assert.equal(transform(repaired), repaired, 'idempotent generated output');
 const plain = text => text.replace(/<[^>]+>/g, '');
-const sup = /<sup\\b[^>]*\\bdata-fn="[^"]+"[^>]*>[\\s\\S]*?<\\/sup>/g;
+const sup = /<sup\b[^>]*\bdata-fn="[^"]+"[^>]*>[\s\S]*?<\/sup>/g;
 const before = [...source.matchAll(sup)].map(x => plain(x[0]));
 const after = [...repaired.matchAll(sup)].map(x => plain(x[0]));
 assert.deepEqual(after, before, 'original visible citation numbers preserved');
 assert.deepEqual(after, Array.from({length:13},(_,i)=>String(i+1)), 'all 13 visible ordinals');
 assert.equal((repaired.match(/aria-label="Go to source note /g)||[]).length,13);
-assert.equal((source.match(/<\\/a>[0-3]<\\/sup>/g)||[]).length,4,'four real split references');
-assert.equal((repaired.match(/<\\/a>[0-3]<\\/sup>/g)||[]).length,0,'no split reference remains');
-const first = source.match(/<sup data-fn="[^"]+" class="fn"><a href="#[^"]+" id="[^"]+">1<\\/a><\\/sup>/)[0];
+assert.equal((source.match(/<\/a>[0-3]<\/sup>/g)||[]).length,4,'four real split references');
+assert.equal((repaired.match(/<\/a>[0-3]<\/sup>/g)||[]).length,0,'no split reference remains');
+const first = source.match(/<sup data-fn="[^"]+" class="fn"><a href="#[^"]+" id="[^"]+">1<\/a><\/sup>/)[0];
 const mutations = [
   source.replace('noindex,nofollow','index,follow'),
   source.replace(first,''),

@@ -6,12 +6,12 @@ import { fileURLToPath } from 'node:url';
 // Generated-output-only accessibility repair. Original WordPress HTML is source-locked.
 // The No. 10 article has four references rendered as <a>1</a>0 ... <a>1</a>3.
 export const ARTICLE = '2023/10/21/cultural-significance-no-10/index.html';
-const raw = /<sup data-fn="([0-9a-f-]{36})" class="fn"><a href="#\\1" id="\\1-link">(\\d+)<\\/a>(\\d*)<\\/sup>/g;
-const labeled = /<sup data-fn="([0-9a-f-]{36})" class="fn"><a href="#\\1" id="\\1-link" aria-label="Go to source note (\\d+)">(\\d+)<\\/a><\\/sup>/g;
+const raw = /<sup data-fn="([0-9a-f-]{36})" class="fn"><a href="#\1" id="\1-link">(\d+)<\/a>(\d*)<\/sup>/g;
+const labeled = /<sup data-fn="([0-9a-f-]{36})" class="fn"><a href="#\1" id="\1-link" aria-label="Go to source note (\d+)">(\d+)<\/a><\/sup>/g;
 
 export function transform(html) {
   assert.ok(html.includes('<meta name="robots" content="noindex,nofollow">'), 'noindex retained');
-  const all = [...html.matchAll(/<sup\\b[^>]*\\bdata-fn="[^"]+"[^>]*>/g)];
+  const all = [...html.matchAll(/<sup\b[^>]*\bdata-fn="[^"]+"[^>]*>/g)];
   assert.equal(all.length, 13, 'original 13 source-note references');
   const already = html.includes('aria-label="Go to source note ');
   const matches = [...html.matchAll(already ? labeled : raw)];
