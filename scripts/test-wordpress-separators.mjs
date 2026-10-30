@@ -51,7 +51,9 @@ const mutations = [
   ['width:100px', 'background:url(https://example.org/track);width:100px']
 ];
 for (const [before, after] of mutations) {
-  assert.ok(css.includes(before), 'missing mutation source: ' + before);
-  assert.throws(() => validate(css.replace(before, after)), 'mutation must fail: ' + before);
+  assert.ok(before === marker || rule.includes(before), 'missing scoped mutation source: ' + before);
+  const changed = before === marker ? css.replace(marker, after) : css.replace(rule, rule.replace(before, after));
+  assert.notEqual(changed, css, 'mutation must modify reviewed separator section');
+  assert.throws(() => validate(changed), 'mutation must fail: ' + before);
 }
 console.log('Published Gutenberg separators: 25 original rules, 13 articles + two pages preserved; 11 negative fixtures PASS.');
