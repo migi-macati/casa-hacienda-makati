@@ -19,7 +19,7 @@ assert.ok(about.includes('font-size:50px'), 'desktop inline heading fixture');
 assert.ok(significance.includes('style="flex-basis:33.33%"'), 'published column fixture');
 
 function validate(text) {
-  const section = text.split('/* Imported Gutenberg blocks carry desktop inline widths')[1];
+  const section = text.split('/* Imported Gutenberg blocks carry desktop inline widths')[1]?.split('/* Imported WordPress Gutenberg editorial controls:')[0];
   assert.ok(section, 'reviewed mobile-only Gutenberg section');
   assert.ok(section.includes('@media(max-width:710px)'), 'narrow-screen breakpoint');
   assert.ok(section.includes('.content .wp-block-columns{gap:1.25rem}'), 'published column spacing');

@@ -63,3 +63,15 @@
  .content .wp-block-column{flex:1 1 100%!important;min-width:0;padding-left:0!important;padding-right:0!important}
  .content .wp-block-heading[style*="font-size:50px"]{font-size:clamp(1.75rem,7vw,2.25rem)!important;line-height:1.25!important}
 }
+
+/* Imported WordPress Gutenberg editorial controls: retain source text and links,
+   restore visual affordances lost when the original block-theme CSS is absent. */
+.content .has-text-align-center{text-align:center}
+.content .wp-block-image.aligncenter{margin-left:auto;margin-right:auto;text-align:center}
+.content .wp-block-buttons{display:flex;flex-wrap:wrap;gap:.75rem}
+.content .wp-block-button__link{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:.65rem 1.2rem;background:#1c3b30;color:#fffdf5;border-radius:3px;font-weight:700;line-height:1.4;text-decoration:none}
+.content .wp-block-button__link:hover{background:#294b3e}
+.content .wp-block-button__link:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+@media(max-width:710px){
+ .content .wp-block-spacer[style*="height:100px"]{max-height:36px}
+}
