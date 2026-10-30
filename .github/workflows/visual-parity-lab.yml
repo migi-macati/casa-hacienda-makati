@@ -18,6 +18,9 @@ jobs:
       - run: python -m py_compile scripts/audit-visual-lab.py
       - run: python scripts/audit-visual-lab.py --self-test
       - run: python scripts/audit-visual-lab.py --output-dir visual-lab-evidence
+      - run: python -m py_compile scripts/audit-current-wordpress-rendered-tokens.py
+      - run: python scripts/audit-current-wordpress-rendered-tokens.py --self-test
+      - run: python scripts/audit-current-wordpress-rendered-tokens.py --output-dir visual-lab-evidence
       - run: python -m py_compile scripts/audit-carousel-interactions.py
       - run: python scripts/audit-carousel-interactions.py --self-test
       - run: python scripts/audit-carousel-interactions.py --output-dir visual-lab-evidence
@@ -25,6 +28,9 @@ jobs:
         run: |
           if [ -f visual-lab-evidence/visual-lab-report.md ]; then
             cat visual-lab-evidence/visual-lab-report.md >> "$GITHUB_STEP_SUMMARY"
+          fi
+          if [ -f visual-lab-evidence/current-wordpress-rendered-tokens.md ]; then
+            cat visual-lab-evidence/current-wordpress-rendered-tokens.md >> "$GITHUB_STEP_SUMMARY"
           fi
           if [ -f visual-lab-evidence/carousel-behavior.md ]; then
             cat visual-lab-evidence/carousel-behavior.md >> "$GITHUB_STEP_SUMMARY"
