@@ -4,7 +4,7 @@ import {createHash} from 'node:crypto';
 
 const css=readFileSync('public/assets/style.css','utf8');
 const lock=JSON.parse(readFileSync('ops/published-search-sources.json','utf8'));
-const gitBlob=s=>{const b=Buffer.from(s);return createHash('sha1').update('blob '+b.length+'\\0'.replace('\\0','\\0')).update(b).digest('hex');};
+const gitBlob=s=>{const b=Buffer.from(s);return createHash('sha1').update('blob '+b.length).update(Buffer.from([0])).update(b).digest('hex');};
 assert.equal(lock.documents.length,15);
 assert.equal(lock.documents.filter(x=>x.type==='article').length,13);
 assert.equal(lock.documents.filter(x=>x.type==='page').length,2);
