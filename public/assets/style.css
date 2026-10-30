@@ -98,3 +98,4 @@
 .content .wp-block-table.is-style-stripes table{display:table;width:100%;min-width:320px;table-layout:fixed}
 .content .wp-block-table.is-style-stripes tbody tr:nth-child(even){background:#f4f0e8}
 .content .wp-block-table.is-style-stripes td{vertical-align:top;overflow-wrap:anywhere}
+@media(max-width:920px){.layout{grid-template-columns:minmax(0,1fr)}}

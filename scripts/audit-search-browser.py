@@ -262,20 +262,6 @@ with sync_playwright() as pw:
                     assert medium.evaluate_all(
                         "(nodes) => nodes.every(e => getComputedStyle(e).fontSize === '20px')"
                     ), ("Gutenberg medium font preserved", route, width)
-                if width == 320 and route.endswith("cultural-significance-no-12/"):
-                    print("NARROW TABLE DIAGNOSTIC", page.evaluate("""() => ({
-                      viewport: innerWidth,
-                      scrollWidth: document.documentElement.scrollWidth,
-                      overflowing: [...document.querySelectorAll('article.content *')].filter(e => {
-                        const r=e.getBoundingClientRect(); return r.right>innerWidth+1 || r.left < -1;
-                      }).slice(0,25).map(e => {
-                        const r=e.getBoundingClientRect(); const s=getComputedStyle(e);
-                        return {tag:e.tagName,cls:String(e.className).slice(0,80),
-                                left:Math.round(r.left),right:Math.round(r.right),
-                                width:Math.round(r.width),scroll:e.scrollWidth,
-                                overflow:s.overflowX,display:s.display};
-                      })
-                    })"""), flush=True)
                 assert page.evaluate("document.documentElement.scrollWidth <= innerWidth + 1"), (
                     "Published article horizontal overflow", route, width)
 
