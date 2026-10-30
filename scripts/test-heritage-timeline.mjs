@@ -17,7 +17,7 @@ function verify(html){
  assert.deepEqual(rows.map(r=>r[1]),['1607','1608','1620','1768','1769'],'chronology drift');
  assert.ok(rows.every(r=>r[2].includes('class="timeline-source"')),'source missing');
  assert.ok(rows.slice(0,4).every(r=>r[2].includes('https://philhistoricsites.nhcp.gov.ph/registry_database/')),'official marker sources changed');
- assert.ok(rows[4][2].includes('Santiago Lorenzo García') && rows[4][2].includes('does not establish when the Makati hacienda changed ownership'),'1769 evidence boundary missing');
+ assert.ok(rows[4][2].includes('Historian Santiago Lorenzo García') && rows[4][2].includes('Santiago Lorenzo García, <em>La expulsión') && rows[4][2].includes('does not establish when the Makati hacienda changed ownership'),'1769 evidence boundary missing');
  assert.ok(section.includes(marker)&&section.includes(town),'both official markers required');
  assert.ok(!/<(?:img|video|audio|iframe|script|canvas)\b/i.test(section),'unapproved media or scripts');
  assert.ok(!/autoplay|setInterval|animation:/i.test(section),'motion behavior not authorized');
