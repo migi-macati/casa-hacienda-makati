@@ -46,7 +46,7 @@ const variants=[
  html.replace('aria-labelledby="heritage-sources-title"',''),
  html.replace('data-source-id="ua-1999"','data-source-id="unverified"'),
  html.replace('the monograph’s full text and original estate records were not examined','the monograph and original estate records were examined'),
- html.replace('Santiago Lorenzo García','Unverified author')
+ html.replace('The University of Alicante publication by Santiago Lorenzo García','The University of Alicante publication by Unverified author')
 ];
 for(const variant of variants)assert.throws(()=>verify(variant));
 console.log('Institutional source register: 4 records, 13 fail-closed regressions PASS.');
