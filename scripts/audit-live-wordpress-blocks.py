@@ -67,7 +67,7 @@ def validate_snapshot(s, route, width):
             or s.get("robots") != "noindex,nofollow"
             or s.get("articleCount") != 1 or s.get("stylesheets", 0) < 1
             or s.get("overflow") is not False):
-        raise AssertionError("Production/privacy/layout regression: " + route)
+        raise AssertionError("Production/privacy/layout regression: " + route + " " + str({k:s.get(k) for k in ("status", "header", "robots", "articleCount", "stylesheets", "overflow")}))
     for kind, count in ROUTES[route].items():
         values = s.get("classes", {}).get(kind)
         if not isinstance(values, list) or len(values) != count:
