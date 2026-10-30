@@ -99,6 +99,20 @@ with sync_playwright() as pw:
         assert "1769" not in original_excerpt, "Fixture must exercise a deep-text match"
         for width in (1280, 375):
             page.set_viewport_size({"width": width, "height": 812})
+            # Contextual homepage navigation: keyboard-operable links to all six
+            # existing published research sections, without new archival media.
+            jump_links = page.locator('nav.research-jump[aria-label="On this page"] a')
+            assert jump_links.count() == 6, ("Research jump link count", width)
+            for target in ("#heritage-timeline", "#heritage-sources",
+                           "#heritage-places", "#heritage-people",
+                           "#heritage-events", "#archive"):
+                jump = page.locator(f'nav.research-jump a[href="{target}"]')
+                assert jump.count() == 1, ("Missing research jump", target, width)
+                assert jump.evaluate("(e) => e.getBoundingClientRect().height >= 44"), ("Jump target size", target, width)
+                jump.focus()
+                page.keyboard.press("Enter")
+                assert page.evaluate("location.hash") == target, ("Keyboard jump", target, width)
+                assert page.locator(target).is_visible(), ("Published section target", target, width)
             def results(query):
                 page.locator("#find").fill(query)
                 status = page.locator("#search-status").inner_text()
