@@ -21,3 +21,7 @@ No conclusion about the date of the Casa Hacienda building, the ownership of the
 - Source register four records: NHCP 1937, NHCP 1991, BL 1775 catalogue, UA 1999 monograph record.
 - All existing 13 published posts, two informational pages, four private drafts, 82 media and noindex unchanged.
 - Full Newspack carousel/theme parity, manual screen-reader review, PDF remediation, rights, native comments, field performance and original records remain pending.
+
+## Deployment transition gate
+
+The independent read-only production timeline and sources Chromium scripts were updated **in this same PR** to accept exactly two complete, internally consistent configurations: the existing four-marker/three-source production and the new five-milestone/four-source release. Partial mixes, extra source links, changed marker identities and unreviewed 1769 source URLs fail. This is necessary because PR checks read the currently deployed production while the new branch is not yet deployed. After exact-main deployment, independently run the browser gates against the new production; then tighten the acceptance baseline to five/four in a follow-up only after verification. Passing premerge live QA against the older four/three configuration does not verify the new entry.
