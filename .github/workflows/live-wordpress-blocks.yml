@@ -19,3 +19,12 @@ jobs:
       - run: python -m py_compile scripts/audit-live-wordpress-recent-parity.py
       - run: CHM_SELF_TEST=1 python scripts/audit-live-wordpress-recent-parity.py
       - run: python scripts/audit-live-wordpress-recent-parity.py
+      - run: python -m py_compile scripts/audit-live-print-browser.py
+      - run: CHM_SELF_TEST=1 python scripts/audit-live-print-browser.py
+      - run: python scripts/audit-live-print-browser.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: independent-production-print-evidence
+          path: artifacts/live-print-browser.json
+          if-no-files-found: ignore

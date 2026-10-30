@@ -1,0 +1,7 @@
+# Independent production print-mode browser acceptance — 2026-10-31
+
+This adds a read-only production Chromium acceptance gate for the source-preserving print CSS already deployed in PR #120. It checks all 13 published articles and two pages at 375px and 1280px (30 real production visits), preserving original publication links, text, image counts, noindex header/meta, readable scans, stacked columns, hidden navigation/spacers and the existing Land Bank table. Seventeen synthetic mutations must fail closed. The evidence artifact contains only published route names, viewport widths and test results, not images, private drafts, PDF derivatives or third-party media.
+
+The workflow permits only same-origin Vercel requests and blocks all third-party requests; it does not visit WordPress or Facebook. No original article/page source, CSS, media, PDF, rights, noindex, comments or launch setting is changed. This verifies live print-mode CSS, not original Newspack pixel parity, PDF/UA remediation, manual screen-reader accessibility, full heritage acceptance or media reproduction rights. CHM-B040 historical CS12 safety rejection remains prohibited and is not retried.
+
+Require all exact-branch Actions and preview READY, reviewed diff, merge and exact-main production READY before calling the change SAVED ON MAIN. A live test against preceding production with identical public HTML/CSS verifies that existing feature, but final-main deployment remains DEPLOYED until independently checked.
