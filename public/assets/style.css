@@ -137,6 +137,7 @@
   .content .wp-block-columns{display:block}
   .content .wp-block-column{display:block;width:auto!important;min-width:0!important;padding:0!important}
   .content .wp-block-gallery.has-nested-images{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+  .content .wp-block-gallery.has-nested-images.columns-4{grid-template-columns:repeat(2,minmax(0,1fr))}
   .content .wp-block-table.is-style-stripes{overflow:visible}
   .content .wp-block-table.is-style-stripes table{min-width:0;width:100%}
   .content .wp-block-group.has-accent-background-color.has-background{overflow:visible;background:#fff!important;border:1px solid #777}

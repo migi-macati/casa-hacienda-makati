@@ -32,7 +32,8 @@ const required=[
  '.content .wp-block-group.has-accent-background-color.has-background{overflow:visible;background:#fff!important;border:1px solid #777}',
  '.content .wp-block-button__link{background:#fff!important;color:#111!important;border:1px solid #777}',
  '.content a{color:#111!important;text-decoration:underline}',
- '.original{background:#fff!important;border-top:1px solid #777}'
+ '.original{background:#fff!important;border-top:1px solid #777}',
+ '.content .wp-block-gallery.has-nested-images.columns-4{grid-template-columns:repeat(2,minmax(0,1fr))}'
 ];
 function validate(candidate){
   assert.equal(candidate.split(marker).length,2,'exactly one print section');
@@ -58,6 +59,7 @@ const changes=[
  [required[10],required[10].replace('padding:0!important','padding:80px!important')],
  [required[11],required[11].replace('repeat(2','repeat(5')],
  [required[12],required[12].replace('overflow:visible','overflow:hidden')],
+ ['.content .wp-block-gallery.has-nested-images.columns-4{grid-template-columns:repeat(2,minmax(0,1fr))}','.content .wp-block-gallery.has-nested-images.columns-4{grid-template-columns:repeat(4,minmax(0,1fr))}'],
  [required[13],required[13].replace('min-width:0','min-width:600px')],
  [required[14],required[14].replace('background:#fff','background:#000')],
  [required[15],required[15].replace('color:#111','color:transparent')],
