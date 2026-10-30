@@ -176,6 +176,36 @@ with sync_playwright() as pw:
             "(e) => getComputedStyle(e).paddingRight") == "80px", "Desktop WordPress gutter regression"
         assert page.locator('article.content h2[style*="font-size:50px"]').evaluate(
             "(e) => getComputedStyle(e).fontSize") == "50px", "Desktop WordPress heading regression"
+        # Imported Gutenberg control parity: source-preserving alignment,
+        # visible keyboard-operable buttons and shorter mobile spacers.
+        for width in (320, 375, 1280):
+            page.set_viewport_size({"width": width, "height": 812})
+            page.goto(f"http://127.0.0.1:{server.server_port}/cultural-significance/",
+                      wait_until="domcontentloaded")
+            buttons = page.locator("article.content .wp-block-button__link")
+            spacers = page.locator('article.content .wp-block-spacer[style*="height:100px"]')
+            centered = page.locator("article.content .has-text-align-center").first
+            assert buttons.count() == 12, ("Gutenberg published CTA count", width)
+            assert spacers.count() == 12, ("Gutenberg spacer count", width)
+            assert centered.evaluate("(e) => getComputedStyle(e).textAlign") == "center", (
+                "WordPress center alignment", width)
+            assert buttons.first.evaluate(
+                "(e) => getComputedStyle(e).backgroundColor") == "rgb(28, 59, 48)", (
+                    "Visible Gutenberg button treatment", width)
+            assert buttons.first.evaluate(
+                "(e) => e.getBoundingClientRect().height >= 44"), (
+                    "Gutenberg touch target", width)
+            assert buttons.first.get_attribute("href") == "/2023/08/12/cultural-significance-no-1/", (
+                "Original published CTA destination", width)
+            buttons.first.focus()
+            assert buttons.first.evaluate(
+                "(e) => getComputedStyle(e).outlineStyle") == "solid", (
+                    "Gutenberg keyboard focus", width)
+            height = spacers.first.evaluate("(e) => e.getBoundingClientRect().height")
+            assert (height <= 36 if width <= 710 else height == 100), (
+                "Responsive WordPress spacer", width, height)
+            assert page.evaluate("document.documentElement.scrollWidth <= innerWidth + 1"), (
+                "Gutenberg control horizontal overflow", width)
     finally:
         server.shutdown()
         server.server_close()
