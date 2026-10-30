@@ -36,6 +36,15 @@ export function validateLock(manifest, lock) {
   return checked;
 }
 
+export function validateVercelBuildConfig(config) {
+  assert.equal(config.version, 2, 'Vercel config schema must remain v2');
+  assert.equal(config.framework, null, 'Static framework setting changed');
+  assert.equal(config.installCommand, 'npm ci --no-audit --no-fund',
+    'Production dependency installation must use the committed lockfile');
+  assert.equal(config.buildCommand, 'npm run build', 'Production build command changed');
+  assert.equal(config.outputDirectory, 'public', 'Production output directory changed');
+}
+
 const fixtureManifest = { name: 'casa-hacienda-makati', version: '1.0.0', dependencies: { sharp: '0.35.5' } };
 const fixture = {
   name: 'casa-hacienda-makati', version: '1.0.0', lockfileVersion: 3,
@@ -68,6 +77,25 @@ function selfTest() {
     assert.throws(() => validateLock(fixtureManifest, broken), undefined,
       `Unsafe lockfile mutation ${i + 1} passed`);
   }
+  const validVercel = {
+    version: 2, framework: null, installCommand: 'npm ci --no-audit --no-fund',
+    buildCommand: 'npm run build', outputDirectory: 'public'
+  };
+  validateVercelBuildConfig(validVercel);
+  const invalidVercel = [
+    ['version', 1], ['framework', 'nextjs'], ['installCommand', 'npm install'],
+    ['installCommand', 'npm ci --ignore-scripts'],
+    ['installCommand', 'npm ci --omit=optional'],
+    ['installCommand', 'npm ci && echo bypass'],
+    ['buildCommand', 'echo skip'], ['outputDirectory', 'private']
+  ];
+  for (const [field, value] of invalidVercel) {
+    const broken = structuredClone(validVercel);
+    broken[field] = value;
+    assert.throws(() => validateVercelBuildConfig(broken), undefined,
+      'Unsafe Vercel build config mutation accepted: ' + field + '=' + value);
+  }
+  console.log('Vercel lockfile installation fixtures PASS: 8 fail-closed mutations');
   console.log(`npm lockfile provenance fixtures PASS: ${rejects.length} fail-closed mutations`);
 }
 
@@ -76,6 +104,7 @@ if (process.argv.includes('--self-test')) {
 } else {
   const manifest = JSON.parse(fs.readFileSync('package.json', 'utf8'));
   const lock = JSON.parse(fs.readFileSync('package-lock.json', 'utf8'));
+  validateVercelBuildConfig(JSON.parse(fs.readFileSync('vercel.json', 'utf8')));
   const count = validateLock(manifest, lock);
   console.log(`npm lockfile provenance PASS: ${count} registry-pinned packages`);
 }
