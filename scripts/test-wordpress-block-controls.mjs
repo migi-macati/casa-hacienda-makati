@@ -20,7 +20,7 @@ for (const html of [about, significance]) {
   assert.ok(html.includes('<article class="content">'), 'published source remains');
 }
 function validate(text) {
-  const section = text.split('/* Imported WordPress Gutenberg editorial controls:')[1];
+  const section = text.split('/* Imported WordPress Gutenberg editorial controls:')[1]?.split('\n\n/*')[0];
   assert.ok(section, 'Gutenberg block parity section');
   for (const fragment of [
     '.content .has-text-align-center{text-align:center}',
@@ -54,8 +54,11 @@ const marker = '/* Imported WordPress Gutenberg editorial controls:';
 const pos = css.indexOf(marker);
 assert.ok(pos >= 0);
 for (const [before, after] of mutations) {
-  const prefix = css.slice(0, pos), section = css.slice(pos);
-  assert.ok(section.includes(before), 'missing mutation fixture: ' + before);
-  assert.throws(() => validate(prefix + section.replace(before, after)), 'must reject: ' + before);
+  const prefix = css.slice(0, pos), remainder = css.slice(pos);
+  const end = remainder.indexOf('\n\n/*');
+  assert.ok(end > 0, 'Gutenberg control section must be delimited');
+  const section = remainder.slice(0, end), suffix = remainder.slice(end);
+  assert.ok(section.includes(before), 'missing scoped mutation fixture: ' + before);
+  assert.throws(() => validate(prefix + section.replace(before, after) + suffix), 'must reject: ' + before);
 }
 console.log('WordPress Gutenberg block controls: 12 published CTAs, 12 spacers, 12 fail-closed mutations PASS.');
