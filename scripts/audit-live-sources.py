@@ -12,26 +12,20 @@ from urllib.parse import urlsplit
 from playwright.sync_api import sync_playwright
 
 ORIGIN = "https://casa-hacienda-makati.vercel.app"
-IDS_OLD = ["nhcp-1937", "nhcp-1991", "bl-1775"]
-IDS_NEW = IDS_OLD + ["ua-1999"]
+IDS = ["nhcp-1937", "nhcp-1991", "bl-1775", "ua-1999"]
 SCHOLARLY_SOURCE = "https://www.digitaliapublishing.com/a/647/la-expulsion-de-los-jesuitas-de-filipinas"
 SOURCE_URLS = [
     "https://philhistoricsites.nhcp.gov.ph/registry_database/san-pedro-macati/",
     "https://philhistoricsites.nhcp.gov.ph/registry_database/makati/",
     "https://searcharchives.bl.uk/catalog/040-002027896",
 ]
-EXPECTED_OLD = SOURCE_URLS + ["/cultural-significance/"]
-EXPECTED_NEW = SOURCE_URLS + [SCHOLARLY_SOURCE, "/cultural-significance/"]
+EXPECTED_HREFS = SOURCE_URLS + [SCHOLARLY_SOURCE, "/cultural-significance/"]
 
 
 def check_links(hrefs, ids):
-    if ids == IDS_OLD:
-        expected = EXPECTED_OLD
-    elif ids == IDS_NEW:
-        expected = EXPECTED_NEW
-    else:
+    if ids != IDS:
         raise AssertionError("Unreviewed source-register inventory")
-    if hrefs != expected:
+    if hrefs != EXPECTED_HREFS:
         raise AssertionError("Source register hrefs or ordering changed")
     for href in hrefs[:-1]:
         u = urlsplit(href)
@@ -40,17 +34,16 @@ def check_links(hrefs, ids):
     return True
 
 def self_test():
-    assert check_links(EXPECTED_OLD, IDS_OLD)
-    assert check_links(EXPECTED_NEW, IDS_NEW)
+    assert check_links(EXPECTED_HREFS, IDS)
     bad = [
-        (EXPECTED_OLD[:-1], IDS_OLD),
-        (EXPECTED_NEW, IDS_OLD),
-        (EXPECTED_OLD, IDS_NEW),
-        (EXPECTED_NEW[:-2] + ["/cultural-significance/"], IDS_NEW),
-        (EXPECTED_NEW[:-2] + ["https://example.invalid/", "/cultural-significance/"], IDS_NEW),
-        (EXPECTED_NEW[:-2] + [SCHOLARLY_SOURCE + "?unverified=1", "/cultural-significance/"], IDS_NEW),
-        (EXPECTED_NEW, IDS_NEW[:-1] + ["unreviewed"]),
-        ([EXPECTED_NEW[1], EXPECTED_NEW[0]] + EXPECTED_NEW[2:], IDS_NEW),
+        (EXPECTED_HREFS[:-1], IDS),
+        (EXPECTED_HREFS[:-2] + ["/cultural-significance/"], IDS),
+        (EXPECTED_HREFS[:-2] + ["https://example.invalid/", "/cultural-significance/"], IDS),
+        (EXPECTED_HREFS[:-2] + [SCHOLARLY_SOURCE + "?unverified=1", "/cultural-significance/"], IDS),
+        (EXPECTED_HREFS, IDS[:-1]),
+        (EXPECTED_HREFS, IDS[:-1] + ["unreviewed"]),
+        ([EXPECTED_HREFS[1], EXPECTED_HREFS[0]] + EXPECTED_HREFS[2:], IDS),
+        (EXPECTED_HREFS + ["/about/"], IDS),
     ]
     for hrefs, ids in bad:
         try:
@@ -58,7 +51,7 @@ def self_test():
         except AssertionError:
             continue
         raise AssertionError("Unreviewed source URL fixture passed")
-    print("Deployed sources transitional exact-version allowlist: 8 rejected fixtures", flush=True)
+    print("Deployed sources exact-four-record allowlist: 8 rejected fixtures", flush=True)
 
 def inspect(page, width, js_enabled, reduced_motion):
     response = page.goto(ORIGIN + "/", wait_until="load", timeout=60000)
@@ -74,7 +67,7 @@ def inspect(page, width, js_enabled, reduced_motion):
     assert section.locator("h2#heritage-sources-title").is_visible()
     rows = section.locator("ol.source-records > li[data-source-id]")
     ids = [x.get_attribute("data-source-id") for x in rows.all()]
-    assert ids in (IDS_OLD, IDS_NEW), "Unreviewed source-register inventory"
+    assert ids == IDS, "Four reviewed source records required"
     assert rows.locator("h3").count() == len(ids)
     body = section.inner_text()
     for boundary in (
@@ -87,9 +80,8 @@ def inspect(page, width, js_enabled, reduced_motion):
         "040-002027896",
     ):
         assert boundary in body, "Evidence limitation missing: " + boundary
-    if ids == IDS_NEW:
-        assert "Santiago Lorenzo García" in body
-        assert "the monograph’s full text and original estate records were not examined" in body
+    assert "Santiago Lorenzo García" in body
+    assert "the monograph’s full text and original estate records were not examined" in body
     links = section.locator("a")
     hrefs = [x.get_attribute("href") for x in links.all()]
     check_links(hrefs, ids)
@@ -157,7 +149,7 @@ def main():
         "scope": "Read-only production Chromium smoke QA, not manual screen-reader, archival truth or rights clearance",
         "origin": ORIGIN, "tests": results, "allPassed": True,
     }, indent=2) + "\n")
-    print("Independent deployed sources PASS: eight browser combinations, strictly approved three/four source records", flush=True)
+    print("Independent deployed sources PASS: eight browser combinations, four reviewed source records", flush=True)
 
 
 if __name__ == "__main__":
