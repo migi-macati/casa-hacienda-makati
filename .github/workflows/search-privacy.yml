@@ -24,4 +24,5 @@ jobs:
       - run: python scripts/audit-search-browser.py
       - run: python scripts/audit-wordpress-embed-browser.py
       - run: python scripts/audit-gallery-browser.py
+      - run: python scripts/audit-wordpress-border-presets.py
       - run: python scripts/audit-mobile-nav.py
