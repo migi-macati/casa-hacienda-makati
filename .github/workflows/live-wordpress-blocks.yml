@@ -25,6 +25,9 @@ jobs:
       - run: python -m py_compile scripts/audit-live-footnote-links.py
       - run: python scripts/audit-live-footnote-links.py --self-test
       - run: python scripts/audit-live-footnote-links.py
+      - run: python -m py_compile scripts/audit-live-original-source-note-labels.py
+      - run: python scripts/audit-live-original-source-note-labels.py --self-test
+      - run: python scripts/audit-live-original-source-note-labels.py
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -36,4 +39,10 @@ jobs:
         with:
           name: independent-production-footnote-evidence
           path: artifacts/live-footnote-links.json
+          if-no-files-found: ignore
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: independent-production-source-note-label-evidence
+          path: artifacts/live-original-source-note-labels.json
           if-no-files-found: ignore
