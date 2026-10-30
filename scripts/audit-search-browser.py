@@ -322,6 +322,39 @@ with sync_playwright() as pw:
             assert page.evaluate("document.documentElement.scrollWidth <= innerWidth + 1"), (
                 "No document overflow from source table", width)
 
+
+        # WordPress core spacing fallback for three original published source routes.
+        # The original Newspack theme's exact custom scale is not independently verified.
+        for width in (320, 375, 1280):
+            page.set_viewport_size({"width": width, "height": 812})
+            page.goto(f"http://127.0.0.1:{server.server_port}/2023/10/21/history-of-barrio-olimpia-makati-rizal/",
+                      wait_until="domcontentloaded")
+            indents = page.locator('article.content p[style*="padding-left:var(--wp--preset--spacing--70)"]')
+            assert indents.count() == 29, ("Original Olympia paragraph indent inventory", width)
+            assert indents.evaluate_all(
+                "(nodes) => nodes.every(e => Math.abs(parseFloat(getComputedStyle(e).paddingLeft)-54.08)<1)"
+            ), ("Gutenberg spacing-70 paragraph indentation", width)
+            assert page.evaluate("document.documentElement.scrollWidth <= innerWidth + 1"), (
+                "Olympia source paragraph overflow", width)
+            page.goto(f"http://127.0.0.1:{server.server_port}/about/",
+                      wait_until="domcontentloaded")
+            columns = page.locator('article.content .wp-block-columns[style*="margin-top:var(--wp--preset--spacing--70)"]')
+            assert columns.count() == 1, ("Original About columns spacing inventory", width)
+            assert columns.first.evaluate(
+                "(e) => Math.abs(parseFloat(getComputedStyle(e).marginTop)-54.08)<1"
+            ), ("About Gutenberg spacing-70 margin", width)
+            assert page.evaluate("document.documentElement.scrollWidth <= innerWidth + 1"), (
+                "About preset margin overflow", width)
+            page.goto(f"http://127.0.0.1:{server.server_port}/cultural-significance/",
+                      wait_until="domcontentloaded")
+            heading = page.locator('article.content h2[style*="padding-bottom:var(--wp--preset--spacing--60)"]')
+            assert heading.count() == 1, ("Original Significance heading spacing inventory", width)
+            assert heading.first.evaluate(
+                "(e) => Math.abs(parseFloat(getComputedStyle(e).paddingBottom)-36)<1"
+            ), ("Significance Gutenberg spacing-60 padding", width)
+            assert page.evaluate("document.documentElement.scrollWidth <= innerWidth + 1"), (
+                "Significance heading spacing overflow", width)
+
     finally:
         server.shutdown()
         server.server_close()
