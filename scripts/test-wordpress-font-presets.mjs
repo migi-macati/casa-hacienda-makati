@@ -32,7 +32,7 @@ validate(css);
 const mutations = [
   ['.content .has-small-font-size', '.sidebar .has-small-font-size'],
   ['font-size:.875rem', 'font-size:.6rem'],
-  ['line-height:1.6', 'line-height:1'],
+  ['font-size:.875rem;line-height:1.6', 'font-size:.875rem;line-height:1'],
   ['.content .has-medium-font-size', '.sidebar .has-medium-font-size'],
   ['font-size:1.25rem', 'font-size:1rem'],
   ['font-size:1.25rem;line-height:1.55', 'font-size:1.25rem;line-height:1'],
