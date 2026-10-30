@@ -22,8 +22,6 @@ jobs:
       - run: python -m py_compile scripts/audit-live-print-browser.py
       - run: CHM_SELF_TEST=1 python scripts/audit-live-print-browser.py
       - run: python scripts/audit-live-print-browser.py
-        env:
-          CHM_PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
       - uses: actions/upload-artifact@v4
         if: always()
         with:
