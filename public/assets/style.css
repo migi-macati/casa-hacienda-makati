@@ -91,3 +91,10 @@
 /* Imported Gutenberg separators: restore narrow centered rules without source edits. */
 .content .wp-block-separator{box-sizing:content-box;width:100px;max-width:100%;height:0;margin:2rem auto;border:0;border-bottom:2px solid currentColor;opacity:.4}
 .content .wp-block-separator.has-alpha-channel-opacity{opacity:1}
+
+/* Imported Gutenberg Land Bank callout and striped evidence table: restore missing block styles. */
+.content .wp-block-group.has-accent-background-color.has-background{background:#f0e2c9;padding:1rem}
+.content .wp-block-table.is-style-stripes{max-width:100%;overflow-x:auto}
+.content .wp-block-table.is-style-stripes table{display:table;width:100%;min-width:320px;table-layout:fixed}
+.content .wp-block-table.is-style-stripes tbody tr:nth-child(even){background:#f4f0e8}
+.content .wp-block-table.is-style-stripes td{vertical-align:top;overflow-wrap:anywhere}

@@ -1,0 +1,7 @@
+# WordPress Land Bank source callout and table styling — 2026-10-30
+
+The locked Cultural Significance No. 12 source includes a Gutenberg accent-background group enclosing the original five-row, two-column Land Bank of the Philippines evidence table. Imported inline padding uses an unavailable `--wp--preset--spacing--10` variable, and the striped-table class has no migrated styling. The original content and citation remain unchanged; this release supplies scoped background, fallback padding, alternating rows and an internally scrollable table on narrow screens.
+
+The source's acquisition and property assertions remain historical claims, not independently authenticated land-title or parcel evidence. No new image, PDF derivative, OCR, archival claim or source rewrite. The 13+2 public document source lock, 82 media, four private drafts, noindex and original WordPress READ-ONLY policy remain intact. CHM-B040 prohibited historical CS12 operation is not retried or bypassed.
+
+Mandatory build checks: original source structure, exact reviewed CSS blob, 13 negative CSS mutations, and Chromium computed styles at 320/375/1280px. The 320px table must scroll within its figure without document-level horizontal overflow. All nine existing workflow gates must pass at the final branch SHA; exact-main Vercel READY establishes DEPLOYED, not full live acceptance. Original Newspack theme/carousel, manual screen-reader and PDF remediation, rights, native comments, and field CWV remain outstanding.
