@@ -149,10 +149,37 @@ with sync_playwright() as pw:
         assert page.locator(".card:visible").count() > 0, "Fallback summaries must remain searchable"
         assert article_one.locator(".cardbody p").inner_text() == original_excerpt, "Fallback must retain original public summary"
         page.unroute("**/search-index.json")
+        # Actual generated WordPress Gutenberg layout, including original inline
+        # desktop padding and 50px heading. No source page is rewritten.
+        for width in (320, 375):
+            page.set_viewport_size({"width": width, "height": 812})
+            for route in ("/about/", "/cultural-significance/"):
+                page.goto(f"http://127.0.0.1:{server.server_port}{route}",
+                          wait_until="domcontentloaded")
+                column = page.locator("article.content .wp-block-column").first
+                assert column.count() == 1, ("Published Gutenberg column", route, width)
+                assert column.evaluate("(e) => getComputedStyle(e).paddingRight") == "0px", (
+                    "Mobile imported inline gutter", route, width)
+                assert column.evaluate("(e) => getComputedStyle(e).paddingLeft") == "0px", (
+                    "Mobile imported inline gutter", route, width)
+                assert page.evaluate("document.documentElement.scrollWidth <= innerWidth + 1"), (
+                    "Mobile horizontal overflow", route, width)
+                if route == "/about/":
+                    heading = page.locator('article.content h2[style*="font-size:50px"]')
+                    assert heading.count() == 1, ("About inline heading", width)
+                    assert heading.evaluate("(e) => parseFloat(getComputedStyle(e).fontSize)") <= 36, (
+                        "Oversized mobile WordPress heading", width)
+        page.set_viewport_size({"width": 1280, "height": 800})
+        page.goto(f"http://127.0.0.1:{server.server_port}/about/",
+                  wait_until="domcontentloaded")
+        assert page.locator("article.content .wp-block-column").first.evaluate(
+            "(e) => getComputedStyle(e).paddingRight") == "80px", "Desktop WordPress gutter regression"
+        assert page.locator('article.content h2[style*="font-size:50px"]').evaluate(
+            "(e) => getComputedStyle(e).fontSize") == "50px", "Desktop WordPress heading regression"
     finally:
         server.shutdown()
         server.server_close()
         worker.join(timeout=5)
 
     browser.close()
-print('Chromium search privacy and UI PASS: 15/15 documents, 30 computed-CSS scans and 2 viewport search interaction suites.')
+print('Chromium search privacy and UI PASS: 15/15 documents, 30 computed-CSS scans, 2 search interaction suites and 5 Gutenberg responsive viewport checks.')
