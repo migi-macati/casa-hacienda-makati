@@ -8,6 +8,7 @@ pixel-identical Newspack parity, or a rights/publication decision.
 import argparse
 import copy
 import math
+import re
 from urllib.parse import urlsplit
 
 ORIGIN = "https://casa-hacienda-makati.vercel.app"
@@ -63,7 +64,7 @@ def expected_size(kind, width):
 def validate_snapshot(s, route, width):
     if route not in ROUTES or width not in VIEWPORTS:
         raise AssertionError("Unreviewed route or viewport")
-    if (s.get("status") != 200 or s.get("header") != "noindex,nofollow"
+    if (s.get("status") != 200 or not re.fullmatch(r"noindex\s*,\s*nofollow", s.get("header") or "", re.I)
             or s.get("robots") != "noindex,nofollow"
             or s.get("articleCount") != 1 or s.get("stylesheets", 0) < 1
             or s.get("overflow") is not False):
