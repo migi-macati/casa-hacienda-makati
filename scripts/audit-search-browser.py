@@ -94,6 +94,9 @@ with sync_playwright() as pw:
             "document.querySelector('#search-status')?.textContent === 'Showing 13 articles.'"
         )
         assert page.locator('meta[name="robots"]').get_attribute("content") == "noindex,nofollow"
+        article_one = page.locator(".card").filter(has=page.locator('h3 a[href="/2023/08/12/cultural-significance-no-1/"]')).first
+        original_excerpt = article_one.locator(".cardbody p").inner_text()
+        assert "1769" not in original_excerpt, "Fixture must exercise a deep-text match"
         for width in (1280, 375):
             page.set_viewport_size({"width": width, "height": 812})
             def results(query):
@@ -113,12 +116,25 @@ with sync_playwright() as pw:
             assert sum(map(len, results("Hacienda"))) > 0, ("Expected Hacienda matches", width)
             assert results("bahay-na-bato") == results("bahay na bato"), ("Punctuation", width)
             assert sum(map(len, results("bahay na bato"))) > 0, ("Expected architecture matches", width)
+            results("1769")
+            assert article_one.is_visible(), ("Deep article match", width)
+            contextual = article_one.locator(".cardbody p").inner_text()
+            assert "1769" in contextual and contextual != original_excerpt, ("Contextual public excerpt", width)
+            assert article_one.locator(".cardbody p img").count() == 0, ("Excerpt must be text-only", width)
             assert results("unfindableqzxyz") == ([], []), ("Unexpected match", width)
             assert page.locator("#nothing").is_visible(), ("No-results notice", width)
             assert results("—") == ([], []), ("Punctuation-only query", width)
             results("")
             assert page.locator(".card:visible").count() == 13, ("Unfiltered archive", width)
             assert page.locator("#page-results").is_hidden(), ("Empty-query pages", width)
+            assert article_one.locator(".cardbody p").inner_text() == original_excerpt, ("Summary restored", width)
+        page.route("**/search-index.json", lambda route: route.fulfill(status=503, body="Unavailable"))
+        page.reload(wait_until="domcontentloaded")
+        page.wait_for_function('document.querySelector("#search-status")?.textContent.includes("temporarily unavailable")')
+        page.locator("#find").fill("Casa")
+        assert page.locator(".card:visible").count() > 0, "Fallback summaries must remain searchable"
+        assert article_one.locator(".cardbody p").inner_text() == original_excerpt, "Fallback must retain original public summary"
+        page.unroute("**/search-index.json")
     finally:
         server.shutdown()
         server.server_close()

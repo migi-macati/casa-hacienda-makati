@@ -52,9 +52,19 @@ function searchKey(value){
 }
 const input=document.getElementById("find"),cards=[...document.querySelectorAll(".card")];
 const pageResults=document.getElementById("page-results");
-let fullText=null,pageRows=[],indexUnavailable=false;
+const originalSummaries=new Map(cards.map(card=>[card,card.querySelector(".cardbody p")?.textContent||""]));
+let fullText=null,articleRows=new Map(),pageRows=[],indexUnavailable=false;
+function contextualExcerpt(text,terms){
+  const words=String(text||"").trim().split(/\s+/).filter(Boolean);
+  const hit=words.findIndex(word=>terms.some(term=>searchKey(word).includes(term)));
+  if(hit<0)return null;
+  const start=Math.max(0,hit-8),end=Math.min(words.length,hit+23);
+  return (start?"… ":"")+words.slice(start,end).join(" ")+(end<words.length?" …":"");
+}
 fetch("/search-index.json").then(r=>{if(!r.ok)throw Error("Index unavailable");return r.json()}).then(rows=>{
-  fullText=new Map(rows.filter(r=>r.type!=="page").map(r=>[r.url,searchKey(r.title+" "+r.text)]));
+  const articles=rows.filter(r=>r.type!=="page");
+  fullText=new Map(articles.map(r=>[r.url,searchKey(r.title+" "+r.text)]));
+  articleRows=new Map(articles.map(r=>[r.url,r]));
   pageRows=rows.filter(r=>r.type==="page").map(r=>({...r,searchKey:searchKey(r.title+" "+r.text)}));
   filter();
 }).catch(()=>{indexUnavailable=true;filter();});
@@ -66,6 +76,12 @@ function filter(){
     const haystack=fullText?.get(url)||searchKey(card.dataset.q||"");
     const show=!q||(terms.length>0&&terms.every(term=>haystack.includes(term)));
     card.hidden=!show;
+    const summary=card.querySelector(".cardbody p");
+    if(summary){
+      const row=articleRows.get(url);
+      const excerpt=show&&terms.length&&row?contextualExcerpt(row.text,terms):null;
+      summary.textContent=excerpt||originalSummaries.get(card)||"";
+    }
     if(show)count++;
   }
   pageResults.replaceChildren();
