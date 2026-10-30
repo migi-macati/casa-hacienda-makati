@@ -35,7 +35,7 @@ const mutations = [
   ['line-height:1.6', 'line-height:1'],
   ['.content .has-medium-font-size', '.sidebar .has-medium-font-size'],
   ['font-size:1.25rem', 'font-size:1rem'],
-  ['line-height:1.55', 'line-height:1'],
+  ['font-size:1.25rem;line-height:1.55', 'font-size:1.25rem;line-height:1'],
   [marker, '/* Unreviewed font override */'],
   ['font-size:.875rem', 'display:none;font-size:.875rem'],
   ['font-size:1.25rem', 'visibility:hidden;font-size:1.25rem'],
