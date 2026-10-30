@@ -206,6 +206,32 @@ with sync_playwright() as pw:
                 "Responsive WordPress spacer", width, height)
             assert page.evaluate("document.documentElement.scrollWidth <= innerWidth + 1"), (
                 "Gutenberg control horizontal overflow", width)
+        # WordPress Gutenberg font presets: actual computed styles on both published pages.
+        # Original HTML and the 15-document source lock remain unchanged.
+        for width in (320, 375, 1280):
+            page.set_viewport_size({"width": width, "height": 812})
+            for route, expected in (("/about/", 14), ("/cultural-significance/", 12)):
+                page.goto(f"http://127.0.0.1:{server.server_port}{route}",
+                          wait_until="domcontentloaded")
+                small = page.locator("article.content .has-small-font-size")
+                assert small.count() == expected, ("Original small-font classes", route, width)
+                assert small.evaluate_all(
+                    "(nodes) => nodes.every(e => getComputedStyle(e).fontSize === '14px' && parseFloat(getComputedStyle(e).lineHeight) >= 22)"
+                ), ("Readable small-font preset", route, width)
+                assert page.evaluate("document.documentElement.scrollWidth <= innerWidth + 1"), (
+                    "Gutenberg font horizontal overflow", route, width)
+                if route == "/about/":
+                    heading = page.locator("article.content h2.has-small-font-size")
+                    assert heading.count() >= 2, ("About source heading classes", width)
+                    assert heading.first.evaluate("(e) => getComputedStyle(e).fontSize") == "14px", (
+                        "Imported small heading was oversized", width)
+                else:
+                    medium = page.locator("article.content .has-medium-font-size")
+                    assert medium.count() == 1, ("Original medium-font class", width)
+                    assert medium.first.evaluate(
+                        "(e) => getComputedStyle(e).fontSize === '20px' && parseFloat(getComputedStyle(e).lineHeight) >= 30"
+                    ), ("Gutenberg medium-font preset", width)
+
     finally:
         server.shutdown()
         server.server_close()
