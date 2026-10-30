@@ -1,0 +1,7 @@
+# Independently deployed No. 10 footnote acceptance — 2026-10-31 PHT
+
+PR #123 repaired a concrete original markup defect in generated Cultural Significance No. 10: visible footnotes 10–13 had only their first digit inside the hyperlink. The build now preserves the complete original visible numerals and UUIDs while labeling all 13 links for assistive technology. The original published HTML remains source-locked.
+
+This QA-only follow-up adds a strict production Chromium gate to the existing Gutenberg live workflow, with no public HTML, CSS, PDF, media, rights or original WordPress changes. It verifies all 13 link names, destinations, keyboard activation, noindex header/meta, and no horizontal overflow across 320/375/1280px and JavaScript on/off (six live visits). Third-party requests and non-GET/HEAD requests are aborted. Eleven synthetic mutations must fail closed. Evidence JSON is saved as a workflow artifact.
+
+Acceptance is scoped to this deployed source-note repair. It does not establish manual screen-reader WCAG certification, complete original Newspack parity, historical accuracy, native comments, field performance, rights, PDF remediation or full migration acceptance. Four private drafts, 82 media assets and noindex remain preserved. CHM-B040 remains prohibited and is not touched. Exact-head CI, preview, merge and exact-main production are required before recording this gate as SAVED ON MAIN.
