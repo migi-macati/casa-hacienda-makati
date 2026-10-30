@@ -21,7 +21,7 @@ assert.equal((html.match(/<tr>/g) || []).length, 5);
 assert.equal((html.match(/<td>/g) || []).length, 10);
 assert.ok(html.includes('Properties Available for Negotiated Sale'), 'original evidence heading');
 const marker = "/* Imported Gutenberg Land Bank callout and striped evidence table: restore missing block styles. */";
-const rule = ".content .wp-block-group.has-accent-background-color.has-background{min-width:0;max-width:100%;overflow-x:auto;background:#f0e2c9;padding:1rem}\n.content .wp-block-table.is-style-stripes{display:block;width:100%;min-width:0;max-width:100%;overflow-x:auto}\n.content .wp-block-table.is-style-stripes table{display:table;width:100%;min-width:320px;table-layout:fixed}\n.content .wp-block-table.is-style-stripes tbody tr:nth-child(even){background:#f4f0e8}\n.content .wp-block-table.is-style-stripes td{vertical-align:top;overflow-wrap:anywhere}\n@media(max-width:920px){.layout{grid-template-columns:minmax(0,1fr)}}";
+const rule = ".content .wp-block-group.has-accent-background-color.has-background{--wp--preset--spacing--10:1rem;min-width:0;max-width:100%;overflow-x:auto;background:#f0e2c9;padding:1rem}\n.content .wp-block-table.is-style-stripes{display:block;width:100%;min-width:0;max-width:100%;overflow-x:auto}\n.content .wp-block-table.is-style-stripes table{display:table;width:100%;min-width:320px;table-layout:fixed}\n.content .wp-block-table.is-style-stripes tbody tr:nth-child(even){background:#f4f0e8}\n.content .wp-block-table.is-style-stripes td{vertical-align:top;overflow-wrap:anywhere}\n@media(max-width:920px){.layout{grid-template-columns:minmax(0,1fr)}}";
 function validate(candidate) {
   assert.equal(candidate.split(marker).length, 2, 'one reviewed table section');
   assert.equal(candidate.split(marker)[1].trim(), rule, 'exact scoped callout/table rules');
@@ -42,7 +42,8 @@ const mutations = [
   ['overflow-wrap:anywhere', 'overflow-wrap:normal'],
   ['vertical-align:top', 'vertical-align:bottom'],
   ['padding:1rem', 'padding:1rem;background:url(https://example.org/tracker)'],
-  ['grid-template-columns:minmax(0,1fr)', 'grid-template-columns:1fr']
+  ['grid-template-columns:minmax(0,1fr)', 'grid-template-columns:1fr'],
+  ['--wp--preset--spacing--10:1rem', '--wp--preset--spacing--10:0']
 ];
 for (const [from, to] of mutations) {
   assert.ok(rule.includes(from), 'missing scoped fixture ' + from);
@@ -50,4 +51,4 @@ for (const [from, to] of mutations) {
   assert.notEqual(changed, css);
   assert.throws(() => validate(changed), 'mutation must fail: ' + from);
 }
-console.log('Land Bank WordPress source table: one callout, five rows, ten cells, 14 fail-closed fixtures PASS.');
+console.log('Land Bank WordPress source table: one callout, five rows, ten cells, 15 fail-closed fixtures PASS.');
