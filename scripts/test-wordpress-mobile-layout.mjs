@@ -38,7 +38,7 @@ const mutations = [
   ['min-width:0;padding-left', 'min-width:200px;padding-left'],
   ['padding-left:0!important', 'padding-left:80px!important'],
   ['padding-right:0!important', 'padding-right:80px!important'],
-  ['.content .wp-block-column{', '.sidebar .wp-block-column{'],
+  ['.content .wp-block-column{flex:1 1 100%', '.sidebar .wp-block-column{flex:1 1 100%'],
   ['[style*="font-size:50px"]', '[style*="font-size:40px"]'],
   ['font-size:clamp(1.75rem,7vw,2.25rem)!important', 'font-size:50px!important'],
   ['line-height:1.25!important', 'line-height:3!important'],
