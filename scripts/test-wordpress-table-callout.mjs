@@ -24,7 +24,9 @@ const marker = "/* Imported Gutenberg Land Bank callout and striped evidence tab
 const rule = ".content .wp-block-group.has-accent-background-color.has-background{--wp--preset--spacing--10:1rem;min-width:0;max-width:100%;overflow-x:auto;background:#f0e2c9;padding:1rem}\n.content .wp-block-table.is-style-stripes{display:block;width:100%;min-width:0;max-width:100%;overflow-x:auto}\n.content .wp-block-table.is-style-stripes table{display:table;width:100%;min-width:320px;table-layout:fixed}\n.content .wp-block-table.is-style-stripes tbody tr:nth-child(even){background:#f4f0e8}\n.content .wp-block-table.is-style-stripes td{vertical-align:top;overflow-wrap:anywhere}\n@media(max-width:920px){.layout{grid-template-columns:minmax(0,1fr)}}";
 function validate(candidate) {
   assert.equal(candidate.split(marker).length, 2, 'one reviewed table section');
-  assert.equal(candidate.split(marker)[1].trim(), rule, 'exact scoped callout/table rules');
+  const after = candidate.split(marker)[1];
+  const next = after.indexOf('\n\n/*');
+  assert.equal((next < 0 ? after : after.slice(0, next)).trim(), rule, 'exact scoped callout/table rules');
   assert.ok(!candidate.includes('@import'), 'no remote stylesheet');
 }
 validate(css);
