@@ -45,8 +45,14 @@ const mutations = [
   ['/* Imported Gutenberg blocks carry desktop inline widths', '/* Unreviewed layout'],
   ['.content .wp-block-columns{gap:1.25rem}', '.content .wp-block-columns{display:none}']
 ];
+const marker = '/* Imported Gutenberg blocks carry desktop inline widths';
+const split = css.indexOf(marker);
+assert.ok(split >= 0, 'responsive section start');
+const prefix = css.slice(0, split);
+const responsive = css.slice(split);
 for (const [before, after] of mutations) {
-  assert.ok(css.includes(before), 'missing fixture: ' + before);
-  assert.throws(() => validate(css.replace(before, after)), 'mutation must fail: ' + before);
+  assert.ok(responsive.includes(before), 'missing responsive fixture: ' + before);
+  assert.throws(() => validate(prefix + responsive.replace(before, after)),
+    'responsive mutation must fail: ' + before);
 }
 console.log('Published Gutenberg mobile layout: pinned CSS, two source pages, 12 negative fixtures PASS.');
