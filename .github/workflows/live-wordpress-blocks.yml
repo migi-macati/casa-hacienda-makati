@@ -1,0 +1,18 @@
+name: Independent production Gutenberg computed-style acceptance
+on:
+  pull_request:
+  workflow_dispatch:
+jobs:
+  production-wordpress-gutenberg:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install playwright==1.57.0
+      - run: python -m playwright install --with-deps chromium
+      - run: python -m py_compile scripts/audit-live-wordpress-blocks.py
+      - run: python scripts/audit-live-wordpress-blocks.py --self-test
+      - run: python scripts/audit-live-wordpress-blocks.py
