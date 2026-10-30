@@ -1,0 +1,9 @@
+# Gutenberg spacing-variable restoration — 2026-10-30
+
+## Scope and evidence
+The locked published HTML contains 29 Olympia-history paragraph inline references to `--wp--preset--spacing--70`, one About columns margin using the same variable, and one Cultural Significance heading padding using `--wp--preset--spacing--60`. The imported static stylesheet did not define either variable, so those inline declarations did not resolve. The new scoped `.content` variables restore the **WordPress core default** values (70 = 3.38rem, 60 = 2.25rem), documented in WordPress's developer handbook: https://developer.wordpress.org/themes/global-settings-and-styles/settings/spacing/ . The exact original Newspack/theme-specific spacing scale remains unverified, so this is a documented fallback rather than pixel-identical original-theme acceptance.
+
+## Acceptance and safeguards
+No original article/page HTML, historical claim, media, PDF, private draft, rights, WordPress source or noindex setting is changed. The 15-document source lock is retained and its CSS Git blob is updated. A mandatory build test verifies the source occurrence inventory and 12 fail-closed CSS mutations. The generated-site Chromium gate checks computed indentation/margin/padding and document overflow on all three affected routes at 320/375/1280px; external requests remain blocked by the existing browser harness. Require all exact-head CI checks, preview READY, reviewed branch diff, merge and exact-main production before marking DEPLOYED. Final production Chromium, manual screen-reader WCAG, original Newspack visual parity and PDF accessibility remain separate acceptance items.
+
+CHM-B040's historical safety-rejected operation is not retried, modified or bypassed. Original WordPress is READ-ONLY. Four private drafts, 82 media, 13 articles, two pages and noindex are preserved.

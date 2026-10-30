@@ -99,3 +99,6 @@
 .content .wp-block-table.is-style-stripes tbody tr:nth-child(even){background:#f4f0e8}
 .content .wp-block-table.is-style-stripes td{vertical-align:top;overflow-wrap:anywhere}
 @media(max-width:920px){.layout{grid-template-columns:minmax(0,1fr)}}
+
+/* Imported Gutenberg spacing preset fallbacks: preserve source inline values. */
+.content{--wp--preset--spacing--60:2.25rem;--wp--preset--spacing--70:3.38rem}
