@@ -288,6 +288,40 @@ with sync_playwright() as pw:
                 assert page.evaluate("document.documentElement.scrollWidth <= innerWidth + 1"), (
                     "Separator page horizontal overflow", route, width)
 
+
+        # WordPress No. 12: original Land Bank source table and highlighted callout.
+        # Verify computed styles and nested scrolling without changing source claims.
+        for width in (320, 375, 1280):
+            page.set_viewport_size({"width": width, "height": 812})
+            page.goto(f"http://127.0.0.1:{server.server_port}/2024/10/28/cultural-significance-no-12/",
+                      wait_until="domcontentloaded")
+            callout = page.locator("article.content .wp-block-group.has-accent-background-color.has-background")
+            figure = page.locator("article.content figure.wp-block-table.is-style-stripes")
+            table = figure.locator("table.has-fixed-layout")
+            assert callout.count() == figure.count() == table.count() == 1, (
+                "Original Land Bank source block", width)
+            assert table.locator("tbody tr").count() == 5, ("Original source rows", width)
+            assert callout.evaluate(
+                "(e) => {const s=getComputedStyle(e);return s.backgroundColor==='rgb(240, 226, 201)' "
+                "&& parseFloat(s.paddingTop)>=16 && parseFloat(s.paddingLeft)>=16;}"
+            ), ("Visible callout and padding", width)
+            assert figure.evaluate("(e) => getComputedStyle(e).overflowX==='auto'"), (
+                "Scoped horizontal table scrolling", width)
+            assert table.evaluate(
+                "(e) => {const s=getComputedStyle(e);return s.display==='table' "
+                "&& s.minWidth==='320px' && s.tableLayout==='fixed';}"
+            ), ("Responsive table geometry", width)
+            assert table.locator("tbody tr").evaluate_all(
+                "(rows) => getComputedStyle(rows[0]).backgroundColor !== "
+                "getComputedStyle(rows[1]).backgroundColor"
+            ), ("Original striped table restored", width)
+            assert table.locator("tbody td").count() == 10, ("Source cell inventory", width)
+            if width == 320:
+                assert figure.evaluate("(e) => e.scrollWidth > e.clientWidth"), (
+                    "Small-screen table must scroll internally", width)
+            assert page.evaluate("document.documentElement.scrollWidth <= innerWidth + 1"), (
+                "No document overflow from source table", width)
+
     finally:
         server.shutdown()
         server.server_close()
