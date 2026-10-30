@@ -103,6 +103,11 @@ def extract_external(markup):
     return external, invalid
 
 def check_external(url):
+    # User-directed social links are preserved, but this automated audit must
+    # never contact Facebook. Record them explicitly as unverified instead.
+    if parse.urlsplit(url).hostname in ("www.facebook.com", "facebook.com", "m.facebook.com"):
+        return {"url": url, "status": None, "category": "social_not_probed",
+                "location": "", "elapsed_ms": 0, "reason": "Facebook HTTP not requested"}
     result = fetch(url, "HEAD")
     if result["status"] in (404, 410, 405, 501):
         # Some servers return a false 404 to HEAD; verify using GET headers.
@@ -198,6 +203,7 @@ def self_test():
     assert classify(403) == "restricted_unverified"
     assert classify(301) == "redirect_unverified"
     assert classify(None) == "network_unverified"
+    assert check_external("https://www.facebook.com/casahaciendamakati/posts/123")["category"] == "social_not_probed"
     print("Public-link audit: 10 synthetic assertions PASS")
 
 if __name__ == "__main__":
