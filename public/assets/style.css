@@ -102,3 +102,12 @@
 
 /* Imported Gutenberg spacing preset fallbacks: preserve source inline values. */
 .content{--wp--preset--spacing--60:2.25rem;--wp--preset--spacing--70:3.38rem}
+
+/* Published Gutenberg nested galleries: keep the existing ten scans readable in source order. */
+.content .wp-block-gallery.has-nested-images{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;align-items:start}
+.content .wp-block-gallery.has-nested-images.columns-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.content .wp-block-gallery.has-nested-images>figure.wp-block-image{display:block;min-width:0;margin:0}
+.content .wp-block-gallery.has-nested-images>figure.wp-block-image>a,.content .wp-block-gallery.has-nested-images>figure.wp-block-image>.chm-gallery-trigger{display:block;width:100%}
+.content .wp-block-gallery.has-nested-images>figure.wp-block-image img{display:block;width:100%;max-width:100%;height:auto;object-fit:contain}
+@media(max-width:710px){.content .wp-block-gallery.has-nested-images,.content .wp-block-gallery.has-nested-images.columns-4{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:350px){.content .wp-block-gallery.has-nested-images,.content .wp-block-gallery.has-nested-images.columns-4{grid-template-columns:minmax(0,1fr)}}
