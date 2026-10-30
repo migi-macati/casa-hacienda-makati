@@ -12,43 +12,53 @@ from urllib.parse import urlsplit
 from playwright.sync_api import sync_playwright
 
 ORIGIN = "https://casa-hacienda-makati.vercel.app"
-IDS = ["nhcp-1937", "nhcp-1991", "bl-1775"]
+IDS_OLD = ["nhcp-1937", "nhcp-1991", "bl-1775"]
+IDS_NEW = IDS_OLD + ["ua-1999"]
+SCHOLARLY_SOURCE = "https://www.digitaliapublishing.com/a/647/la-expulsion-de-los-jesuitas-de-filipinas"
 SOURCE_URLS = [
     "https://philhistoricsites.nhcp.gov.ph/registry_database/san-pedro-macati/",
     "https://philhistoricsites.nhcp.gov.ph/registry_database/makati/",
     "https://searcharchives.bl.uk/catalog/040-002027896",
 ]
-EXPECTED_HREFS = SOURCE_URLS + ["/cultural-significance/"]
+EXPECTED_OLD = SOURCE_URLS + ["/cultural-significance/"]
+EXPECTED_NEW = SOURCE_URLS + [SCHOLARLY_SOURCE, "/cultural-significance/"]
 
 
-def check_links(hrefs):
-    if hrefs != EXPECTED_HREFS:
+def check_links(hrefs, ids):
+    if ids == IDS_OLD:
+        expected = EXPECTED_OLD
+    elif ids == IDS_NEW:
+        expected = EXPECTED_NEW
+    else:
+        raise AssertionError("Unreviewed source-register inventory")
+    if hrefs != expected:
         raise AssertionError("Source register hrefs or ordering changed")
-    for href in hrefs[:3]:
+    for href in hrefs[:-1]:
         u = urlsplit(href)
         if u.scheme != "https" or u.username or u.password or u.port or u.query or u.fragment:
             raise AssertionError("Source link is not an approved canonical HTTPS URL")
     return True
 
-
 def self_test():
-    assert check_links(EXPECTED_HREFS)
+    assert check_links(EXPECTED_OLD, IDS_OLD)
+    assert check_links(EXPECTED_NEW, IDS_NEW)
     bad = [
-        EXPECTED_HREFS[:-1],
-        EXPECTED_HREFS[:2] + ["https://searcharchives.bl.uk/catalog/040-002027897", EXPECTED_HREFS[3]],
-        EXPECTED_HREFS[:2] + ["https://example.invalid/catalog/040-002027896", EXPECTED_HREFS[3]],
-        EXPECTED_HREFS[:2] + ["http://searcharchives.bl.uk/catalog/040-002027896", EXPECTED_HREFS[3]],
-        EXPECTED_HREFS[:2] + [EXPECTED_HREFS[2] + "?unverified=1", EXPECTED_HREFS[3]],
-        [EXPECTED_HREFS[1], EXPECTED_HREFS[0], EXPECTED_HREFS[2], EXPECTED_HREFS[3]],
+        (EXPECTED_OLD[:-1], IDS_OLD),
+        (EXPECTED_NEW, IDS_OLD),
+        (EXPECTED_OLD, IDS_NEW),
+        (EXPECTED_NEW[:-2] + ["/cultural-significance/"], IDS_NEW),
+        (EXPECTED_NEW[:-2] + ["https://example.invalid/", "/cultural-significance/"], IDS_NEW),
+        (EXPECTED_NEW[:-2] + [SCHOLARLY_SOURCE + "?unverified=1", "/cultural-significance/"], IDS_NEW),
+        (EXPECTED_NEW, IDS_NEW[:-1] + ["unreviewed"]),
+        ([EXPECTED_NEW[1], EXPECTED_NEW[0]] + EXPECTED_NEW[2:], IDS_NEW),
     ]
-    for fixture in bad:
+    for hrefs, ids in bad:
         try:
-            check_links(fixture)
+            check_links(hrefs, ids)
         except AssertionError:
             continue
-        raise AssertionError("Unsafe source URL fixture passed")
-    print("Deployed sources URL allowlist: six fail-closed fixtures PASS", flush=True)
-
+        raise AssertionError("Unreviewed source URL fixture passed")
+    print("Deployed sources transitional exact-version allowlist: 8 rejected fixtures", flush=True)
 
 def inspect(page, width, js_enabled, reduced_motion):
     response = page.goto(ORIGIN + "/", wait_until="load", timeout=60000)
@@ -64,8 +74,8 @@ def inspect(page, width, js_enabled, reduced_motion):
     assert section.locator("h2#heritage-sources-title").is_visible()
     rows = section.locator("ol.source-records > li[data-source-id]")
     ids = [x.get_attribute("data-source-id") for x in rows.all()]
-    assert ids == IDS, "Three reviewed institutional records required"
-    assert rows.locator("h3").count() == 3
+    assert ids in (IDS_OLD, IDS_NEW), "Unreviewed source-register inventory"
+    assert rows.locator("h3").count() == len(ids)
     body = section.inner_text()
     for boundary in (
         "not the original deed",
@@ -77,9 +87,12 @@ def inspect(page, width, js_enabled, reduced_motion):
         "040-002027896",
     ):
         assert boundary in body, "Evidence limitation missing: " + boundary
+    if ids == IDS_NEW:
+        assert "Santiago Lorenzo García" in body
+        assert "the monograph’s full text and original estate records were not examined" in body
     links = section.locator("a")
     hrefs = [x.get_attribute("href") for x in links.all()]
-    check_links(hrefs)
+    check_links(hrefs, ids)
     assert all(x.is_visible() for x in links.all()), "Hidden institutional link"
     assert section.locator("img,video,audio,iframe,canvas,script,object,embed").count() == 0
     assert page.evaluate("document.documentElement.scrollWidth <= window.innerWidth + 2"), "Horizontal overflow"
@@ -94,7 +107,7 @@ def inspect(page, width, js_enabled, reduced_motion):
         assert page.locator("nav.desktop-nav").is_visible(), "Desktop navigation missing"
     return {
         "viewport": width, "javaScript": js_enabled, "reducedMotion": reduced_motion,
-        "sourceIds": ids, "sourceLinks": hrefs[:3], "articleCards": 13,
+        "sourceIds": ids, "sourceLinks": hrefs[:-1], "articleCards": 13,
         "noindex": True, "keyboardFocus": True, "overflow": False,
     }
 
@@ -144,7 +157,7 @@ def main():
         "scope": "Read-only production Chromium smoke QA, not manual screen-reader, archival truth or rights clearance",
         "origin": ORIGIN, "tests": results, "allPassed": True,
     }, indent=2) + "\n")
-    print("Independent deployed sources PASS: eight browser combinations, three reviewed institutional links", flush=True)
+    print("Independent deployed sources PASS: eight browser combinations, strictly approved three/four source records", flush=True)
 
 
 if __name__ == "__main__":
