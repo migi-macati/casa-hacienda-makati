@@ -232,6 +232,39 @@ with sync_playwright() as pw:
                         "(e) => getComputedStyle(e).fontSize === '20px' && parseFloat(getComputedStyle(e).lineHeight) >= 30"
                     ), ("Gutenberg medium-font preset", width)
 
+        # Original published article Gutenberg large and extra-large headings:
+        # preserve hierarchy with readable mobile sizes, no source rewriting.
+        for width in (320, 375, 1280):
+            page.set_viewport_size({"width": width, "height": 812})
+            for route in ("/2023/08/12/cultural-significance-no-1/",
+                          "/2024/02/06/cultural-significance-no-11/",
+                          "/2024/10/28/cultural-significance-no-12/"):
+                page.goto(f"http://127.0.0.1:{server.server_port}{route}",
+                          wait_until="domcontentloaded")
+                extra = page.locator("article.content .has-x-large-font-size")
+                assert extra.count() == 1, ("Published extra-large heading", route, width)
+                assert extra.first.evaluate("(e) => getComputedStyle(e).fontSize") == (
+                    "32px" if width <= 710 else "42px"), (
+                    "Gutenberg extra-large heading computed size", route, width)
+                assert extra.first.evaluate("(e) => parseFloat(getComputedStyle(e).lineHeight) >= 39"), (
+                    "Gutenberg extra-large heading line height", route, width)
+                if route.endswith("no-1/"):
+                    large = page.locator("article.content .has-large-font-size")
+                    assert large.count() == 4, ("Published large heading count", width)
+                    assert large.evaluate_all(
+                        "(nodes) => nodes.every(e => getComputedStyle(e).fontSize === '" +
+                        ("28px" if width <= 710 else "36px") + "')"
+                    ), ("Gutenberg large heading computed size", width)
+                else:
+                    medium = page.locator("article.content .has-medium-font-size")
+                    assert medium.count() == (5 if "no-11/" in route else 3), (
+                        "Published medium typography", route, width)
+                    assert medium.evaluate_all(
+                        "(nodes) => nodes.every(e => getComputedStyle(e).fontSize === '20px')"
+                    ), ("Gutenberg medium font preserved", route, width)
+                assert page.evaluate("document.documentElement.scrollWidth <= innerWidth + 1"), (
+                    "Published article horizontal overflow", route, width)
+
     finally:
         server.shutdown()
         server.server_close()
