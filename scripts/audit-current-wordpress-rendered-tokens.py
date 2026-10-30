@@ -69,6 +69,8 @@ SNAPSHOT = r"""() => {
       .reduce((n,e)=>n+e.querySelectorAll(':scope > figure.wp-block-image').length,0),
     stylesheets: document.styleSheets.length,
     overflow: document.documentElement.scrollWidth > innerWidth+2,
+    scrollWidth: document.documentElement.scrollWidth,
+    viewportWidth: innerWidth,
     robots: document.querySelector('meta[name="robots"]')?.content || null
   };
 }"""
@@ -80,7 +82,7 @@ def validate(route, width, which, record):
     assert record["title"] and record["titleStyle"] and record["stylesheets"] >= 1
     assert record["contentWidth"] > 0
     if which == "migrated":
-        assert not record["overflow"]
+        assert not record["overflow"], (route, width, record.get("scrollWidth"), record.get("viewportWidth"))
         assert record["robots"] == "noindex,nofollow"
         assert re.fullmatch(r"noindex\s*,\s*nofollow", record["header"] or "", re.I)
         for key, value in EXPECTED[route].items():
@@ -142,10 +144,13 @@ def capture():
                         response=page.goto(origin+route,wait_until="domcontentloaded",timeout=45000)
                         assert response is not None
                         page.wait_for_selector("h1",timeout=15000)
+                        page.wait_for_load_state("load",timeout=15000)
                         page.evaluate("() => Promise.race([document.fonts.ready,new Promise(r=>setTimeout(r,3000))])")
+                        page.wait_for_timeout(250)
                         data=page.evaluate(SNAPSHOT)
                         data.update(status=response.status,host=urlsplit(page.url).hostname,
                                     header=response.headers.get("x-robots-tag"))
+                        print("CSS diagnostic",which,route,width,"scroll",data.get("scrollWidth"),"viewport",data.get("viewportWidth"),flush=True)
                         validate(route,width,which,data)
                         pair[which]=data
                     rows.append({"route":route,"width":width,**pair})
