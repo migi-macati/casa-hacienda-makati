@@ -16,3 +16,6 @@ jobs:
       - run: python -m py_compile scripts/audit-live-wordpress-blocks.py
       - run: python scripts/audit-live-wordpress-blocks.py --self-test
       - run: python scripts/audit-live-wordpress-blocks.py
+      - run: python -m py_compile scripts/audit-live-wordpress-recent-parity.py
+      - run: CHM_SELF_TEST=1 python scripts/audit-live-wordpress-recent-parity.py
+      - run: python scripts/audit-live-wordpress-recent-parity.py
