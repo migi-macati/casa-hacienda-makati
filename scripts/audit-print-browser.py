@@ -37,6 +37,10 @@ with sync_playwright() as pw:
             assert article.locator('a').count()==links,('links missing',doc['file'],width)
             assert all(v=='none' for v in article.locator('.wp-block-spacer').evaluate_all(
                 '(els)=>els.map(e=>getComputedStyle(e).display)')),('spacer',doc['file'],width)
+            galleries=article.locator('.wp-block-gallery.has-nested-images')
+            for i in range(galleries.count()):
+                columns=galleries.nth(i).evaluate('(e)=>getComputedStyle(e).gridTemplateColumns.split(" ").filter(Boolean).length')
+                assert columns==2,('print gallery columns',doc['file'],width,columns)
             assert page.locator('meta[name="robots"]').get_attribute('content')=='noindex,nofollow'
             page.emulate_media(media='screen')
             assert page.locator('.siteheader').evaluate('(e)=>getComputedStyle(e).display')!='none'
