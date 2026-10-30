@@ -29,3 +29,4 @@ jobs:
       - run: python scripts/audit-mobile-nav.py
       - run: python scripts/audit-print-browser.py
       - run: python scripts/audit-footnote-links-browser.py
+      - run: python scripts/audit-original-source-note-labels.py

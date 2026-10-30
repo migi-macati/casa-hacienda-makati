@@ -1,0 +1,7 @@
+# Source-note link names across three published articles (2026-10-31 PHT)
+
+Original WordPress exports retain 22 fully linked, numbered references in Cultural Significance No. 1 (4), History of Barrio Olimpia (4), and Cultural Significance No. 11 (14). The links expose bare numeral accessible names. This change adds explicit "Go to source note N" labels in **generated HTML only**, preserving the visible numbers, original note UUIDs, restored note content, return links and source-locked Git blobs. No. 10's previously repaired 13 references remain under their existing gate. No. 12 and its historically rejected CHM-B040 operation are excluded.
+
+The build now rejects source changes and 30 synthetic malformed-link cases, and the existing full-build CI runs Chromium against all three generated routes at 320/375/1280px with JavaScript on/off (18 contexts). The browser checks 22 complete link labels, targets, return links, keyboard activation, noindex and horizontal overflow without external requests. This is not manual screen-reader testing or complete WCAG certification.
+
+No WordPress/Facebook writes, new media, PDFs, OCR, private draft changes, new rights, carousel reproduction, noindex/public launch, paid services or historical claim changes. Require all nine exact-head Actions, preview READY, final diff review, merge, and exact-main production READY. Generated-site QA is not independent final-production verification. The existing CHM-B040 safety rejection remains untouched.
