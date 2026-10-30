@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Read-only independent deployed Chromium QA for the four-entry sourced timeline.
+"""Read-only independent deployed Chromium QA for approved sourced timeline versions.
 
 Interaction/accessibility smoke gate, not historical-source or manual screen-reader acceptance.
 """
@@ -11,42 +11,54 @@ from urllib.parse import urlsplit
 from playwright.sync_api import sync_playwright
 
 ORIGIN = "https://casa-hacienda-makati.vercel.app"
-YEARS = ["1607", "1608", "1620", "1768"]
+YEARS_OLD = ["1607", "1608", "1620", "1768"]
+YEARS_NEW = YEARS_OLD + ["1769"]
+SCHOLARLY_SOURCE = "https://www.digitaliapublishing.com/a/647/la-expulsion-de-los-jesuitas-de-filipinas"
 SOURCE_PATHS = {"/registry_database/san-pedro-macati/", "/registry_database/makati/"}
 
 
-def check_source_links(hrefs):
-    if len(hrefs) != 4:
-        raise AssertionError("Four timeline source links required")
+def check_source_links(hrefs, years):
+    if years not in (YEARS_OLD, YEARS_NEW):
+        raise AssertionError("Unreviewed timeline chronology")
+    if len(hrefs) != len(years):
+        raise AssertionError("Timeline source link count mismatch")
     paths = []
-    for href in hrefs:
+    for href in hrefs[:4]:
         parsed = urlsplit(href)
         if (parsed.scheme != "https" or
                 parsed.hostname != "philhistoricsites.nhcp.gov.ph" or
                 parsed.path not in SOURCE_PATHS or parsed.query or parsed.fragment):
-            raise AssertionError("Unreviewed timeline source URL")
+            raise AssertionError("Unreviewed official timeline source URL")
         paths.append(parsed.path)
     if set(paths) != SOURCE_PATHS:
         raise AssertionError("Both NHCP marker records required")
+    if years == YEARS_NEW and hrefs[4] != SCHOLARLY_SOURCE:
+        raise AssertionError("Unreviewed 1769 scholarly source")
     return True
-
 
 def self_test():
     good = ["https://philhistoricsites.nhcp.gov.ph/registry_database/san-pedro-macati/",
             "https://philhistoricsites.nhcp.gov.ph/registry_database/makati/"]
-    assert check_source_links([good[0], good[1], good[0], good[0]])
-    for bad in ([good[0]] * 4,
-                [good[0], good[1], good[0]],
-                [good[0], good[1], good[0], "https://evil.example/"],
-                [good[0], good[1], good[0], "http://philhistoricsites.nhcp.gov.ph/registry_database/makati/"],
-                [good[0], good[1], good[0], "https://philhistoricsites.nhcp.gov.ph/registry_database/makati/?extra=1"]):
+    old = [good[0], good[1], good[0], good[0]]
+    assert check_source_links(old, YEARS_OLD)
+    assert check_source_links(old + [SCHOLARLY_SOURCE], YEARS_NEW)
+    bad = [
+        (old[:-1], YEARS_OLD),
+        ([good[0]] * 4, YEARS_OLD),
+        (old + [SCHOLARLY_SOURCE], YEARS_OLD),
+        (old, YEARS_NEW),
+        (old + ["https://example.invalid/"], YEARS_NEW),
+        (old + [SCHOLARLY_SOURCE + "?unverified=1"], YEARS_NEW),
+        ([good[0], good[1], good[0], "http://philhistoricsites.nhcp.gov.ph/registry_database/makati/"], YEARS_OLD),
+        (old, ["1607", "1608", "1620", "1769"]),
+    ]
+    for hrefs, years in bad:
         try:
-            check_source_links(bad)
+            check_source_links(hrefs, years)
         except AssertionError:
             continue
-        raise AssertionError("Unreviewed source fixture passed")
-    print("Deployed timeline source allowlist synthetic regressions PASS: 5 rejected cases")
-
+        raise AssertionError("Unreviewed timeline fixture passed")
+    print("Deployed timeline transitional exact-version allowlist: 8 rejected fixtures")
 
 def inspect(page, width, js_enabled, reduced_motion):
     response = page.goto(ORIGIN + "/", wait_until="load", timeout=60000)
@@ -61,15 +73,18 @@ def inspect(page, width, js_enabled, reduced_motion):
     assert page.get_by_role("region", name="Early San Pedro Macati: what the records date").count() == 1
     assert section.locator("h2#heritage-timeline-title").is_visible()
     entries = section.locator("ol.timeline-list > li[data-year]")
-    assert entries.count() == 4, "Four verified milestones expected"
     actual = [x.get_attribute("data-year") for x in entries.all()]
-    assert actual == YEARS, f"Chronology changed: {actual}"
-    assert all(x.inner_text().strip().startswith(year) for x, year in zip(entries.locator("h3").all(), YEARS))
+    assert actual in (YEARS_OLD, YEARS_NEW), f"Unreviewed chronology: {actual}"
+    assert all(x.inner_text().strip().startswith(year) for x, year in zip(entries.locator("h3").all(), actual))
     assert "does not establish when the surviving structure" in section.inner_text()
     assert "not original deeds or building plans" in section.inner_text()
-    source_links = section.locator('a[href^="https://philhistoricsites.nhcp.gov.ph/"]')
+    source_links = section.locator("p.timeline-source a")
     hrefs = [a.get_attribute("href") for a in source_links.all()]
-    check_source_links(hrefs)
+    check_source_links(hrefs, actual)
+    if actual == YEARS_NEW:
+        assert "1768–1771" in section.inner_text()
+        assert "does not establish when the Makati hacienda changed ownership" in section.inner_text()
+        assert "The 1769 entry follows a scholarly publication record" in section.inner_text()
     assert all(a.is_visible() for a in source_links.all())
     assert section.locator("img,video,audio,iframe,canvas,script").count() == 0
     assert page.evaluate("document.documentElement.scrollWidth <= window.innerWidth + 2"), "Horizontal overflow"
@@ -138,7 +153,7 @@ def main():
         "tests": results,
         "allPassed": True,
     }, indent=2) + "\n")
-    print("Independent deployed timeline PASS: 8 viewport/JS/motion combinations, 4 dated entries, 4 official source links")
+    print("Independent deployed timeline PASS: 8 viewport/JS/motion combinations, strictly approved four/five-entry chronology and source links")
 
 
 if __name__ == "__main__":
