@@ -31,6 +31,12 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
+          name: independent-production-current-theme-token-evidence
+          path: artifacts/live-current-wordpress-tokens.json
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
           name: independent-production-print-evidence
           path: artifacts/live-print-browser.json
           if-no-files-found: ignore
