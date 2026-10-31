@@ -115,10 +115,10 @@
 /* Gutenberg base-border preset: restore 12 original Significance text frames. */
 .content p.has-border-color.has-base-border-color{border-style:solid;border-color:var(--paper)}
 
-/* Original Gutenberg text-color classes: conservative readable palette fallbacks. */
-.content .has-primary-color.has-text-color{color:#1c3b30}
-.content .has-foreground-color.has-text-color{color:var(--ink)}
-.content .has-black-color.has-text-color{color:#111}
+/* Original Gutenberg text-color classes: current-original computed colors, article only. */
+.content .has-primary-color.has-text-color{color:#111}
+.content .has-foreground-color.has-text-color{color:#111}
+.content .has-black-color.has-text-color{color:#000}
 
 /* Print-only archival reading: preserve original published text, source links and scans. */
 @media print{

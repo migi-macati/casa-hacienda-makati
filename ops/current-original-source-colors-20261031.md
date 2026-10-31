@@ -1,0 +1,7 @@
+# Current-original Gutenberg source colors, 2026-10-31
+
+Current WordPress (Twenty Twenty-Four) read-only computed CSS in PRs #128 and #132 shows source classes primary/foreground #111 and black #000. This integrated source-preserving change scopes those three colors to published article Gutenberg content only. It preserves 16 primary, 55 foreground and five black class instances, the 15 locked original published HTML files, 82 media, four private drafts and noindex. Site-wide green/gold identity, header/footer and controls remain unchanged.
+
+Mandatory build-level source-lock tests include 12 fail-closed color mutations. Generated-site Chromium checks representative classes at 320/375/1280, including noindex and overflow. The independent original-versus-production lab enforces new color parity except for one named PR branch, which may encounter the previously deployed exact old three-color palette while the new CSS is still under review. That transition is never enabled on main or unrelated PRs and must be removed in a follow-up QA-only PR after exact-main production. The original theme's historical identity remains unknown. Cardo versus Georgia and gallery flex versus grid remain open. No remote fonts or image reproduction.
+
+Require all nine exact-head Actions, READY preview, reviewed diff, merge, exact-main READY production and independent final live verification. No WordPress writes, article rewrites, PDF or image edits, paid services, rights assumptions or public launch. CHM-B040 historical CS12 safety-rejected operation remains prohibited.
