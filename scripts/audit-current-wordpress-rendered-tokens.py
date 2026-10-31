@@ -3,7 +3,6 @@
 import argparse
 import copy
 import json
-import os
 import re
 from pathlib import Path
 from urllib.parse import urlsplit
@@ -122,23 +121,16 @@ def assert_current_original_parity(route, width, pair):
         close_px("spacing70", "marginTop", 54.08, "About spacing-70")
 
 
-# Source-defined colors are restored in generated HTML; the original-vs-production
-# gate allows the exact old production palette only during this named PR transition.
-# Font and gallery differences remain unresolved.
+# Strict independent original-versus-production source-color parity after #133
+# reached READY production; heading font and gallery layout remain unresolved.
 COLOR_PARITY_BASELINE = {
     "primary": "rgb(17, 17, 17)",
     "foreground": "rgb(17, 17, 17)",
     "black": "rgb(0, 0, 0)",
 }
-OLD_MIGRATED_COLORS = {
-    "primary": "rgb(28, 59, 48)",
-    "foreground": "rgb(36, 62, 48)",
-    "black": "rgb(17, 17, 17)",
-}
-TRANSITION_BRANCH = "fix/current-wordpress-source-colors-20261031"
 
-def assert_unresolved_visual_fingerprint(route, width, pair, allow_old_production=False):
-    """Enforce source colors and remaining font/gallery fingerprint; pin old-production transition."""
+def assert_unresolved_visual_fingerprint(route, width, pair):
+    """Require original-production color equality and guard remaining font/gallery gaps."""
     assert route in ROUTES and width in WIDTHS
     a, b = pair["original"], pair["migrated"]
     assert "cardo" in a["titleStyle"]["fontFamily"].lower(), (route, width, "original heading font")
@@ -150,7 +142,7 @@ def assert_unresolved_visual_fingerprint(route, width, pair, allow_old_productio
         assert left == right, (route, width, key, "source class inventory", left, right)
         if left:
             assert a["first"][key]["color"] == source_rgb, (route, width, key, "original color")
-            assert b["first"][key]["color"] in ((source_rgb, OLD_MIGRATED_COLORS[slug]) if allow_old_production else (source_rgb,)), (route, width, key, "migrated color")
+            assert b["first"][key]["color"] == source_rgb, (route, width, key, "migrated color")
             observed.add(slug)
     if route in ("/2023/08/12/cultural-significance-no-1/",
                  "/2023/10/21/history-of-barrio-olimpia-makati-rizal/"):
@@ -236,12 +228,14 @@ def self_test():
     migrated["first"]["galleries"]["display"] = "grid"
     fingerprint = {"original": source, "migrated": migrated}
     assert assert_unresolved_visual_fingerprint(route, 375, fingerprint) == set(COLOR_PARITY_BASELINE)
-    old = copy.deepcopy(fingerprint)
-    for slug, rgb in OLD_MIGRATED_COLORS.items(): old["migrated"]["first"][slug]["color"] = rgb
-    try: assert_unresolved_visual_fingerprint(route, 375, old)
-    except AssertionError: pass
-    else: raise AssertionError("Old production palette must fail strict parity")
-    assert assert_unresolved_visual_fingerprint(route, 375, old, allow_old_production=True) == set(COLOR_PARITY_BASELINE)
+    for slug, old_color in (("primary", "rgb(28, 59, 48)"),
+                            ("foreground", "rgb(36, 62, 48)"),
+                            ("black", "rgb(17, 17, 17)")):
+        old = copy.deepcopy(fingerprint)
+        old["migrated"]["first"][slug]["color"] = old_color
+        try: assert_unresolved_visual_fingerprint(route, 375, old)
+        except AssertionError: pass
+        else: raise AssertionError("Failed to reject old production color: " + slug)
     visual_mutations = [
       ("original-font", lambda p: p["original"]["titleStyle"].update(fontFamily="Arial")),
       ("migrated-font", lambda p: p["migrated"]["titleStyle"].update(fontFamily="Arial")),
@@ -270,7 +264,6 @@ def self_test():
 def capture():
     from playwright.sync_api import sync_playwright
     rows=[];blocked=0;observed_colors=set()
-    transition = os.environ.get("GITHUB_EVENT_NAME") == "pull_request" and os.environ.get("GITHUB_HEAD_REF") == TRANSITION_BRANCH
     with sync_playwright() as p:
         browser=p.chromium.launch(headless=True)
         try:
@@ -306,7 +299,7 @@ def capture():
                         validate(route,width,which,data)
                         pair[which]=data
                     assert_current_original_parity(route, width, pair)
-                    observed_colors.update(assert_unresolved_visual_fingerprint(route, width, pair, allow_old_production=transition))
+                    observed_colors.update(assert_unresolved_visual_fingerprint(route, width, pair))
                     rows.append({"route":route,"width":width,**pair})
                 context.close()
         finally: browser.close()
@@ -318,7 +311,7 @@ def output(rows,blocked,directory):
     directory.mkdir(parents=True,exist_ok=True)
     (directory/"current-wordpress-rendered-tokens.json").write_text(json.dumps({
         "scope":"4 published routes x 3 widths x 2 read-only origins",
-        "status":"source_scoped_spacing_and_color_parity_with_one_time_branch_transition",
+        "status":"strict_live_source_scoped_spacing_and_color_parity",
         "unresolvedVisualFingerprint":{"originalHeading":"Cardo","migratedHeading":"Georgia",
             "originalGallery":"flex","migratedGallery":"grid"},
         "verifiedColorClasses":COLOR_PARITY_BASELINE,
@@ -327,7 +320,7 @@ def output(rows,blocked,directory):
       "24 restricted read-only Chromium visits, no images, scripts, social requests or screenshots.",
       "Current active theme does not establish historic authoring theme. Missing source selectors are inconclusive.",
       "Strict parity passed for 5+3 source-defined separators, Cultural Significance spacing-60 and About spacing-70 at 320/375/1280px.",
-      "Generated-site source colors now match current original; old deployed colors are allowed ONLY for the exact named PR transition. Remaining font and gallery differences are fingerprinted. This is not full visual parity.","",
+      "Strict original-versus-production computed source-color equality required for primary/foreground/black classes. Remaining font and gallery differences are fingerprinted. This is not full visual parity.","",
       "| Route | Width | Original spacing 60 | Migrated spacing 60 | Original separator width/border | Migrated separator width/border |",
       "|---|---:|---|---|---|---|"]
     for row in rows:
@@ -339,7 +332,7 @@ def output(rows,blocked,directory):
                      (a["tokens"]["60"] or "undefined")+" | "+(b["tokens"]["60"] or "undefined")+
                      " | "+separator(a)+" | "+separator(b)+" |")
     lines+=["","Inspect JSON counts and computed styles before proposing any CSS change.",
-      "Final production must pass strict source-color parity after merge; no full theme, media rights, manual screen-reader, PDF or field CWV certification."]
+      "Strict live source-color parity passes only on measured classes; no full theme, media rights, manual screen-reader, PDF or field CWV certification."]
     (directory/"current-wordpress-rendered-tokens.md").write_text("\n".join(lines)+"\n")
     print("Rendered-token parity PASS: 12 paired route/width checks, 24 HTTP 200 visits; blocked requests:",blocked)
 
