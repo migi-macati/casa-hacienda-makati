@@ -99,7 +99,8 @@ def assert_current_original_parity(route, width, pair):
         assert left is not None and right is not None, (route, width, label, "missing element")
         x = float(str(left[property_name]).removesuffix("px"))
         y = float(str(right[property_name]).removesuffix("px"))
-        assert abs(x - expected) <= 1 and abs(y - expected) <= 1 and abs(x - y) <= 1, (
+        tolerance = 0.1 if label == "separator border" else 0.8
+        assert abs(x - expected) <= tolerance and abs(y - expected) <= tolerance and abs(x - y) <= tolerance, (
             route, width, label, x, y, expected)
     if route in ("/2023/08/12/cultural-significance-no-1/",
                  "/2023/10/21/history-of-barrio-olimpia-makati-rizal/"):
