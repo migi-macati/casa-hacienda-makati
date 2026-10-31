@@ -138,7 +138,7 @@ def assert_unresolved_visual_fingerprint(route, width, pair):
     assert "georgia" in b["titleStyle"]["fontFamily"].lower(), (route, width, "migrated heading font")
     observed = set()
     for slug, (source_rgb, migrated_rgb) in COLOR_GAP_BASELINE.items():
-        key = "has-" + slug + "-color"
+        key = slug
         left, right = a["counts"][key], b["counts"][key]
         assert left == right, (route, width, key, "source class inventory", left, right)
         if left:
@@ -215,17 +215,17 @@ def self_test():
             else: raise AssertionError("Failed to reject " + which + " " + token + " regression")
     # Known-unresolved visual differences have independent negative fixtures.
     source = {"titleStyle": {"fontFamily": "Cardo, serif"},
-              "counts": {"has-primary-color": 1, "has-foreground-color": 1,
-                         "has-black-color": 1, "galleries": 1},
-              "first": {"has-primary-color": {"color": "rgb(17, 17, 17)"},
-                        "has-foreground-color": {"color": "rgb(17, 17, 17)"},
-                        "has-black-color": {"color": "rgb(0, 0, 0)"},
+              "counts": {"primary": 1, "foreground": 1,
+                         "black": 1, "galleries": 1},
+              "first": {"primary": {"color": "rgb(17, 17, 17)"},
+                        "foreground": {"color": "rgb(17, 17, 17)"},
+                        "black": {"color": "rgb(0, 0, 0)"},
                         "galleries": {"display": "flex"}},
               "galleryImages": 3}
     migrated = copy.deepcopy(source)
     migrated["titleStyle"]["fontFamily"] = "Georgia, serif"
     for slug, (_, rgb) in COLOR_GAP_BASELINE.items():
-        migrated["first"]["has-" + slug + "-color"]["color"] = rgb
+        migrated["first"][slug]["color"] = rgb
     migrated["first"]["galleries"]["display"] = "grid"
     fingerprint = {"original": source, "migrated": migrated}
     assert assert_unresolved_visual_fingerprint(route, 375, fingerprint) == set(COLOR_GAP_BASELINE)
@@ -240,7 +240,7 @@ def self_test():
       ("migrated-gallery-count", lambda p: p["migrated"]["counts"].update(galleries=0)),
     ]
     for slug in COLOR_GAP_BASELINE:
-        key = "has-" + slug + "-color"
+        key = slug
         visual_mutations.extend([
           ("original-" + slug, lambda p, k=key: p["original"]["first"][k].update(color="rgb(255, 255, 255)")),
           ("migrated-" + slug, lambda p, k=key: p["migrated"]["first"][k].update(color="rgb(255, 255, 255)")),
