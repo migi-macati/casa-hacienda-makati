@@ -321,7 +321,7 @@ def output(rows,blocked,directory):
         "status":"source_scoped_spacing_and_color_parity_with_one_time_branch_transition",
         "unresolvedVisualFingerprint":{"originalHeading":"Cardo","migratedHeading":"Georgia",
             "originalGallery":"flex","migratedGallery":"grid"},
-        "verifiedColorClasses":COLOR_PARITY_BASELINE},
+        "verifiedColorClasses":COLOR_PARITY_BASELINE,
         "blockedNonCSSFontDocumentRequests":blocked,"pairs":rows},indent=2)+"\n")
     lines=["# Current WordPress rendered CSS versus migrated site","",
       "24 restricted read-only Chromium visits, no images, scripts, social requests or screenshots.",
