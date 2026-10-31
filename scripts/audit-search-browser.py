@@ -281,7 +281,7 @@ with sync_playwright() as pw:
                 assert separators.count() == expected, ("Original separator count", route, width)
                 assert separators.evaluate_all(
                     "(nodes) => nodes.every(e => {const s=getComputedStyle(e);return "
-                    "s.width==='100px' && s.height==='0px' && s.borderBottomWidth==='2px' "
+                    "Math.abs(parseFloat(s.width)-Math.min(168,innerWidth*.13))<1 && s.height==='0px' && s.borderBottomWidth==='1px' "
                     "&& s.borderBottomStyle==='solid' && s.opacity==='1' && "
                     "s.display!=='none';})"
                 ), ("Gutenberg separator computed styles", route, width)
@@ -350,7 +350,7 @@ with sync_playwright() as pw:
             heading = page.locator('article.content h2[style*="padding-bottom:var(--wp--preset--spacing--60)"]')
             assert heading.count() == 1, ("Original Significance heading spacing inventory", width)
             assert heading.first.evaluate(
-                "(e) => Math.abs(parseFloat(getComputedStyle(e).paddingBottom)-36)<1"
+                "(e) => Math.abs(parseFloat(getComputedStyle(e).paddingBottom)-Math.min(168,innerWidth*.13))<1"
             ), ("Significance Gutenberg spacing-60 padding", width)
             assert page.evaluate("document.documentElement.scrollWidth <= innerWidth + 1"), (
                 "Significance heading spacing overflow", width)

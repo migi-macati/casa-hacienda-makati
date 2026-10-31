@@ -20,7 +20,7 @@ assert.equal(occurrences(history, 'padding-left:var(--wp--preset--spacing--70)')
 assert.equal(occurrences(about, 'margin-top:var(--wp--preset--spacing--70)'), 1, 'original About columns margin');
 assert.equal(occurrences(significance, 'padding-bottom:var(--wp--preset--spacing--60)'), 1, 'original Significance heading padding');
 const marker = '/* Imported Gutenberg spacing preset fallbacks: preserve source inline values. */';
-const rule = '.content{--wp--preset--spacing--60:2.25rem;--wp--preset--spacing--70:3.38rem}';
+const rule = '.content{--wp--preset--spacing--60:min(10.5rem,13vw);--wp--preset--spacing--70:3.38rem}';
 function validate(candidate) {
   assert.equal(occurrences(candidate, marker), 1, 'one reviewed spacing section');
   const after = candidate.slice(candidate.indexOf(marker) + marker.length);
@@ -33,12 +33,13 @@ validate(css);
 const mutations = [
   ['.content{', 'body{'],
   ['.content{', '.hero{'],
-  ['--wp--preset--spacing--60:2.25rem', '--wp--preset--spacing--60:0'],
+  ['--wp--preset--spacing--60:min(10.5rem,13vw)', '--wp--preset--spacing--60:0'],
   ['--wp--preset--spacing--70:3.38rem', '--wp--preset--spacing--70:0'],
   ['--wp--preset--spacing--60', '--wp--preset--spacing--80'],
   ['--wp--preset--spacing--70', '--wp--preset--spacing--80'],
-  ['2.25rem', '22.5rem'],
+  ['min(10.5rem,13vw)', '22.5rem'],
   ['3.38rem', '33.8rem'],
+  ['min(10.5rem,13vw)', 'min(10.5rem,130vw)'],
   ['.content{', '.content p{'],
   [';--wp--preset--spacing--70', ';--wp--preset--spacing--70;--tracking:url(https://example.invalid)']
 ];

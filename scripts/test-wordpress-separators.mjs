@@ -29,7 +29,7 @@ assert.equal(byRoute.get('2023/08/12/cultural-significance-no-1/index.html'), 5)
 assert.equal(byRoute.get('2023/10/21/history-of-barrio-olimpia-makati-rizal/index.html'), 3);
 assert.equal(byRoute.get('2024/10/28/cultural-significance-no-12/index.html'), 1);
 const marker = '/* Imported Gutenberg separators: restore narrow centered rules without source edits. */';
-const rule = '.content .wp-block-separator{box-sizing:content-box;width:100px;max-width:100%;height:0;margin:2rem auto;border:0;border-bottom:2px solid currentColor;opacity:.4}\n' +
+const rule = '.content .wp-block-separator{box-sizing:content-box;width:min(10.5rem,13vw);max-width:100%;height:0;margin:2rem auto;border:0;border-bottom:1px solid currentColor;opacity:.4}\n' +
   '.content .wp-block-separator.has-alpha-channel-opacity{opacity:1}';
 function validate(candidate) {
   assert.equal(candidate.split(marker).length, 2, 'one reviewed Gutenberg separator section');
@@ -40,17 +40,19 @@ function validate(candidate) {
 }
 validate(css);
 const mutations = [
-  ['width:100px', 'width:0'],
+  ['width:min(10.5rem,13vw)', 'width:0'],
   ['max-width:100%', 'max-width:200vw'],
+  ['width:min(10.5rem,13vw)', 'width:168px'],
+  ['border-bottom:1px solid currentColor', 'border-bottom:2px solid currentColor'],
   ['height:0', 'height:100px'],
   ['margin:2rem auto', 'margin:0 0'],
   ['border:0', 'border:10px solid red'],
-  ['border-bottom:2px solid currentColor', 'border-bottom:0'],
+  ['border-bottom:1px solid currentColor', 'border-bottom:0'],
   ['opacity:.4', 'opacity:0'],
   ['has-alpha-channel-opacity{opacity:1}', 'has-alpha-channel-opacity{opacity:0}'],
   ['box-sizing:content-box', 'display:none;box-sizing:content-box'],
   [marker, '/* unreviewed styles */'],
-  ['width:100px', 'background:url(https://example.org/track);width:100px']
+  ['width:min(10.5rem,13vw)', 'background:url(https://example.org/track);width:min(10.5rem,13vw)']
 ];
 for (const [before, after] of mutations) {
   assert.ok(before === marker || rule.includes(before), 'missing scoped mutation source: ' + before);

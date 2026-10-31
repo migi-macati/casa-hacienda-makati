@@ -26,6 +26,7 @@ jobs:
       - run: python scripts/audit-gallery-browser.py
       - run: python scripts/audit-wordpress-border-presets.py
       - run: python scripts/audit-wordpress-color-presets.py
+      - run: python scripts/audit-wordpress-current-tokens.py
       - run: python scripts/audit-mobile-nav.py
       - run: python scripts/audit-print-browser.py
       - run: python scripts/audit-footnote-links-browser.py
