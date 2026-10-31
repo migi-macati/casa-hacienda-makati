@@ -1,0 +1,9 @@
+# Current-original Gutenberg separators and spacing-60 — 2026-10-31 PHT
+
+Measured evidence: `ops/current-wordpress-rendered-tokens-20261031.md`, Actions artifact 13020551816. The original WordPress.com's **current** Twenty Twenty-Four rendering gives 25 source-defined separators responsive widths 41.6px/48.75px/166.4px at 320/375/1280px with 1px border. The migration had fixed 100px/2px. This release scopes `.content .wp-block-separator` to `min(10.5rem,13vw)` and 1px, preserving source alpha opacity and centered placement.
+
+The original Cultural Significance heading's inline spacing-60 computes 41.6/48.75/166.4px; migration had 36px. Its `.content` token now uses the measured responsive value. The original About spacing-70 is 54.08px on both sites and is intentionally unchanged. Current-original rendering does not establish the historical authoring theme or authorize a whole-site restyle.
+
+The integrated release pins the CSS Git blob in the 15-document source manifest, updates both fail-closed exact-section fixture suites (including responsive-width and 1px rejection), and adds mandatory generated-site Chromium checks at 320/375/1280 across all 15 documents: 25 separators, original alpha opacity, Cultural Significance spacing-60 and 12 buttons/frames, unchanged About spacing-70, print visibility, noindex and horizontal overflow. Existing CSS/print/visual tests remain required.
+
+No original article/page source, images, media, PDF, private drafts, rights, Facebook, WordPress writes, native comments, noindex, or public-launch changes. CHM-B040 safety rejection remains prohibited. Fonts, legacy colors, gallery display and site-shell layout are intentionally untouched. Require exact-head CI, reviewed PR, preview, merge, authenticated exact-main deployment and subsequent independent live-browser verification before declaring this particular correction LIVE VERIFIED.
