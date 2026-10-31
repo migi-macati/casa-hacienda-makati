@@ -26,11 +26,11 @@ for (const doc of lock.documents) {
   }
 }
 assert.deepEqual(counts, {'has-primary-color': 16, 'has-foreground-color': 55, 'has-black-color': 5});
-const marker = '/* Original Gutenberg text-color classes: conservative readable palette fallbacks. */';
+const marker = '/* Original Gutenberg text-color classes: current-original computed colors, article only. */';
 const rules = [
-  '.content .has-primary-color.has-text-color{color:#1c3b30}',
-  '.content .has-foreground-color.has-text-color{color:var(--ink)}',
-  '.content .has-black-color.has-text-color{color:#111}'
+  '.content .has-primary-color.has-text-color{color:#111}',
+  '.content .has-foreground-color.has-text-color{color:#111}',
+  '.content .has-black-color.has-text-color{color:#000}'
 ];
 function validate(candidate) {
   assert.equal(candidate.split(marker).length, 2, 'one color fallback section');
@@ -44,16 +44,16 @@ validate(css);
 const mutations = [
   [rules[0], rules[0].replace('.content ', 'body ')],
   [rules[0], rules[0].replace('has-primary-color', 'has-unknown-color')],
-  [rules[0], rules[0].replace('#1c3b30', 'transparent')],
-  [rules[0], rules[0].replace('#1c3b30', '#ffffff')],
+  [rules[0], rules[0].replace('#111', 'transparent')],
+  [rules[0], rules[0].replace('#111', '#ffffff')],
   [rules[1], rules[1].replace('has-foreground-color', 'has-background-color')],
-  [rules[1], rules[1].replace('var(--ink)', 'inherit')],
-  [rules[1], rules[1].replace('var(--ink)', 'transparent')],
+  [rules[1], rules[1].replace('#111', 'inherit')],
+  [rules[1], rules[1].replace('#111', 'transparent')],
   [rules[2], rules[2].replace('has-black-color', 'has-white-color')],
-  [rules[2], rules[2].replace('#111', '#fff')],
-  [rules[2], rules[2].replace('#111', 'transparent')],
-  [rules[2], rules[2].replace('color:#111', 'display:none;color:#111')],
-  [rules[2], rules[2].replace('#111', 'url(https://example.org/track)')],
+  [rules[2], rules[2].replace('#000', '#fff')],
+  [rules[2], rules[2].replace('#000', 'transparent')],
+  [rules[2], rules[2].replace('color:#000', 'display:none;color:#000')],
+  [rules[2], rules[2].replace('#000', 'url(https://example.org/track)')],
 ];
 for (const [before, after] of mutations) {
   assert.ok(css.includes(before) && before !== after, 'valid mutation fixture');

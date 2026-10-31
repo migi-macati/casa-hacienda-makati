@@ -8,13 +8,13 @@ root = Path('public')
 css = (root / 'assets/style.css').read_text()
 targets = [
     ('2023/08/12/cultural-significance-no-1/index.html',
-     '.content .has-primary-color.has-text-color', 5, 'rgb(28, 59, 48)'),
+     '.content .has-primary-color.has-text-color', 5, 'rgb(17, 17, 17)'),
     ('2023/10/21/history-of-barrio-olimpia-makati-rizal/index.html',
-     '.content .has-foreground-color.has-text-color', 53, 'rgb(36, 62, 48)'),
+     '.content .has-foreground-color.has-text-color', 53, 'rgb(17, 17, 17)'),
     ('2023/10/21/history-of-barrio-olimpia-makati-rizal/index.html',
-     '.content .has-black-color.has-text-color', 3, 'rgb(17, 17, 17)'),
+     '.content .has-black-color.has-text-color', 3, 'rgb(0, 0, 0)'),
     ('2024/10/28/cultural-significance-no-12/index.html',
-     '.content .has-primary-color.has-text-color', 1, 'rgb(28, 59, 48)'),
+     '.content .has-primary-color.has-text-color', 1, 'rgb(17, 17, 17)'),
 ]
 with sync_playwright() as pw:
     launch = {'headless': True}
