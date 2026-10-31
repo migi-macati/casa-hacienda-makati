@@ -72,6 +72,9 @@ SNAPSHOT = r"""() => {
 }"""
 
 def source_inventory():
+    css = (ROOT / "public/assets/style.css").read_bytes()
+    css_blob = hashlib.sha1(b"blob " + str(len(css)).encode() + b"\0" + css).hexdigest()
+    assert css_blob == LOCK["stylesheetGitBlob"], "Reviewed stylesheet source lock changed"
     docs = LOCK["documents"]
     assert len(docs) == 15
     assert sum(d["type"] == "article" for d in docs) == 13
@@ -110,8 +113,10 @@ def validate(s, counts, route, width):
         assert len(s["colors"][key]) == counts[key], (route, key)
         assert all(color == rgb for color in s["colors"][key]), (route, key, "color")
     assert len(s["rules"]) == counts["wp-block-separator"], (route, "separator inventory")
+    expected = min(168.0, width * 0.13)  # Verified current WordPress spacing-60
     for rule in s["rules"]:
-        assert abs(rule["width"] - 100) <= 1 and rule["border"] == "solid" and rule["thickness"] == "2px", (route, rule)
+        assert (abs(rule["width"] - expected) <= 0.8 and
+                rule["border"] == "solid" and rule["thickness"] == "1px"), (route, width, rule)
     assert len(s["frames"]) == counts["has-base-border-color"], (route, "frame inventory")
     assert all(f == {"width": "15px", "type": "solid", "color": "rgb(252, 249, 241)"}
                for f in s["frames"]), (route, "frame styling")
@@ -126,7 +131,7 @@ def validate(s, counts, route, width):
     if route == "/about/":
         assert s["aboutMargin"] is not None and abs(s["aboutMargin"] - 54.08) <= 0.5, "About column margin"
     if route == "/cultural-significance/":
-        assert s["headingPadding"] is not None and abs(s["headingPadding"] - 36) <= 0.5, "Significance heading spacing"
+        assert s["headingPadding"] is not None and abs(s["headingPadding"] - min(168.0, width * 0.13)) <= 0.8, "Significance heading spacing"
     if route == "/2024/10/28/cultural-significance-no-12/":
         table = s["table"]
         assert table and table["background"] == "rgb(240, 226, 201)"
@@ -141,9 +146,9 @@ def self_test(inventory):
         "status": 200, "header": "noindex,nofollow", "robots": "noindex,nofollow",
         "articleCount": 1, "stylesheetCount": 1, "overflow": False,
         "colors": {k: [v] * counts[k] for k, v in COLOR.items()},
-        "rules": [{"width": 100, "border": "solid", "thickness": "2px"}] * counts["wp-block-separator"],
+        "rules": [{"width": 48.75, "border": "solid", "thickness": "1px"}] * counts["wp-block-separator"],
         "frames": [{"width": "15px", "type": "solid", "color": "rgb(252, 249, 241)"}] * 12,
-        "galleries": [], "indents": [], "aboutMargin": None, "headingPadding": 36, "table": None
+        "galleries": [], "indents": [], "aboutMargin": None, "headingPadding": 48.75, "table": None
     }
     validate(sample, counts, route, 375)
     changes = [
@@ -157,6 +162,7 @@ def self_test(inventory):
         ("frame-width", lambda x: x["frames"][0].update(width="0px")),
         ("frame-color", lambda x: x["frames"][0].update(color="transparent")),
         ("heading-spacing", lambda x: x.update(headingPadding=0)),
+        ("old-heading-spacing", lambda x: x.update(headingPadding=36)),
         ("article", lambda x: x.update(articleCount=0)),
     ]
     if counts["wp-block-separator"]:
@@ -173,7 +179,37 @@ def self_test(inventory):
             pass
         else:
             raise AssertionError("Negative fixture did not fail closed: " + name)
-    print("Recent Gutenberg production QA: source inventory and", len(changes), "negative fixtures PASS")
+    sep_route = "/2023/08/12/cultural-significance-no-1/"
+    sep_counts = inventory[sep_route]
+    sep = copy.deepcopy(sample)
+    sep["colors"] = {k: [v] * sep_counts[k] for k, v in COLOR.items()}
+    sep["rules"] = [{"width": 48.75, "border": "solid", "thickness": "1px"}
+                    for _ in range(sep_counts["wp-block-separator"])]
+    sep["frames"] = []
+    sep["headingPadding"] = None
+    sep["galleries"] = [{"columns": 2, "figures": 3}]
+    validate(sep, sep_counts, sep_route, 375)
+    separator_mutations = [
+        ("old-100px-width", lambda x: x["rules"][0].update(width=100)),
+        ("old-2px-border", lambda x: x["rules"][0].update(thickness="2px")),
+        ("missing-solid-border", lambda x: x["rules"][0].update(border="none")),
+        ("missing-separator", lambda x: x["rules"].pop()),
+    ]
+    for name, mutate in separator_mutations:
+        changed = copy.deepcopy(sep)
+        mutate(changed)
+        try:
+            validate(changed, sep_counts, sep_route, 375)
+        except (AssertionError, KeyError):
+            pass
+        else:
+            raise AssertionError("Negative separator fixture did not fail: " + name)
+    for width in (320, 375, 1280):
+        changed = copy.deepcopy(sample)
+        changed["headingPadding"] = min(168.0, width * 0.13)
+        validate(changed, counts, route, width)
+    print("Recent Gutenberg production QA: source inventory and",
+          len(changes) + len(separator_mutations), "negative fixtures PASS")
 
 def run_live(inventory):
     from playwright.sync_api import sync_playwright
@@ -192,6 +228,7 @@ def run_live(inventory):
             context.route("**/*", restrict)
             page = context.new_page()
             checks = 0
+            evidence = []
             for route, counts in inventory.items():
                 for width in ((320, 375, 1280) if route in KEY_ROUTES else (375,)):
                     page.set_viewport_size({"width": width, "height": 812})
@@ -202,8 +239,18 @@ def run_live(inventory):
                     s["status"] = response.status
                     s["header"] = response.headers.get("x-robots-tag")
                     validate(s, counts, route, width)
+                    evidence.append({"route": route, "viewport": width,
+                                     "separators": s["rules"], "headingPadding": s["headingPadding"],
+                                     "robots": s["robots"], "header": s["header"],
+                                     "overflow": s["overflow"]})
                     checks += 1
             context.close()
+            assert checks == 25, ("Unexpected published route/viewport inventory", checks)
+            out = ROOT / "artifacts/live-current-wordpress-tokens.json"
+            out.parent.mkdir(parents=True, exist_ok=True)
+            out.write_text(json.dumps({"scope": "15 source-locked published routes; 25 production Chromium visits",
+                                       "stylesheetGitBlob": LOCK["stylesheetGitBlob"],
+                                       "checks": evidence}, indent=2) + "\n")
             print("Recent Gutenberg production QA:", checks, "real Chromium route/viewport checks PASS")
             print("Third-party requests aborted:", len(blocked))
         finally:
