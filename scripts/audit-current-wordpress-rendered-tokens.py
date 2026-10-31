@@ -89,6 +89,38 @@ def validate(route, width, which, record):
             got = record["galleryImages"] if key == "galleryImages" else record["counts"][key]
             assert got == value, (route, key, got, value)
 
+def assert_current_original_parity(route, width, pair):
+    """Require measured, source-scoped Gutenberg token parity, not template/theme parity."""
+    assert route in ROUTES and width in WIDTHS
+    a, b = pair["original"], pair["migrated"]
+    def close_px(first_key, property_name, expected, label):
+        left = a["first"][first_key]
+        right = b["first"][first_key]
+        assert left is not None and right is not None, (route, width, label, "missing element")
+        x = float(str(left[property_name]).removesuffix("px"))
+        y = float(str(right[property_name]).removesuffix("px"))
+        tolerance = 0.1 if label == "separator border" else 0.8
+        assert abs(x - expected) <= tolerance and abs(y - expected) <= tolerance and abs(x - y) <= tolerance, (
+            route, width, label, x, y, expected)
+    if route in ("/2023/08/12/cultural-significance-no-1/",
+                 "/2023/10/21/history-of-barrio-olimpia-makati-rizal/"):
+        expected_count = EXPECTED[route]["separators"]
+        assert a["counts"]["separators"] == b["counts"]["separators"] == expected_count, (
+            route, width, "separator source inventory")
+        close_px("separators", "width", min(168, width * .13), "separator width")
+        close_px("separators", "borderBottomWidth", 1, "separator border")
+        assert a["first"]["separators"]["borderBottomStyle"] == "solid"
+        assert b["first"]["separators"]["borderBottomStyle"] == "solid"
+    if route == "/cultural-significance/":
+        assert a["counts"]["spacing60"] == b["counts"]["spacing60"] == 1, (
+            route, width, "heading spacing-60 source inventory")
+        close_px("spacing60", "paddingBottom", min(168, width * .13), "heading spacing-60")
+    if route == "/about/":
+        assert a["counts"]["spacing70"] == b["counts"]["spacing70"] == 1, (
+            route, width, "About spacing-70 source inventory")
+        close_px("spacing70", "marginTop", 54.08, "About spacing-70")
+
+
 def self_test():
     assert len(ROUTES) == 4 and len(set(ROUTES)) == 4 and len(WIDTHS) == 3
     assert not any(r.endswith("cultural-significance-no-12/") for r in ROUTES)
@@ -114,7 +146,38 @@ def self_test():
         try: validate("/about/", 375, "migrated", bad)
         except (AssertionError, KeyError, TypeError): pass
         else: raise AssertionError("Failed to reject mutation: "+name)
-    print("Rendered-token self-test: 9 fail-closed mutations PASS")
+    # Independent parity fixtures reject regressions in either origin or in the migration.
+    separator = {"counts": {"separators": 5}, "first": {"separators": {
+        "width": 48.75, "borderBottomWidth": "1px", "borderBottomStyle": "solid"}}}
+    pair = {"original": copy.deepcopy(separator), "migrated": copy.deepcopy(separator)}
+    route = "/2023/08/12/cultural-significance-no-1/"
+    assert_current_original_parity(route, 375, pair)
+    parity_mutations = [
+      ("migration-width", lambda p: p["migrated"]["first"]["separators"].update(width=100)),
+      ("original-width", lambda p: p["original"]["first"]["separators"].update(width=100)),
+      ("migration-border", lambda p: p["migrated"]["first"]["separators"].update(borderBottomWidth="2px")),
+      ("original-border", lambda p: p["original"]["first"]["separators"].update(borderBottomStyle="none")),
+      ("missing-original-separator", lambda p: p["original"]["counts"].update(separators=4)),
+      ("missing-migrated-separator", lambda p: p["migrated"]["first"].update(separators=None)),
+    ]
+    for name, mutate in parity_mutations:
+        bad = copy.deepcopy(pair); mutate(bad)
+        try: assert_current_original_parity(route, 375, bad)
+        except (AssertionError, KeyError, TypeError, ValueError): pass
+        else: raise AssertionError("Failed to reject parity mutation: " + name)
+    for path, token, property_name, value, expected in (
+        ("/cultural-significance/", "spacing60", "paddingBottom", "48.75px", 48.75),
+        ("/about/", "spacing70", "marginTop", "54.08px", 54.08)):
+        record = {"counts": {token: 1}, "first": {token: {property_name: value}}}
+        matched = {"original": copy.deepcopy(record), "migrated": copy.deepcopy(record)}
+        assert_current_original_parity(path, 375, matched)
+        for which in ("original", "migrated"):
+            bad = copy.deepcopy(matched)
+            bad[which]["first"][token][property_name] = "36px"
+            try: assert_current_original_parity(path, 375, bad)
+            except (AssertionError, KeyError, TypeError, ValueError): pass
+            else: raise AssertionError("Failed to reject " + which + " " + token + " regression")
+    print("Rendered-token self-test: 9 base + 10 parity fail-closed mutations PASS")
 
 def capture():
     from playwright.sync_api import sync_playwright
@@ -153,6 +216,7 @@ def capture():
                         print("CSS diagnostic",which,route,width,"scroll",data.get("scrollWidth"),"viewport",data.get("viewportWidth"),flush=True)
                         validate(route,width,which,data)
                         pair[which]=data
+                    assert_current_original_parity(route, width, pair)
                     rows.append({"route":route,"width":width,**pair})
                 context.close()
         finally: browser.close()
@@ -163,11 +227,12 @@ def output(rows,blocked,directory):
     directory.mkdir(parents=True,exist_ok=True)
     (directory/"current-wordpress-rendered-tokens.json").write_text(json.dumps({
         "scope":"4 published routes x 3 widths x 2 read-only origins",
-        "status":"diagnostic_only_not_exact_theme_parity",
+        "status":"source_scoped_current_gutenberg_token_parity_not_exact_theme_parity",
         "blockedNonCSSFontDocumentRequests":blocked,"pairs":rows},indent=2)+"\n")
     lines=["# Current WordPress rendered CSS versus migrated site","",
       "24 restricted read-only Chromium visits, no images, scripts, social requests or screenshots.",
-      "Current active theme does not establish historic authoring theme. Missing source selectors are inconclusive.","",
+      "Current active theme does not establish historic authoring theme. Missing source selectors are inconclusive.",
+      "Strict parity passed for 5+3 source-defined separators, Cultural Significance spacing-60 and About spacing-70 at 320/375/1280px. Other styling differences remain unaccepted.","",
       "| Route | Width | Original spacing 60 | Migrated spacing 60 | Original separator width/border | Migrated separator width/border |",
       "|---|---:|---|---|---|---|"]
     for row in rows:
@@ -181,7 +246,7 @@ def output(rows,blocked,directory):
     lines+=["","Inspect JSON counts and computed styles before proposing any CSS change.",
       "This does not certify theme, gallery interaction, media rights, manual screen-reader, PDF or field CWV parity."]
     (directory/"current-wordpress-rendered-tokens.md").write_text("\n".join(lines)+"\n")
-    print("Rendered-token diagnostic PASS: 12 paired route/width checks, 24 HTTP 200 visits; blocked requests:",blocked)
+    print("Rendered-token parity PASS: 12 paired route/width checks, 24 HTTP 200 visits; blocked requests:",blocked)
 
 if __name__=="__main__":
     parser=argparse.ArgumentParser()
