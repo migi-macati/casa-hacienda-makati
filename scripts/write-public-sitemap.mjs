@@ -10,20 +10,22 @@ if (!Array.isArray(expected) || expected.length !== 15 ||
   throw new Error('Published route inventory changed; review before sitemap release');
 }
 const base = 'https://casa-hacienda-makati.vercel.app';
-const urls = expected.map(d => {
+// The homepage is an independently published route, outside the 13+2 source inventory.
+const urls = [base + '/', ...expected.map(d => {
   if (typeof d.file !== 'string' || !/^(?:[a-z0-9-]+\/)*index\.html$/.test(d.file)) {
     throw new Error('Unsafe published route: ' + String(d.file));
   }
   return base + '/' + d.file.slice(0, -'index.html'.length);
-});
-if (new Set(urls).size !== 15) throw new Error('Duplicate sitemap URL');
+})];
+if (new Set(urls).size !== 16) throw new Error('Duplicate sitemap URL or homepage collision');
 const xml = '<?xml version="1.0" encoding="UTF-8"?>\n' +
   '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
   urls.map(url => '  <url><loc>' + url + '</loc></url>').join('\n') +
   '\n</urlset>\n';
 writeFileSync(resolve(root, 'public/sitemap.xml'), xml, 'utf8');
 const written = readFileSync(resolve(root, 'public/sitemap.xml'), 'utf8');
-if (written !== xml || (written.match(/<url>/g) || []).length !== 15) {
+if (written !== xml || (written.match(/<url>/g) || []).length !== 16 ||
+    !written.includes('<loc>' + base + '/</loc>')) {
   throw new Error('Sitemap verification failed');
 }
-console.log('Generated source-locked sitemap for 15 published routes; indexing remains disabled.');
+console.log('Generated source-locked sitemap for homepage and 15 published routes; indexing remains disabled.');
