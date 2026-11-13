@@ -1,5 +1,5 @@
 // Source-locked public sitemap. This does not change robots/noindex policy.
-import { readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 const root = resolve(import.meta.dirname, '..');
 const source = JSON.parse(readFileSync(resolve(root, 'ops/published-search-sources.json'), 'utf8'));
@@ -11,6 +11,23 @@ if (!Array.isArray(expected) || expected.length !== 15 ||
 }
 const base = 'https://casa-hacienda-makati.vercel.app';
 // The homepage is an independently published route, outside the 13+2 source inventory.
+const publicRoot = resolve(root, 'public');
+const assertBuiltRoute = (file) => {
+  if (typeof file !== 'string' || !/^(?:[a-z0-9-]+\\/)*index\\.html$/.test(file)) {
+    throw new Error('Unsafe published route: ' + String(file));
+  }
+  if (!existsSync(resolve(publicRoot, file))) {
+    throw new Error('Sitemap route has no built HTML: ' + file);
+  }
+};
+// Fail-closed fixture: an absent published page must never enter the sitemap.
+try {
+  assertBuiltRoute('__missing-sitemap-fixture__/index.html');
+  throw new Error('Missing-route negative fixture unexpectedly passed');
+} catch (error) {
+  if (!String(error.message).startsWith('Sitemap route has no built HTML:')) throw error;
+}
+assertBuiltRoute('index.html');
 const urls = [base + '/', ...expected.map(d => {
   if (typeof d.file !== 'string' || !/^(?:[a-z0-9-]+\/)*index\.html$/.test(d.file)) {
     throw new Error('Unsafe published route: ' + String(d.file));
