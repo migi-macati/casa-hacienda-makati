@@ -13,7 +13,7 @@ const base = 'https://casa-hacienda-makati.vercel.app';
 // The homepage is an independently published route, outside the 13+2 source inventory.
 const publicRoot = resolve(root, 'public');
 const assertBuiltRoute = (file) => {
-  if (typeof file !== 'string' || !/^(?:[a-z0-9-]+\\/)*index\\.html$/.test(file)) {
+  if (typeof file !== 'string' || !/^(?:[a-z0-9-]+\/)*index\.html$/.test(file)) {
     throw new Error('Unsafe published route: ' + String(file));
   }
   if (!existsSync(resolve(publicRoot, file))) {
