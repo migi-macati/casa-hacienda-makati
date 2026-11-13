@@ -29,9 +29,7 @@ try {
 }
 assertBuiltRoute('index.html');
 const urls = [base + '/', ...expected.map(d => {
-  if (typeof d.file !== 'string' || !/^(?:[a-z0-9-]+\/)*index\.html$/.test(d.file)) {
-    throw new Error('Unsafe published route: ' + String(d.file));
-  }
+  assertBuiltRoute(d.file);
   return base + '/' + d.file.slice(0, -'index.html'.length);
 })];
 if (new Set(urls).size !== 16) throw new Error('Duplicate sitemap URL or homepage collision');
