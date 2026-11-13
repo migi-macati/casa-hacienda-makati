@@ -22,7 +22,7 @@ const assertBuiltRoute = (file) => {
 };
 // Fail-closed fixture: an absent published page must never enter the sitemap.
 try {
-  assertBuiltRoute('__missing-sitemap-fixture__/index.html');
+  assertBuiltRoute('missing-sitemap-fixture/index.html');
   throw new Error('Missing-route negative fixture unexpectedly passed');
 } catch (error) {
   if (!String(error.message).startsWith('Sitemap route has no built HTML:')) throw error;
