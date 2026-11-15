@@ -2,6 +2,10 @@ name: Independent production browser and media acceptance
 on:
   pull_request:
   workflow_dispatch:
+# A newer commit on the same PR supersedes older expensive live-site checks.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 jobs:
   production-http-browser-and-bytes:
     runs-on: ubuntu-24.04
