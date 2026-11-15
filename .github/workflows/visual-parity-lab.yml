@@ -4,6 +4,10 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+# A newer commit on the same PR supersedes older expensive live-site checks.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 jobs:
   public-visual-lab:
     runs-on: ubuntu-24.04
