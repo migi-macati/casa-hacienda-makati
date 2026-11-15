@@ -24,9 +24,9 @@ KEY_ROUTES = {
     "/2024/10/28/cultural-significance-no-12/",
 }
 COLOR = {
-    "has-primary-color": "rgb(28, 59, 48)",
-    "has-foreground-color": "rgb(36, 62, 48)",
-    "has-black-color": "rgb(17, 17, 17)",
+    "has-primary-color": "rgb(17, 17, 17)",
+    "has-foreground-color": "rgb(17, 17, 17)",
+    "has-black-color": "rgb(0, 0, 0)",
 }
 SNAPSHOT = r"""() => {
   const article = document.querySelector('article.content');
@@ -194,6 +194,7 @@ def self_test(inventory):
         ("old-2px-border", lambda x: x["rules"][0].update(thickness="2px")),
         ("missing-solid-border", lambda x: x["rules"][0].update(border="none")),
         ("missing-separator", lambda x: x["rules"].pop()),
+        ("old-primary-palette", lambda x: x["colors"]["has-primary-color"].__setitem__(0, "rgb(28, 59, 48)")),
     ]
     for name, mutate in separator_mutations:
         changed = copy.deepcopy(sep)
@@ -208,7 +209,7 @@ def self_test(inventory):
         changed = copy.deepcopy(sample)
         changed["headingPadding"] = min(168.0, width * 0.13)
         validate(changed, counts, route, width)
-    print("Recent Gutenberg production QA: source inventory and",
+    print("Recent Gutenberg production QA: source inventory and current-original colors;",
           len(changes) + len(separator_mutations), "negative fixtures PASS")
 
 def run_live(inventory):
